@@ -62,8 +62,10 @@ public class Cluster implements Comparable<Cluster> {
 	 */
 	public Cluster(ServerClusters plugin, String name, List<String> serverlist, String defaultServer) {
 		this.plugin = plugin;
-		this.setName(name);
-		this.setServerlist(serverlist);
+		setName(name);
+		if(serverlist != null) {
+			setServerlist(serverlist);
+		}
 		this.defaultServer = defaultServer;
 	}
 	
@@ -72,9 +74,9 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param playername The name of the player
 	 */	
 	public void connectPlayer(String playername) {
-		ProxiedPlayer player = this.plugin.getProxy().getPlayer(playername);	
+		ProxiedPlayer player = plugin.getProxy().getPlayer(playername);
 		if(player != null)
-			this.connectPlayer(player);
+			connectPlayer(player);
 	}
 	
 	/**
@@ -82,9 +84,9 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param playerid The UUID of the player
 	 */	
 	public void connectPlayer(UUID playerid) {
-		ProxiedPlayer player = this.plugin.getProxy().getPlayer(playerid);
+		ProxiedPlayer player = plugin.getProxy().getPlayer(playerid);
 		if(player != null)
-			this.connectPlayer(player);
+			connectPlayer(player);
 	}
 
 	/**
@@ -92,13 +94,14 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param player The player to connect
 	 */
 	public void connectPlayer(ProxiedPlayer player) {
-		String servername = this.getLoggoutServer(player.getUniqueId());
-		if(servername == null)
-			servername = this.getDefaultServer();
-		ServerInfo server = this.plugin.getProxy().getServers().get(servername);
-		if(player != null && server != null)
-			player.connect(server);
-		else if(player != null) {
+		String servername = getLoggoutServer(player.getUniqueId());
+		if(servername == null) {
+            servername = getDefaultServer();
+        }
+		ServerInfo server = plugin.getProxy().getServers().get(servername);
+		if(server != null) {
+            player.connect(server);
+        } else {
 			player.sendMessage(new ComponentBuilder("Error:").color(ChatColor.DARK_RED).append(" The server " + servername + " does not exist!").color(ChatColor.RED).create());
 		}
 	}
@@ -108,7 +111,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @return The name of the default server
 	 */
 	public String getDefaultServer() {
-		return this.defaultServer;
+		return defaultServer;
 	}
 
 	/**
@@ -117,8 +120,9 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param servername The name of the server the player logged out from as a string
 	 */
 	public void setLoggoutServer(ProxiedPlayer player, String servername) {
-		if(this.getServerlist().contains(servername))
-			this.logoutmap.put(player.getUniqueId(), servername);
+		if(getServerlist().contains(servername)) {
+            logoutmap.put(player.getUniqueId(), servername);
+        }
 	}
 	
 	/**
@@ -127,22 +131,22 @@ public class Cluster implements Comparable<Cluster> {
 	 * @return The servername as a string, null if not found
 	 */
 	public String getLoggoutServer(UUID playerid) {
-		if(this.logoutmap.containsKey(playerid)) 
-			return this.logoutmap.get(playerid);
-		if(this.plugin.getBackend() == Backend.MYSQL) {
+		if(logoutmap.containsKey(playerid))
+			return logoutmap.get(playerid);
+		if(plugin.getBackend() == Backend.MYSQL) {
 			try {
 				PreparedStatement sta;
 				sta = plugin.getConnection().prepareStatement("SELECT servername as name from " + plugin.getTablePrefix() + "_logoutserver WHERE playerid=?");
-		        sta.setString(1, this.getName() + playerid);
+		        sta.setString(1, getName() + playerid);
 		        ResultSet rs = sta.executeQuery();
 			    sta.close();		      
 		        rs.next();	        
 		        return rs.getString("name");
 			} catch (SQLException e) {
-				plugin.getLogger().severe("MySQL-Error! Something went wrong while fetching the logout server for player with the id " + playerid + " on cluster " + this.getName() + "! Does the table \""+ plugin.getTablePrefix() + "_loggoutserver\" exist?");
+				plugin.getLogger().severe("MySQL-Error! Something went wrong while fetching the logout server for player with the id " + playerid + " on cluster " + getName() + "! Does the table \""+ plugin.getTablePrefix() + "_loggoutserver\" exist?");
 				//e.printStackTrace();
 			}
-		} else if(this.plugin.getBackend() == Backend.YAML) {
+		} else if(plugin.getBackend() == Backend.YAML) {
 			// TODO: YAML BACKEND
 		}
 		return null;
@@ -156,8 +160,8 @@ public class Cluster implements Comparable<Cluster> {
 	public List<ProxiedPlayer> getPlayerlist() {
 		// TODO Auto-generated method stub
 		List<ProxiedPlayer> playerlist = new ArrayList<ProxiedPlayer>();
-		for(String s : this.getServerlist()) {
-			ServerInfo si = this.plugin.getProxy().getServerInfo(s);
+		for(String s : getServerlist()) {
+			ServerInfo si = plugin.getProxy().getServerInfo(s);
 			if(si != null)
 				playerlist.addAll(si.getPlayers());
 		}
@@ -169,7 +173,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @return the serverlist
 	 */
 	public List<String> getServerlist() {
-		return this.serverlist;
+		return serverlist;
 	}
 
 	/**
@@ -184,8 +188,8 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param name String representing the name of the server
 	 */
 	public void addServer(String name) {
-		if(!this.serverlist.contains(name.toLowerCase()))
-			this.serverlist.add(name.toLowerCase());
+		if(!serverlist.contains(name.toLowerCase()))
+			serverlist.add(name.toLowerCase());
 	}
 
 	/**
@@ -193,7 +197,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @return the name
 	 */
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	/**
@@ -208,7 +212,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @return the aliaslist
 	 */
 	public List<String> getAliaslist() {
-		return this.aliaslist;
+		return aliaslist;
 	}
 
 	/**
@@ -219,9 +223,11 @@ public class Cluster implements Comparable<Cluster> {
 	}
 
 	public boolean containsServer(String servername) {
-		for(String s : this.getServerlist())
-			if(s.equalsIgnoreCase(servername))
-				return true;
+		for(String s : getServerlist()) {
+            if(s.equalsIgnoreCase(servername)) {
+                return true;
+            }
+        }
 		return false;
 	}
 
@@ -230,7 +236,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @throws NullPointerException if o is null.
 	 */
 	public int compareTo(Cluster c) {
-		if (this == c) return 0;
-		return this.getName().compareToIgnoreCase(c.getName());
+		if(this == c) return 0;
+		return getName().compareToIgnoreCase(c.getName());
 	}
 }
