@@ -1,0 +1,52 @@
+# backend to safe runtime data (for example loggoutservers)
+# possible options: YAML or MYSQL
+backend: YAML
+# mysql connection information
+mysql:
+  user: username
+  password: password1
+  dbname: mydatabase
+  host: localhost
+  port: 3306
+  tableprefix: serverclusters_
+commandaliases:
+  cluster: [server,hg,join,j]
+  clist: [slist, glist]
+  cfind: [find]
+  ctp: [tp, tpc]
+  ctpa: [tpa]
+  ctphere: [tpahere]
+  ctpaccept: [tpaccept]
+cluster:
+  Freebuild:
+    server:
+      - minebench
+    alias: [fb, f, minebench, mb, m, survival]
+  Lobby:
+    server:
+      - lobby
+    alias:
+      - l
+  Test:
+    server:
+      - test
+    alias:
+      - t
+  Skyblock:
+    server:
+      - sky
+    alias:
+      - sky
+      - s
+  Build:
+    server:
+      - build
+    alias:
+      - b
+  PVP:
+    server:
+      - pvp
+    alias:
+      - p
+
+
