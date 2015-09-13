@@ -3,3 +3,41 @@ main: de.themoep.serverclusters.bukkit.ServerClustersBukkit
 version: 0.2.6.3
 description: Bukkit part of of the ServerClusters plugin
 authors: [Phoenix616]
+commands:
+   ctpa:
+      aliases: [tpa,call]
+      description: Request a teleport to another player
+      usage: /<command> <playername>
+      permission: serverclusters.command.ctpa
+      permission-message: You don't have the permission <permission>
+   ctpahere:
+      aliases: [tpahere]
+      description: Request another player to teleport to you
+      usage: /<command> <playername>
+      permission: serverclusters.command.ctpahere
+      permission-message: You don't have the permission <permission>
+   ctpaccept:
+      aliases: [tpaccept,tpyes]
+      description: Accepts a teleport request by another player
+      usage: /<command> [<playername>]
+      permission: serverclusters.command.ctpaccept
+      permission-message: You don't have the permission <permission>
+   ctpdeny:
+      aliases: [tpdeny,tpno]
+      description: Denies a teleport request by another player
+      usage: /<command> [<playername>]
+      permission: serverclusters.command.ctpdeny
+      permission-message: You don't have the permission <permission>
+permissions:
+   serverclusters.command.ctpa:
+      default: op
+   serverclusters.command.ctpa.intercluster:
+      default: op
+   serverclusters.command.ctpahere:
+      default: op
+   serverclusters.command.ctpahere.intercluster:
+      default: op
+   serverclusters.command.ctpaccept:
+      default: op
+   serverclusters.command.ctpdeny:
+      default: op
