@@ -3,11 +3,11 @@ package de.themoep.serverclusters.bungee.commands;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.vnpbungee.VNPBungee;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
-import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
 import java.util.Collections;
