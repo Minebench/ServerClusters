@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import de.themoep.serverclusters.bungee.commands.ClusterCommand;
+import de.themoep.serverclusters.bungee.commands.FindCommand;
 import de.themoep.serverclusters.bungee.commands.ListCommand;
 import de.themoep.serverclusters.bungee.commands.TpCommand;
 import de.themoep.serverclusters.bungee.enums.Backend;
@@ -165,6 +166,9 @@ public class ServerClusters extends Plugin {
 
 		List<String> tpal = getConfig().getStringList("commandaliases.ctp");
         commandList.add(new TpCommand(this, "ctp","serverclusters.command.ctp", tpal.toArray(new String[tpal.size()])));
+
+		List<String> fal = getConfig().getStringList("commandaliases.cfind");
+		commandList.add(new FindCommand(this, "cfind","serverclusters.command.cfind", fal.toArray(new String[fal.size()])));
 
 		if(latebind) {
 			getLogger().log(infolevel, "Scheduling the Registering of the Commands...");
