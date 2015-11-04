@@ -11,9 +11,7 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class FindCommand extends Command implements TabExecutor {
@@ -39,7 +37,7 @@ public class FindCommand extends Command implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " online!");
                     return;
                 }
-                sender.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GREEN + " ist online auf " + cluster.getName());
+                sender.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GREEN + " ist online auf " + ChatColor.YELLOW + cluster.getName());
             }
         } else {
             sender.sendMessage(ChatColor.RED + "Bitte gebe den Namen des Spielers ein den du suchst!");
