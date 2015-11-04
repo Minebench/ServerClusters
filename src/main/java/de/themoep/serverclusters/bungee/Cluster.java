@@ -120,6 +120,18 @@ public class Cluster implements Comparable<Cluster> {
 	}
 
 	/**
+	 * Set the default server of this cluster
+	 * @param defaultServer The name of the default server
+	 */
+	public void setDefaultServer(String defaultServer) {
+		if(defaultServer != null) {
+			if(getServerlist().contains(defaultServer)) {
+				this.defaultServer = defaultServer;
+			}
+		}
+	}
+
+	/**
 	 * Sets the server a player loggout out from
 	 * @param player The Player to save the loggout server
 	 * @param servername The name of the server the player logged out from as a string
