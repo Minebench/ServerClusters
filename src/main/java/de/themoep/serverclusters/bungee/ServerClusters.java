@@ -127,6 +127,7 @@ public class ServerClusters extends Plugin {
 		for(String clustername : section.getKeys()) {			
 			Cluster cluster = new Cluster(this, clustername, getConfig().getStringList("cluster." + clustername + ".server"));
 			cluster.setAliaslist(getConfig().getStringList("cluster." + clustername + ".alias"));
+			cluster.setHidden(getConfig().getBoolean("cluster." + clustername + ".hidden", false));
 			getClusterManager().addCluster(cluster);
 		}
 		

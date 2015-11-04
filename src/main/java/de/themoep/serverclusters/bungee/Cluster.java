@@ -44,6 +44,11 @@ public class Cluster implements Comparable<Cluster> {
 	private String defaultServer;
 
 	/**
+	 * Whether or not this cluster should how up in the lists
+	 */
+	private boolean hidden;
+
+	/**
 	 * The cluster object
 	 * @param plugin The ServerClusters plugin
 	 * @param name The name of the cluster
@@ -238,5 +243,21 @@ public class Cluster implements Comparable<Cluster> {
 	public int compareTo(Cluster c) {
 		if(this == c) return 0;
 		return getName().compareToIgnoreCase(c.getName());
+	}
+
+	/**
+	 * Set whether or not this cluster should be hidden
+	 * @param hidden <tt>true</tt> if it should be hidden; <tt>false</tt> if not
+	 */
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	/**
+	 * Get whether or not this cluster is hidden
+	 * @return <tt>true</tt> if it should be hidden; <tt>false</tt> if not
+	 */
+	public boolean isHidden() {
+		return hidden;
 	}
 }

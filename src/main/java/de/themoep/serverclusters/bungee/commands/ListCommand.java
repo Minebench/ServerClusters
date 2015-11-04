@@ -49,6 +49,12 @@ public class ListCommand extends Command implements TabExecutor {
                 
 				for(Cluster c : cl) {
 					if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
+                        boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
+
+                        if(!current && sender instanceof ProxiedPlayer && c.isHidden()) {
+                            continue;
+                        }
+
                         List<String> clusterPlayers = new ArrayList<String>();
                         for(ProxiedPlayer p : c.getPlayerlist()) {
                             String name = "";
@@ -71,8 +77,6 @@ public class ListCommand extends Command implements TabExecutor {
                         String playerList = clusterPlayers.toString().substring(1, clusterPlayers.toString().length() - 1);
 
 						ComponentBuilder msg = new ComponentBuilder(" ");
-                        
-                        Boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
 
                         HoverEvent he;
                         

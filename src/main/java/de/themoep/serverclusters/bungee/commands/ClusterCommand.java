@@ -44,8 +44,12 @@ public class ClusterCommand extends Command implements TabExecutor {
 
 				for(Cluster c : cl) {
 					if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
-						Boolean current = (sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*"));
-						
+						boolean current = (sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*"));
+
+						if(!current && sender instanceof ProxiedPlayer && c.isHidden()) {
+							continue;
+						}
+
 						ComponentBuilder msg = new ComponentBuilder(" ");
 
 						HoverEvent he;
