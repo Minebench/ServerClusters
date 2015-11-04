@@ -51,7 +51,7 @@ public class ListCommand extends Command implements TabExecutor {
 					if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
                         boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
 
-                        if(!current && sender instanceof ProxiedPlayer && c.isHidden()) {
+                        if(c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
                             continue;
                         }
 
