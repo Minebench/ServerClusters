@@ -29,18 +29,18 @@ public class FindCommand extends Command implements TabExecutor {
             for(String name : args) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(name);
                 if(player == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VISIBLE && !sender.hasPermission("vanish.see"))) {
-                    sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " online!");
+                    sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
                     return;
                 }
                 Cluster cluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
                 if(cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") || !sender.hasPermission("serverclusters.cluster." + cluster.getName())) {
-                    sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " online!");
+                    sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
                     return;
                 }
                 sender.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GREEN + " ist online auf " + ChatColor.YELLOW + cluster.getName());
             }
         } else {
-            sender.sendMessage(ChatColor.RED + "Bitte gebe den Namen des Spielers ein den du suchst!");
+            sender.sendMessage(ChatColor.RED + "Usage: /" + getName() + " <username>");
         }
     }
 
