@@ -3,6 +3,7 @@ package de.themoep.serverclusters.bungee.events;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Event;
 
@@ -34,5 +35,13 @@ public class ClusterConnectEvent extends Event {
 	public void setTarget(Cluster cluster) {
 		event.setTarget(plugin.getProxy().getServerInfo(cluster.getLoggoutServer(event.getPlayer().getUniqueId())));
 		target = cluster;
+	}
+
+	/**
+	 * Get the player of the event
+	 * @return The ProxiedPlayer
+	 */
+	public ProxiedPlayer getPlayer() {
+		return event.getPlayer();
 	}
 }
