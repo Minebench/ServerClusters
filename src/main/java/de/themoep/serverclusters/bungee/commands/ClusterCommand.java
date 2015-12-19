@@ -84,9 +84,8 @@ public class ClusterCommand extends Command implements TabExecutor {
                         int playerCount = 0;
                         if(!sender.hasPermission("vanish.see") && plugin.getVnpbungee() != null) {
                             VNPBungee vnpBungee = (VNPBungee) ProxyServer.getInstance().getPluginManager().getPlugin("VNPBungee");
-                            boolean senderSeeUnknown = sender instanceof ProxiedPlayer && plugin.getVnpbungee().getVanishStatus((ProxiedPlayer) sender) != VNPBungee.VanishStatus.VISIBLE;
                             for(ProxiedPlayer p : c.getPlayerlist()) {
-                                if(senderSeeUnknown || vnpBungee.getVanishStatus(p) == VNPBungee.VanishStatus.VISIBLE) {
+                                if(vnpBungee.getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED) {
                                     playerCount++;
                                 }
                             }
@@ -100,7 +99,7 @@ public class ClusterCommand extends Command implements TabExecutor {
 					}
 				}
 				
-			} else if(args.length == 1 && sender instanceof  ProxiedPlayer){
+			} else if(args.length == 1 && sender instanceof ProxiedPlayer){
 
 				Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
 				if(targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
@@ -110,9 +109,7 @@ public class ClusterCommand extends Command implements TabExecutor {
 				} else {
 					// connect player to cluster
 					ProxiedPlayer p = (ProxiedPlayer) sender;
-					if(p == null){
-						sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + " Use /cluster <clustername> <player> [<player2>...] to send players from the console!");
-					} else if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())) {
+					if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())) {
 						sender.sendMessage(ChatColor.RED + "Du bist bereits auf " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.RED + "!");
 					} else {
 						targetCluster.connectPlayer(p);

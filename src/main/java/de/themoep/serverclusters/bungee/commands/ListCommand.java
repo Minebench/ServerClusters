@@ -24,31 +24,27 @@ public class ListCommand extends Command implements TabExecutor {
     private ServerClusters plugin;
 
     public ListCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-		super(name, permission, aliases);
+        super(name, permission, aliases);
         this.plugin = plugin;
-	}
+    }
 
-	@Override
-	public void execute(CommandSender sender, String[] args) {		
-		if(sender.hasPermission("serverclusters.command.clist")) {
-			if(args.length == 0) {
-				//send cluster list
-				// TODO: Change messages to language system!
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if(sender.hasPermission("serverclusters.command.clist")) {
+            if(args.length == 0) {
+                //send cluster list
+                // TODO: Change messages to language system!
 
-				List<Cluster> cl = plugin.getClusterManager().getClusterlist();
-				Collections.sort(cl);
+                List<Cluster> cl = plugin.getClusterManager().getClusterlist();
+                Collections.sort(cl);
 
-				int totalPlayers = 0;
+                int totalPlayers = 0;
 
-				sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
+                sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
                 boolean checkVanished = plugin.getVnpbungee() != null;
-                boolean senderSeeUnknown = true;
-                if(checkVanished) {
-                    senderSeeUnknown = sender instanceof ProxiedPlayer && plugin.getVnpbungee().getVanishStatus((ProxiedPlayer) sender) != VNPBungee.VanishStatus.VISIBLE;
-                }
-                
-				for(Cluster c : cl) {
-					if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
+
+                for(Cluster c : cl) {
+                    if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
                         boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
 
                         if(c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
@@ -59,9 +55,9 @@ public class ListCommand extends Command implements TabExecutor {
                         for(ProxiedPlayer p : c.getPlayerlist()) {
                             String name = "";
                             if(checkVanished) {
-                                VNPBungee.VanishStatus vStatus = plugin.getVnpbungee().getVanishStatus(p);
-                                if (!(senderSeeUnknown && vStatus == VNPBungee.VanishStatus.UNKNOWN) && vStatus != VNPBungee.VanishStatus.VISIBLE) {
-                                    if (!sender.hasPermission("vanish.see")) continue;
+                                if(plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
+                                    if(!sender.hasPermission("vanish.see"))
+                                        continue;
                                     name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
                                 }
                             }
@@ -73,23 +69,23 @@ public class ListCommand extends Command implements TabExecutor {
                         };
 
                         totalPlayers += clusterPlayers.size();
-                        
+
                         String playerList = clusterPlayers.toString().substring(1, clusterPlayers.toString().length() - 1);
 
-						ComponentBuilder msg = new ComponentBuilder(" ");
+                        ComponentBuilder msg = new ComponentBuilder(" ");
 
                         HoverEvent he;
-                        
+
                         if(current) {
                             msg.append(ChatColor.RED + ">").bold(true).color(ChatColor.RED);
                             he = new HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT, 
+                                    HoverEvent.Action.SHOW_TEXT,
                                     new ComponentBuilder("Hier befindest du dich!")
                                             .create()
                             );
                             msg.event(he);
                         } else {
-                            he = new HoverEvent( 
+                            he = new HoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
                                     new ComponentBuilder("Klicke zum Beitreten von ").italic(true)
                                             .append(c.getName()).color(ChatColor.GREEN)
@@ -97,32 +93,32 @@ public class ListCommand extends Command implements TabExecutor {
                                             .create()
                             );
                         }
-						msg.append(c.getName()).bold(false);
+                        msg.append(c.getName()).bold(false);
 
-						if(current) {
+                        if(current) {
                             msg.color(ChatColor.YELLOW);
                         } else {
                             msg.color(ChatColor.GREEN);
                             msg.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + c.getName()));
                         }
-						msg.event(he);
-						msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
-						msg.append(playerList).color(ChatColor.WHITE);
-						sender.sendMessage(msg.create());
-					}
-				}
-				sender.sendMessage(new ComponentBuilder("Gesamt: " + totalPlayers).create());
-			}
-		}
-	}
+                        msg.event(he);
+                        msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
+                        msg.append(playerList).color(ChatColor.WHITE);
+                        sender.sendMessage(msg.create());
+                    }
+                }
+                sender.sendMessage(new ComponentBuilder("Gesamt: " + totalPlayers).create());
+            }
+        }
+    }
 
-	public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
-		List<String> cl = new ArrayList<String>();
-		for(Cluster c : plugin.getClusterManager().getClusterlist())
-			if(args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
-				cl.add(c.getName());
-		return cl;
-	}
+    public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
+        List<String> cl = new ArrayList<String>();
+        for(Cluster c : plugin.getClusterManager().getClusterlist())
+            if(args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
+                cl.add(c.getName());
+        return cl;
+    }
 
 
 }
