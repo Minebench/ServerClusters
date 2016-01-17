@@ -176,14 +176,14 @@ public class ServerClusters extends Plugin {
 		List<String> lal = getConfig().getStringList("commandaliases.clist");
         commandList.add(new ListCommand(this, "clist","serverclusters.command.clist", lal.toArray(new String[lal.size()])));
 
-		List<String> tpal = getConfig().getStringList("commandaliases.ctp");
-        commandList.add(new TpCommand(this, "ctp","serverclusters.command.ctp", tpal.toArray(new String[tpal.size()])));
+		List<String> tpal = getConfig().getStringList("commandaliases.tp");
+        commandList.add(new TpCommand(this, "tp","serverclusters.command.tp", tpal.toArray(new String[tpal.size()])));
 
-		List<String> tphal = getConfig().getStringList("commandaliases.ctphere");
-		commandList.add(new TphereCommand(this, "ctphere","serverclusters.command.ctphere", tphal.toArray(new String[tpal.size()])));
+		List<String> tphal = getConfig().getStringList("commandaliases.tphere");
+		commandList.add(new TphereCommand(this, "tphere","serverclusters.command.tphere", tphal.toArray(new String[tpal.size()])));
 
-		List<String> fal = getConfig().getStringList("commandaliases.cfind");
-		commandList.add(new FindCommand(this, "cfind","serverclusters.command.cfind", fal.toArray(new String[fal.size()])));
+		List<String> fal = getConfig().getStringList("commandaliases.find");
+		commandList.add(new FindCommand(this, "find","serverclusters.command.find", fal.toArray(new String[fal.size()])));
 
 		if(latebind) {
 			getLogger().log(infolevel, "Scheduling the Registering of the Commands...");

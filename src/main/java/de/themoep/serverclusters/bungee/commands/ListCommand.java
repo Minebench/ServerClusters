@@ -30,7 +30,7 @@ public class ListCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(sender.hasPermission("serverclusters.command.clist")) {
+        if(sender.hasPermission(getPermission())) {
             if(args.length == 0) {
                 //send cluster list
                 // TODO: Change messages to language system!

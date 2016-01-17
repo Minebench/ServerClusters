@@ -23,7 +23,7 @@ public class TphereCommand extends Command implements TabExecutor {
 
 	@Override
 	public void execute(CommandSender sender, String[] args) {		
-		if(sender.hasPermission("serverclusters.command.ctphere")) {
+		if(sender.hasPermission(getPermission())) {
 			// TODO: Change messages to language system!
 			if(args.length == 1) {
 				if(sender instanceof ProxiedPlayer) {

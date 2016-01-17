@@ -12,9 +12,9 @@ mysql:
 commandaliases:
   cluster: [server,hg,join,j]
   clist: [slist, glist]
-  cfind: [find]
-  ctp: [tp, tpc]
-  ctphere: [tphere, s]
+  find: [cfind]
+  tp: [ctp, tpc]
+  tphere: [ctphere, s]
 cluster:
   Freebuild:
     server:
