@@ -32,14 +32,14 @@ public class TeleportUtils {
         Cluster targetCluster = plugin.getClusterManager().getClusterByServer(target.getServer().getInfo().getName());
         if(player.getServer().getInfo().getName().equals(target.getServer().getInfo().getName())) {
             teleportToPlayerPM(player, target);
-            player.sendMessage(ChatColor.GREEN + "Teleported to " + ChatColor.YELLOW + target.getName());
+            player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " teleportiert");
             return true;
         } else if (playerCluster == targetCluster || player.hasPermission("serverclusters.teleport.intercluster")){
             if(playerCluster != targetCluster)
                 player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
             player.connect(target.getServer().getInfo());
             teleportToPlayerPM(player, target);
-            player.sendMessage(ChatColor.GREEN + "Teleported to " + ChatColor.YELLOW + target.getName());
+            player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " teleportiert");
             return true;
         } else
             player.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You are not allowed to teleport between clusters!");

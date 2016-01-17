@@ -15,9 +15,6 @@ commandaliases:
   cfind: [find]
   ctp: [tp, tpc]
   ctphere: [tphere, s]
-  ctpa: [tpa]
-  ctphere: [tpahere]
-  ctpaccept: [tpaccept]
 cluster:
   Freebuild:
     server:

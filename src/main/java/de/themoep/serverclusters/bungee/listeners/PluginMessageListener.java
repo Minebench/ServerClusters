@@ -7,6 +7,7 @@ import de.themoep.serverclusters.bungee.ServerClusters;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.event.EventHandler;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.logging.Level;
 
@@ -50,6 +51,14 @@ public class PluginMessageListener {
                     } else if(reason.equals("SetSpawn")) {
 
                     }
+                } else if(subchannel.equals("RunCommand")) {
+                    String sender = in.readUTF();
+                    String command = in.readUTF();
+                    String argsStr = in.readUTF();
+                    String[] args = StringUtils.split(argsStr, ' ');
+                    plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/RunCommand/" + command + " '" + argsStr + "' from " + sender);
+
+                    plugin.getBukkitCommandExecutor().execute(command, sender, args);
                 }
             }
         }

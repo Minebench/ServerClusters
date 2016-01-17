@@ -13,14 +13,20 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import de.themoep.serverclusters.bungee.bukkitcommands.TpaCommand;
+import de.themoep.serverclusters.bungee.bukkitcommands.TpacceptCommand;
+import de.themoep.serverclusters.bungee.bukkitcommands.TpahereCommand;
+import de.themoep.serverclusters.bungee.bukkitcommands.TpdenyCommand;
 import de.themoep.serverclusters.bungee.commands.ClusterCommand;
 import de.themoep.serverclusters.bungee.commands.FindCommand;
 import de.themoep.serverclusters.bungee.commands.ListCommand;
 import de.themoep.serverclusters.bungee.commands.TpCommand;
+import de.themoep.serverclusters.bungee.commands.TphereCommand;
 import de.themoep.serverclusters.bungee.enums.Backend;
 import de.themoep.serverclusters.bungee.listeners.ServerConnectListener;
 import de.themoep.serverclusters.bungee.listeners.ServerSwitchListener;
 import de.themoep.serverclusters.bungee.manager.ClusterManager;
+import de.themoep.serverclusters.bungee.manager.TeleportManager;
 import de.themoep.serverclusters.bungee.utils.TeleportUtils;
 
 import de.themoep.vnpbungee.VNPBungee;
@@ -50,9 +56,13 @@ public class ServerClusters extends Plugin {
 	
 	private Connection conn = null;
 
+	private TeleportManager tm;
+
 	private ClusterManager cm;
 
 	private TeleportUtils teleportUtils;
+
+	private BukkitCommandExecutor bukkitCommandExecutor;
 
     List<Command> commandList = new ArrayList<Command>();
 
@@ -60,13 +70,15 @@ public class ServerClusters extends Plugin {
 
     private ServerClusters plugin;
 
-    public void onEnable() {
+	public void onEnable() {
 		saveDefaultConfig();
 		config = loadConfigFile();
 		loadConfig();
 		setupCommands(true);
 
+        bukkitCommandExecutor = new BukkitCommandExecutor(this);
 		teleportUtils = new TeleportUtils(this);
+		tm = new TeleportManager(this);
 
 		getProxy().registerChannel("ServerClusters");
 
@@ -167,6 +179,9 @@ public class ServerClusters extends Plugin {
 		List<String> tpal = getConfig().getStringList("commandaliases.ctp");
         commandList.add(new TpCommand(this, "ctp","serverclusters.command.ctp", tpal.toArray(new String[tpal.size()])));
 
+		List<String> tphal = getConfig().getStringList("commandaliases.ctphere");
+		commandList.add(new TphereCommand(this, "ctphere","serverclusters.command.ctphere", tphal.toArray(new String[tpal.size()])));
+
 		List<String> fal = getConfig().getStringList("commandaliases.cfind");
 		commandList.add(new FindCommand(this, "cfind","serverclusters.command.cfind", fal.toArray(new String[fal.size()])));
 
@@ -186,6 +201,12 @@ public class ServerClusters extends Plugin {
                 ProxyServer.getInstance().getPluginManager().registerCommand(this, c);
             }
 		}
+
+		getLogger().log(infolevel, "Setting up Bukkit commands");
+		getBukkitCommandExecutor().registerCommand(new TpaCommand(this, "tpa", "serverclusters.command.tpa"));
+		getBukkitCommandExecutor().registerCommand(new TpahereCommand(this, "tpahere", "serverclusters.command.tpahere"));
+		getBukkitCommandExecutor().registerCommand(new TpacceptCommand(this, "tpaccept", "serverclusters.command.tpaccept"));
+		getBukkitCommandExecutor().registerCommand(new TpdenyCommand(this, "tpdeny", "serverclusters.command.tpdeny"));
 	}
 
 	/**
@@ -195,14 +216,22 @@ public class ServerClusters extends Plugin {
         config = loadConfigFile();
         loadConfig();
         setupCommands(false);
-	}	
-	
+	}
+
+	public TeleportManager getTeleportManager() {
+		return tm;
+	}
+
 	public ClusterManager getClusterManager() {
 		return cm;
 	}
 
     public TeleportUtils getTeleportUtils() {
         return teleportUtils;
+    }
+
+    public BukkitCommandExecutor getBukkitCommandExecutor() {
+        return bukkitCommandExecutor;
     }
 
     /**
