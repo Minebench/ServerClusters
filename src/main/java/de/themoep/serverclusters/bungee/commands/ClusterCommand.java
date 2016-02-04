@@ -112,8 +112,8 @@ public class ClusterCommand extends Command implements TabExecutor {
 					if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())) {
 						sender.sendMessage(ChatColor.RED + "Du bist bereits auf " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.RED + "!");
 					} else {
-						targetCluster.connectPlayer(p);
 						p.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+						targetCluster.connectPlayer(p);
 					}
 				}
 			} else {
@@ -135,8 +135,8 @@ public class ClusterCommand extends Command implements TabExecutor {
 							} else if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())){
 								sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Player " + ChatColor.RED + playername + ChatColor.YELLOW + " is already on " + ChatColor.RED + targetCluster.getName() + ChatColor.YELLOW + "!");
 							} else {
-								targetCluster.connectPlayer(p);
 								p.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+								targetCluster.connectPlayer(p);
 							}
 						}
 					}
