@@ -44,17 +44,7 @@ public class ServerClusters extends Plugin {
 	
 	Level infolevel = Level.INFO;
 
-	private Backend backend;	
-	
-	private String dbuser;
-	private String dbpassword;
-	private String dbname;
-	private String dbhost;
-	private int dbport;
-	private String dburl;
-	private String dbtableprefix;
-	
-	private Connection conn = null;
+	private Backend backend;
 
 	private TeleportManager tm;
 
@@ -96,12 +86,7 @@ public class ServerClusters extends Plugin {
 	}
 
 	public void onDisable() {
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			getLogger().severe("Error while closing the database connection");
-			e.printStackTrace();
-		}
+        getClusterManager().destroy();
 	}
 	
 	private void loadConfig() {
@@ -112,32 +97,11 @@ public class ServerClusters extends Plugin {
 			getLogger().info("No or wrong backend option in config.yml. Only YAML and MYSQL is allowed! Falling back to YAML backend!");
 			backend = Backend.YAML;
 		}
-		if(getBackend() == Backend.MYSQL) {
-			dbuser = getConfig().getString("mysql.user");
-			dbpassword = getConfig().getString("mysql.password");
-			dbname = getConfig().getString("mysql.dbname");
-			dbhost = getConfig().getString("mysql.host");
-			dbport = getConfig().getInt("mysql.port");
-			dbtableprefix = config.getString("mysql.tableprefix", "serverclusters_");
-			
-			if(dbhost != null && dbuser != null && dbpassword != null && dbname != null && dbport > 0) {				
-				dburl = ("jdbc:mysql://" + dbhost + ":" + dbport + "/" + dbname);
-				
-				getLogger().info("Checking Database Connection...");
-				checkConnection();
-				
-				getLogger().info("Initializing Database...");
-				initDb();
-			} else {
-				getLogger().warning("MySQL settings not or not fully configured! Falling back to YAML backend!");
-				backend = Backend.YAML;
-			}
-		}
 		
 		getLogger().info("Loading Cluster Manager...");
 		cm = new ClusterManager(this);
 		Configuration section = getConfig().getSection("cluster");
-		for(String clustername : section.getKeys()) {			
+		for(String clustername : section.getKeys()) {
 			Cluster cluster = new Cluster(this, clustername, getConfig().getStringList("cluster." + clustername + ".server"));
 			cluster.setAliaslist(getConfig().getStringList("cluster." + clustername + ".alias"));
 			cluster.setHidden(getConfig().getBoolean("cluster." + clustername + ".hidden", false));
@@ -244,12 +208,6 @@ public class ServerClusters extends Plugin {
     public VNPBungee getVnpbungee() {
         return vnpbungee;
     }
-	
-//-VVV- Database stuff -VVV-*/
-
-    public String getTablePrefix() {
-        return dbtableprefix;
-    }
 
     /**
      * @return the backend
@@ -258,55 +216,6 @@ public class ServerClusters extends Plugin {
         return backend;
     }
 
-	/**
-	 * Connects to the Database.
-	 */
-	private void connectDb() {
-		getLogger().info("Connecting to Database...");
-	    try {
-		    conn = (Connection) DriverManager.getConnection(dburl, dbuser, dbpassword);
-		    conn.setAutoCommit(true);
-	    } catch (SQLException e) {
-	    	getLogger().severe("Could not establish a connection to the database! Error: " + e.getMessage());
-	    	getLogger().warning(getDescription().getName() + " will not work proberly without its database!");
-	    }
-	}
-	
-	/**
-	 * Initializes the databases for the plugin if they don't exist.
-	 */
-	private void initDb() {
-		try {
-			Statement sta = (Statement)getConnection().createStatement();
-			sta.execute("CREATE TABLE IF NOT EXISTS `" + getTablePrefix() + "_logoutserver` ( `playerid` varchar(52) NOT NULL, `servername` count(16) NOT NULL, PRIMARY KEY (`playerid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-			sta.close();
-		} catch (SQLException e) {
-			getLogger().severe("Could not initialize the tables! Error: " + e.getMessage());
-			//e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Checks if the connection to the database stil exists and reconnects if it doesn't.
-	 */
-	private void checkConnection() {
-		try {
-			if (conn == null || !conn.isValid(1))
-				connectDb();
-		} catch (SQLException e) {
-			//e.printStackTrace(); //We don't need to warnings...
-		}
-	}
-	
-	/**
-	 * Gets the database connection
-	 * @return
-	 */	
-	public Connection getConnection() {
-		checkConnection();
-		return conn;
-	}
-	
 //-VVV- Config handling! -VVV-*/
 	/**
      * Get the plugin's default config.

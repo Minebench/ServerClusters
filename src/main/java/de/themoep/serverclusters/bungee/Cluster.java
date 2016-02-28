@@ -9,14 +9,18 @@ import java.util.List;
 import java.util.UUID;
 
 import de.themoep.serverclusters.bungee.enums.Backend;
+import de.themoep.serverclusters.bungee.storage.MysqlStorage;
+import de.themoep.serverclusters.bungee.storage.ValueStorage;
+import de.themoep.serverclusters.bungee.storage.YamlStorage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 public class Cluster implements Comparable<Cluster> {
 
-	private ServerClusters plugin = null;
+    private ServerClusters plugin = null;
 	
 	/**
 	 * The list of servernames in the cluster
@@ -38,7 +42,9 @@ public class Cluster implements Comparable<Cluster> {
 	 */
 	private HashMap<UUID,String> logoutmap = new HashMap<UUID,String>();
 
-	/**
+    private ValueStorage logoutStorage;
+
+    /**
 	 * The default server of this cluster one connects to the first time
 	 */
 	private String defaultServer;
@@ -67,14 +73,31 @@ public class Cluster implements Comparable<Cluster> {
 	 */
 	public Cluster(ServerClusters plugin, String name, List<String> serverlist, String defaultServer) {
 		this.plugin = plugin;
-		setName(name);
-		if(serverlist != null) {
-			setServerlist(serverlist);
-		}
+		this.name = name;
+        this.serverlist = serverlist;
 		this.defaultServer = defaultServer;
+
+        if(serverlist.size() > 1) {
+            initLogoutStorage();
+        }
 	}
-	
-	/**
+
+    private void initLogoutStorage() {
+        if(plugin.getBackend() == Backend.MYSQL) {
+            try {
+                logoutStorage = new MysqlStorage(plugin, "logoutserver_" + getName());
+            } catch(InvalidConfigurationException e) {
+                e.printStackTrace();
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if(logoutStorage == null) {
+            logoutStorage = new YamlStorage(plugin, "logoutserver_" + getName());
+        }
+    }
+
+    /**
 	 * Connects a player to the server cluster and the last server he was on
 	 * @param playername The name of the player
 	 */	
@@ -150,27 +173,17 @@ public class Cluster implements Comparable<Cluster> {
 	public String getLoggoutServer(UUID playerid) {
 		if(logoutmap.containsKey(playerid))
 			return logoutmap.get(playerid);
-		if(plugin.getBackend() == Backend.MYSQL) {
-			try {
-				PreparedStatement sta;
-				sta = plugin.getConnection().prepareStatement("SELECT servername as name from " + plugin.getTablePrefix() + "_logoutserver WHERE playerid=?");
-		        sta.setString(1, getName() + playerid);
-		        ResultSet rs = sta.executeQuery();
-			    sta.close();		      
-		        rs.next();	        
-		        return rs.getString("name");
-			} catch (SQLException e) {
-				plugin.getLogger().severe("MySQL-Error! Something went wrong while fetching the logout server for player with the id " + playerid + " on cluster " + getName() + "! Does the table \""+ plugin.getTablePrefix() + "_loggoutserver\" exist?");
-				//e.printStackTrace();
-			}
-		} else if(plugin.getBackend() == Backend.YAML) {
-			// TODO: YAML BACKEND
-		}
-		return null;
+        if(logoutStorage == null)
+            return null;
+        String logoutServer = logoutStorage.getValue(playerid);
+        if(logoutServer == null)
+            return null;
+        logoutmap.put(playerid, logoutServer);
+		return logoutServer;
 	}
 	
 	public String getLoggoutServer(String playername) {
-		return getLoggoutServer(plugin.getProxy().getPlayer(playername).getUniqueId().toString());
+		return getLoggoutServer(plugin.getProxy().getPlayer(playername).getUniqueId());
 	}
 	
 
@@ -194,19 +207,17 @@ public class Cluster implements Comparable<Cluster> {
 	}
 
 	/**
-	 * @param serverlist the serverlist to set
-	 */
-	public void setServerlist(List<String> serverlist) {
-		this.serverlist = serverlist;
-	}
-
-	/**
 	 * Adds a server to a cluster
 	 * @param name String representing the name of the server
 	 */
 	public void addServer(String name) {
-		if(!serverlist.contains(name.toLowerCase()))
-			serverlist.add(name.toLowerCase());
+        int countOld = serverlist.size();
+		if(!serverlist.contains(name.toLowerCase())) {
+            serverlist.add(name.toLowerCase());
+            if(countOld == 1) {
+                initLogoutStorage();
+            }
+        }
 	}
 
 	/**
@@ -215,14 +226,6 @@ public class Cluster implements Comparable<Cluster> {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Set the name of the cluster
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -272,4 +275,8 @@ public class Cluster implements Comparable<Cluster> {
 	public boolean isHidden() {
 		return hidden;
 	}
+
+    public void destroy() {
+        logoutStorage.close();
+    }
 }

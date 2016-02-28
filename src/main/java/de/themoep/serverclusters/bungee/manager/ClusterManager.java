@@ -93,5 +93,9 @@ public class ClusterManager {
 	}
 
 
-
+	public void destroy() {
+		for(Cluster cluster : clustermap.values()) {
+			cluster.destroy();
+		}
+	}
 }
