@@ -38,7 +38,7 @@ public class NetworkConnectEvent extends Event {
 	 * @param cluster The target cluster
 	 */
 	public void setTarget(Cluster cluster) {
-		event.setTarget(plugin.getProxy().getServerInfo(cluster.getLoggoutServer(event.getPlayer().getUniqueId())));
+		event.setTarget(plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
 		target = cluster;
 	}
 

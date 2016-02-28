@@ -1,7 +1,5 @@
 package de.themoep.serverclusters.bungee;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,7 +120,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param player The player to connect
 	 */
 	public void connectPlayer(ProxiedPlayer player) {
-		String servername = getLoggoutServer(player.getUniqueId());
+		String servername = getLogoutServer(player.getUniqueId());
 		if(servername == null) {
             servername = getDefaultServer();
         }
@@ -159,7 +157,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param player The Player to save the loggout server
 	 * @param servername The name of the server the player logged out from as a string
 	 */
-	public void setLoggoutServer(ProxiedPlayer player, String servername) {
+	public void setLogoutServer(ProxiedPlayer player, String servername) {
 		if(getServerlist().contains(servername)) {
             logoutmap.put(player.getUniqueId(), servername);
         }
@@ -170,7 +168,7 @@ public class Cluster implements Comparable<Cluster> {
 	 * @param playerid The Player to get the servername
 	 * @return The servername as a string, null if not found
 	 */
-	public String getLoggoutServer(UUID playerid) {
+	public String getLogoutServer(UUID playerid) {
 		if(logoutmap.containsKey(playerid))
 			return logoutmap.get(playerid);
         if(logoutStorage == null)
@@ -182,10 +180,10 @@ public class Cluster implements Comparable<Cluster> {
 		return logoutServer;
 	}
 	
-	public String getLoggoutServer(String playername) {
+	public String getLogoutServer(String playername) {
         ProxiedPlayer player = plugin.getProxy().getPlayer(playername);
         if(player != null) {
-            return getLoggoutServer(player.getUniqueId());
+            return getLogoutServer(player.getUniqueId());
         }
         return null;
 	}

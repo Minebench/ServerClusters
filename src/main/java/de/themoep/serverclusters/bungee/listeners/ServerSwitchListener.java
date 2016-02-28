@@ -18,7 +18,7 @@ public class ServerSwitchListener implements Listener {
 	public void onServerSwitch(ServerSwitchEvent event) {
 		String servername = event.getPlayer().getServer().getInfo().getName();
 		plugin.getLogger().info("ServerSwitchEvent - to " + servername);
-        plugin.getClusterManager().getClusterByServer(servername).setLoggoutServer(event.getPlayer(), servername);
+        plugin.getClusterManager().getClusterByServer(servername).setLogoutServer(event.getPlayer(), servername);
 	}
 	
 }

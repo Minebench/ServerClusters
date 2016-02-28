@@ -49,7 +49,7 @@ public class ClusterSwitchEvent  extends Event {
 	 * @param cluster The target cluster
 	 */
 	public void setTo(Cluster cluster) {
-		this.event.setTarget(this.plugin.getProxy().getServerInfo(cluster.getLoggoutServer(event.getPlayer().getUniqueId())));
+		this.event.setTarget(this.plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
 		this.from = cluster;
 	}
 
