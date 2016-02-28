@@ -183,7 +183,11 @@ public class Cluster implements Comparable<Cluster> {
 	}
 	
 	public String getLoggoutServer(String playername) {
-		return getLoggoutServer(plugin.getProxy().getPlayer(playername).getUniqueId());
+        ProxiedPlayer player = plugin.getProxy().getPlayer(playername);
+        if(player != null) {
+            return getLoggoutServer(player.getUniqueId());
+        }
+        return null;
 	}
 	
 
