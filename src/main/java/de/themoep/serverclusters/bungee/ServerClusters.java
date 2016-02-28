@@ -180,7 +180,10 @@ public class ServerClusters extends Plugin {
         commandList.add(new TpCommand(this, "tp","serverclusters.command.tp", tpal.toArray(new String[tpal.size()])));
 
 		List<String> tphal = getConfig().getStringList("commandaliases.tphere");
-		commandList.add(new TphereCommand(this, "tphere","serverclusters.command.tphere", tphal.toArray(new String[tpal.size()])));
+		commandList.add(new TphereCommand(this, "tphere","serverclusters.command.tphere", tphal.toArray(new String[tphal.size()])));
+
+		List<String> tpac = getConfig().getStringList("commandaliases.tpaconfirm");
+		commandList.add(new TphereCommand(this, "tpaconfirm","serverclusters.command.tpaconfirm", tpac.toArray(new String[tpac.size()])));
 
 		List<String> fal = getConfig().getStringList("commandaliases.find");
 		commandList.add(new FindCommand(this, "find","serverclusters.command.find", fal.toArray(new String[fal.size()])));
