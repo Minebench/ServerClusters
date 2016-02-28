@@ -22,7 +22,7 @@ public class TeleportUtils {
     }
 
     /**
-     * Teleports a player to a targetted player, checks if the player is allowed to teleport between clusters! (serverclusters.teleport.intercluster)
+     * Teleports a player to a targeted player, checks if the player is allowed to teleport between clusters! (serverclusters.teleport.intercluster)
      * @param player The player to teleport
      * @param target The player to teleport to
      * @return True if player got teleported, false if not
@@ -49,7 +49,7 @@ public class TeleportUtils {
     /**
      * Helper method to send the plugin message for teleporting to players
      * @param player Player to teleport
-     * @param target Targetted player
+     * @param target Targeted player
      */
     private void teleportToPlayerPM(ProxiedPlayer player, ProxiedPlayer target) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
