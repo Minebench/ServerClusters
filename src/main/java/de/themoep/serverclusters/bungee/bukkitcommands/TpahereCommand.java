@@ -37,7 +37,7 @@ public class TpahereCommand extends Command implements TabExecutor {
                             }
                         }
                     }
-					if(toTeleport != null) {
+					if(toTeleport != null && (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see"))) {
 						plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER);
                     } else {
                         sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");

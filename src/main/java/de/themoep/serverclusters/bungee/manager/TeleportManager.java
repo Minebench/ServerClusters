@@ -1,15 +1,19 @@
 package de.themoep.serverclusters.bungee.manager;
 
+import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.enums.TeleportTarget;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * ServerClusters
@@ -18,10 +22,35 @@ import java.util.UUID;
 public class TeleportManager {
     private final ServerClusters plugin;
 
-    private Map<UUID, List<Request>> requestMap = new HashMap<UUID, List<Request>>();
+    private Map<String, List<Request>> requestMap = new HashMap<String, List<Request>>();
+
+    private Map<String, Request> cachedRequests = new HashMap<String, Request>();
 
     public TeleportManager(ServerClusters plugin) {
         this.plugin = plugin;
+    }
+
+    /**
+     * Cache a request if the user would get a warning for teleporting across clusters
+     * @param sender  The player who send the request
+     * @param receiver The player who the request was sent to
+     * @param target Where we should teleport to
+     */
+    public void cacheRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
+        cachedRequests.put(sender.getName(), new Request(sender, receiver, target));
+    }
+
+    /**
+     * Add a cached request
+     * @param sender The player who wants to add a cached request
+     * @return <tt>true</tt> if the request was send successfully; <tt>false</tt> if no request was cached or the receiver was already offline
+     */
+    public boolean applyCachedRequest(ProxiedPlayer sender) {
+        Request r = cachedRequests.get(sender.getName());
+        if(r == null) {
+            return false;
+        }
+        return addRequest(r);
     }
 
     /**
@@ -29,12 +58,70 @@ public class TeleportManager {
      * @param sender  The player who send the request
      * @param receiver The player who the request was sent to
      * @param target Where we should teleport to
+     * @return <tt>true</tt> if the request was successfully added; <tt>false</tt> if the receiver isn't online anymore or an error occurred
      */
-    public void addRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
-        if(!requestMap.containsKey(receiver.getUniqueId()))
-            requestMap.put(receiver.getUniqueId(), new ArrayList<Request>());
+    public boolean addRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
+        return addRequest(new Request(sender, receiver, target));
+    }
 
-        requestMap.get(receiver.getUniqueId()).add(new Request(sender, target));
+    private boolean addRequest(Request request) {
+        ProxiedPlayer receiver = plugin.getProxy().getPlayer(request.getReceiver());
+        ProxiedPlayer sender = plugin.getProxy().getPlayer(request.getSender());
+        if(receiver == null || sender == null) {
+            return false;
+        }
+        if(!requestMap.containsKey(request.getReceiver()))
+            requestMap.put(request.getReceiver(), new ArrayList<Request>());
+
+        requestMap.get(request.getReceiver()).add(request);
+
+        sender.sendMessage(ChatColor.GREEN + "Teleportationsanfrage an " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + " gesendet!");
+        if(request.getTarget() == TeleportTarget.RECEIVER) {
+            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.RED + " fragt, ob er sich zu " + ChatColor.YELLOW + "dir" + ChatColor.GREEN + " teleportieren darf.");
+        } else {
+            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.RED + " fragt, ob du dich zu " + ChatColor.YELLOW + "ihm" + ChatColor.GREEN + " teleportieren willst.");
+            Cluster senderCluster = plugin.getClusterManager().getPlayerCluster(sender);
+            Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(receiver);
+            if(senderCluster == null) {
+                receiver.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster is " + sender.getName() + " on? Oo");
+            }
+            if(targetCluster == null) {
+                receiver.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster are you on? Oo");
+            }
+            if(senderCluster != null && targetCluster != null && !senderCluster.equals(targetCluster)) {
+                if(sender.hasPermission("serverclusters.command.tpa.intercluster")) {
+                    if(sender.hasPermission("serverclusters.cluster." + targetCluster.getName())) {
+                        if(!sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
+                            receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " befindet sich auf einem anderen Server als du! (" + senderCluster.getName() + ")");
+                        }
+                    } else {
+                        receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + sender.getName() + " gerade befindet!");
+                    }
+                } else {
+                    receiver.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
+                                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + senderCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                                    .event(
+                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + senderCluster.getName())
+                                    ).event(
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + senderCluster.getName() + "auszuführen und den Server zu wechseln!"))
+                                    ).create()
+                    );
+                }
+            }
+        }
+        receiver.sendMessage(new ComponentBuilder("Nutze /tpaccept um die Anfrage anzunehmen.")
+                        .color(ChatColor.GRAY)
+                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaccept auszuführen und die Anfrage anzunehmen!")))
+                        .create()
+        );
+        receiver.sendMessage(new ComponentBuilder("Nutze /tpdeny um die Anfrage abzulehnen.")
+                        .color(ChatColor.GRAY)
+                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + sender.getName()))
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpdeny auszuführen und die Anfrage abzulehnen!")))
+                        .create()
+        );
+        return true;
     }
 
     /**
@@ -44,7 +131,7 @@ public class TeleportManager {
      * @return The request of the sender; the last request if the sender is null or empty
      */
     private Request getRequest(ProxiedPlayer player, String sender) {
-        List<Request> requestList = requestMap.get(player.getUniqueId());
+        List<Request> requestList = requestMap.get(player.getName());
         if(requestList == null || requestList.isEmpty())
             return null;
 
@@ -100,7 +187,7 @@ public class TeleportManager {
             return false;
         }
 
-        player.sendMessage(ChatColor.GRAY + "Teleportationsanfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.GRAY + " akzeptiert!");
+        player.sendMessage(ChatColor.GREEN + "Teleportationsanfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.GREEN + " akzeptiert!");
         sender.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.GREEN + " hat deine Teleportationsanfrage angenommen!");
 
         boolean r = false;
@@ -155,16 +242,19 @@ public class TeleportManager {
     private class Request {
         private final long timestamp = System.currentTimeMillis();
         private final String sender;
+        private final String receiver;
         private final TeleportTarget target;
         private boolean handled = false;
 
-        public Request(String sender, TeleportTarget target) {
+        public Request(String sender, String receiver, TeleportTarget target) {
             this.sender = sender;
+            this.receiver = receiver;
             this.target = target;
         }
 
-        public Request(ProxiedPlayer sender, TeleportTarget target) {
+        public Request(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
             this.sender = sender.getName();
+            this.receiver = receiver.getName();
             this.target = target;
         }
 
@@ -174,6 +264,10 @@ public class TeleportManager {
 
         public String getSender() {
             return sender;
+        }
+
+        public String getReceiver() {
+            return receiver;
         }
 
         public TeleportTarget getTarget() {

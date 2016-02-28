@@ -4,22 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class ClusterManager {
 
-	private ServerClusters plugin = null;
+	private ServerClusters plugin;
 		
-	private HashMap<String,Cluster> clustermap = new HashMap<String,Cluster>();
+	private Map<String, Cluster> clustermap = new HashMap<String, Cluster>();
+
+    private Set<UUID> stayincluster = new HashSet<UUID>();
  	
 	public ClusterManager(ServerClusters plugin) {
 		this.plugin = plugin;
 	}
-
-	private HashSet<UUID> stayincluster = new HashSet<UUID>();
 
 	/**
 	 * Get all clusters in a list
@@ -62,6 +65,18 @@ public class ClusterManager {
 		return null;		
 	}
 
+    /**
+     * Get the cluster a player is currently on
+     * @param player The player to get the cluster for
+     * @return cluster or null if the player is on no server
+     */
+	public Cluster getPlayerCluster(ProxiedPlayer player) {
+        if(player.getServer() == null || player.getServer().getInfo() == null) {
+            return null;
+        }
+        return getClusterByServer(player.getServer().getInfo().getName());
+	}
+
 	/**
 	 * Adds new cluster to the clustermanager
 	 * @param cluster Cluster to add
@@ -73,10 +88,10 @@ public class ClusterManager {
 	/**
 	 * @return the stayincluster HashSet of players UUID's
 	 */
-	public HashSet<UUID> getStayInCluster() {
+	public Set<UUID> getStayInCluster() {
 		return stayincluster;
 	}
 
 
-	
+
 }

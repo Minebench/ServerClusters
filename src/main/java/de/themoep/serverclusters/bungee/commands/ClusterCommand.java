@@ -118,7 +118,7 @@ public class ClusterCommand extends Command implements TabExecutor {
 				}
 			} else {
 				if(!sender.hasPermission("serverclusters.command.cluster.others")){
-					sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You don't have the permission serverclusters.tp.others");
+					sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You don't have the permission serverclusters.command.cluster.others");
 				} else {
 					Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
 					if(targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
