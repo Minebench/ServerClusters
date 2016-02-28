@@ -33,7 +33,7 @@ public class ClusterSwitchEvent  extends Event {
 	 * @return The origin cluster
 	 */
 	public Cluster getFrom() {
-		return this.from;
+		return from;
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class ClusterSwitchEvent  extends Event {
 	 * @return The targeted cluster
 	 */
 	public Cluster getTo() {
-		return this.to;
+		return to;
 	}
 
 	/**
@@ -49,8 +49,8 @@ public class ClusterSwitchEvent  extends Event {
 	 * @param cluster The target cluster
 	 */
 	public void setTo(Cluster cluster) {
-		this.event.setTarget(this.plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
-		this.from = cluster;
+		event.setTarget(plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
+		from = cluster;
 	}
 
 	/**

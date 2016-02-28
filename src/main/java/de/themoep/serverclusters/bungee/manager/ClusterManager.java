@@ -29,7 +29,7 @@ public class ClusterManager {
 	 * @return List of clusters
 	 */
 	public List<Cluster> getClusterlist() {
-		return new ArrayList<Cluster>(this.clustermap.values());
+		return new ArrayList<Cluster>(clustermap.values());
 	}
 		
 	/**
@@ -38,9 +38,9 @@ public class ClusterManager {
 	 * @return cluster or null if cluster does not exist                
 	 */
 	public Cluster getCluster(String name) {
-		if(this.clustermap.containsKey(name))
-			return this.clustermap.get(name);
-		for(Cluster c : this.clustermap.values()) {
+		if(clustermap.containsKey(name))
+			return clustermap.get(name);
+		for(Cluster c : clustermap.values()) {
 			if(c.getName().equalsIgnoreCase(name))
 				return c;
 			for(String a : c.getAliaslist())
@@ -56,7 +56,7 @@ public class ClusterManager {
 	 * @return cluster or null if cluster does not exist
 	 */
 	public Cluster getClusterByServer(String servername) {
-		for(Cluster c : this.getClusterlist()) {
+		for(Cluster c : getClusterlist()) {
 			for(String s : c.getServerlist()) {
 				if(s.equals(servername))
 					return c;
@@ -82,7 +82,7 @@ public class ClusterManager {
 	 * @param cluster Cluster to add
 	 */
 	public void addCluster(Cluster cluster) {
-		this.clustermap.put(cluster.getName(), cluster);		
+		clustermap.put(cluster.getName(), cluster);
 	}
 	
 	/**
