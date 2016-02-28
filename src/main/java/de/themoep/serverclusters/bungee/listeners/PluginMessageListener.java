@@ -36,11 +36,11 @@ public class PluginMessageListener {
 
                     String server = receiver.getServer().getInfo().getName();
                     String world = in.readUTF();
-                    Double x = in.readDouble();
-                    Double y = in.readDouble();
-                    Double z = in.readDouble();
-                    Float yaw = in.readFloat();
-                    Float pitch = in.readFloat();
+                    double x = in.readDouble();
+                    double y = in.readDouble();
+                    double z = in.readDouble();
+                    float yaw = in.readFloat();
+                    float pitch = in.readFloat();
                     plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/GetPlayerLocation/" + reason + " from " + sender);
                     if(reason.equals("Info")) {
 
