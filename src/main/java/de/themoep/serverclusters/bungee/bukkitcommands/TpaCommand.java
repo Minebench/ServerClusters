@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TpaCommand extends Command implements TabExecutor {
+public class TpaCommand extends BukkitCommand implements TabExecutor {
 
 	private ServerClusters plugin;
 
@@ -28,7 +28,7 @@ public class TpaCommand extends Command implements TabExecutor {
 	}
 
 	@Override
-	public void execute(CommandSender sender, String[] args) {		
+	public void run(CommandSender sender, String[] args) {
 		if(sender.hasPermission(getPermission())) {
 			// TODO: Change messages to language system!
 			if(args.length == 1) {

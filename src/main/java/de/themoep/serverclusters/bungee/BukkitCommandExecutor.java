@@ -1,7 +1,7 @@
 package de.themoep.serverclusters.bungee;
 
+import de.themoep.serverclusters.bungee.bukkitcommands.BukkitCommand;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,21 +13,22 @@ import java.util.Map;
 public class BukkitCommandExecutor {
 
     private final ServerClusters plugin;
-    private Map<String, Command> commandMap = new HashMap<String, Command>();
+    private Map<String, BukkitCommand> commandMap = new HashMap<String, BukkitCommand>();
 
     public BukkitCommandExecutor(ServerClusters plugin) {
         this.plugin = plugin;
     }
 
-    public boolean registerCommand(Command command) {
+    public boolean registerCommand(BukkitCommand command) {
         if(commandMap.containsKey(command.getName()))
             return false;
         commandMap.put(command.getName(), command);
+        plugin.getProxy().getPluginManager().registerCommand(plugin, command);
         return true;
     }
 
     public boolean execute(String commandName, String sender, String[] args) {
-        Command command = commandMap.get(commandName);
+        BukkitCommand command = commandMap.get(commandName);
 
         if(command == null)
             return false;
@@ -36,7 +37,7 @@ public class BukkitCommandExecutor {
         if(player == null)
             return false;
 
-        command.execute(player, args);
+        command.run(player, args);
         return true;
     }
 }

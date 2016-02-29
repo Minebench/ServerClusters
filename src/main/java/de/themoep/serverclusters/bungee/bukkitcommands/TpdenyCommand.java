@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TpdenyCommand extends Command implements TabExecutor {
+public class TpdenyCommand extends BukkitCommand implements TabExecutor {
 
 	private ServerClusters plugin;
 
@@ -22,9 +22,9 @@ public class TpdenyCommand extends Command implements TabExecutor {
 	}
 
 	@Override
-	public void execute(CommandSender sender, String[] args) {		
+	public void run(CommandSender sender, String[] args) {
 		if(sender.hasPermission(getPermission())) {
-			if(sender instanceof ProxiedPlayer) {
+			if(!(sender instanceof ProxiedPlayer)) {
 				sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
 				return;
 			}
