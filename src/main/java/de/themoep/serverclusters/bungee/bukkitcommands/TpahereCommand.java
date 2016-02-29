@@ -15,11 +15,8 @@ import java.util.List;
 
 public class TpahereCommand extends BukkitCommand {
 
-	private ServerClusters plugin;
-
 	public TpahereCommand(ServerClusters plugin, String name, String permission) {
-		super(name, permission);
-		this.plugin = plugin;
+		super(plugin, name, permission);
 	}
 
 	@Override

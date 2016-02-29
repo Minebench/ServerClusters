@@ -20,11 +20,8 @@ import java.util.List;
 
 public class TpaCommand extends BukkitCommand {
 
-	private ServerClusters plugin;
-
 	public TpaCommand(ServerClusters plugin, String name, String permission) {
-		super(name, permission);
-		this.plugin = plugin;
+		super(plugin, name, permission);
 	}
 
 	@Override

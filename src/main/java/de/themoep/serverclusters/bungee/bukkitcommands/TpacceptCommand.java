@@ -14,11 +14,8 @@ import java.util.List;
 
 public class TpacceptCommand extends BukkitCommand {
 
-	private ServerClusters plugin;
-
 	public TpacceptCommand(ServerClusters plugin, String name, String permission) {
-		super(name, permission);
-		this.plugin = plugin;
+		super(plugin, name, permission);
 	}
 
 	@Override

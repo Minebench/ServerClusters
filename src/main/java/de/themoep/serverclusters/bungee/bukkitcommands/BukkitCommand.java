@@ -1,5 +1,6 @@
 package de.themoep.serverclusters.bungee.bukkitcommands;
 
+import de.themoep.serverclusters.bungee.ServerClusters;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -9,12 +10,15 @@ import org.apache.commons.lang.StringUtils;
 
 public abstract class BukkitCommand extends Command implements TabExecutor {
 
-    public BukkitCommand(String name) {
-        this(name, null);
+    protected ServerClusters plugin;
+
+    public BukkitCommand(ServerClusters plugin, String name) {
+        this(plugin, name, null);
     }
 
-    public BukkitCommand(String name, String permission, String... aliases) {
+    public BukkitCommand(ServerClusters plugin, String name, String permission, String... aliases) {
         super(name, permission, aliases);
+        this.plugin = plugin;
     }
 
     @Override
