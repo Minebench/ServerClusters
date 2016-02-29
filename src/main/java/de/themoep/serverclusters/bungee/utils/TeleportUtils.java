@@ -60,7 +60,7 @@ public class TeleportUtils {
     }
 
     /**
-     * Teleport a player to a location on a server, checks if the player is allowed to teleport between clusters! (serverclusters.teleport.intercluster)
+     * Teleport a player to a location on a server
      * @param player Player to teleport
      * @param server Server to teleport to
      * @param world World to teleport to
