@@ -7,8 +7,8 @@ import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.Server;
 
 /**
  * Created by Phoenix616 on 05.01.2015.
@@ -69,21 +69,12 @@ public class TeleportUtils {
      * @param z Z coordinate of the location
      * @param yaw Yaw of the location
      * @param pitch Pitch of the location
-     * @return True if player got teleported, false if not
      */
-    public boolean teleportToLocation(ProxiedPlayer player, Server server, String world, double x, double y, double z, float yaw, float pitch) {
-        Cluster playerCluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
-        Cluster targetCluster = plugin.getClusterManager().getClusterByServer(server.getInfo().getName());
-        if(player.getServer().getInfo().getName().equals(server.getInfo().getName())) {
-            teleportToLocationPM(player, server, world, x, y, z, yaw, pitch);
-            return true;
-        } else if (playerCluster == targetCluster || player.hasPermission("serverclusters.teleport.intercluster")){
-            player.connect(server.getInfo());
-            teleportToLocationPM(player, server, world, x, y, z, yaw, pitch);
-            return true;
-        } else
-            player.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You are not allowed to teleport between clusters!");
-        return false;
+    public void teleportToLocation(ProxiedPlayer player, ServerInfo server, String world, double x, double y, double z, float yaw, float pitch) {
+        if(!player.getServer().getInfo().getName().equals(server.getName())) {
+            player.connect(server);
+        }
+        teleportToLocationPM(player, server, world, x, y, z, yaw, pitch);
     }
 
     /**
@@ -96,11 +87,10 @@ public class TeleportUtils {
      * @param z Z coordinate of the location
      * @param yaw Yaw of the location
      * @param pitch Pitch of the location
-     * @return True if player got teleported, false if not
      */
-    private void teleportToLocationPM(ProxiedPlayer player, Server server, String world, double x, double y, double z, float yaw, float pitch) {
+    private void teleportToLocationPM(ProxiedPlayer player, ServerInfo server, String world, double x, double y, double z, float yaw, float pitch) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("TeleportToPlayer");
+        out.writeUTF("TeleportToLocation");
         out.writeUTF(player.getName());
         out.writeUTF(world);
         out.writeDouble(x);
