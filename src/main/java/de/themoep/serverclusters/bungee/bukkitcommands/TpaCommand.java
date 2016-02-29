@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TpaCommand extends BukkitCommand implements TabExecutor {
+public class TpaCommand extends BukkitCommand {
 
 	private ServerClusters plugin;
 

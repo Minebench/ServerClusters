@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TpahereCommand extends BukkitCommand implements TabExecutor {
+public class TpahereCommand extends BukkitCommand {
 
 	private ServerClusters plugin;
 

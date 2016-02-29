@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TpdenyCommand extends BukkitCommand implements TabExecutor {
+public class TpdenyCommand extends BukkitCommand {
 
 	private ServerClusters plugin;
 
