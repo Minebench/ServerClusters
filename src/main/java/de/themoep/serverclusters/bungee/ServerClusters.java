@@ -17,6 +17,7 @@ import de.themoep.serverclusters.bungee.bukkitcommands.TpaCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpacceptCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpahereCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpdenyCommand;
+import de.themoep.serverclusters.bungee.bukkitcommands.WarpCommand;
 import de.themoep.serverclusters.bungee.commands.ClusterCommand;
 import de.themoep.serverclusters.bungee.commands.FindCommand;
 import de.themoep.serverclusters.bungee.commands.ListCommand;
@@ -27,6 +28,7 @@ import de.themoep.serverclusters.bungee.listeners.ServerConnectListener;
 import de.themoep.serverclusters.bungee.listeners.ServerSwitchListener;
 import de.themoep.serverclusters.bungee.manager.ClusterManager;
 import de.themoep.serverclusters.bungee.manager.TeleportManager;
+import de.themoep.serverclusters.bungee.manager.WarpManager;
 import de.themoep.serverclusters.bungee.utils.TeleportUtils;
 
 import de.themoep.vnpbungee.VNPBungee;
@@ -46,6 +48,8 @@ public class ServerClusters extends Plugin {
 
 	private Backend backend;
 
+    private WarpManager wm;
+
 	private TeleportManager tm;
 
 	private ClusterManager cm;
@@ -60,7 +64,7 @@ public class ServerClusters extends Plugin {
 
     private ServerClusters plugin;
 
-	public void onEnable() {
+    public void onEnable() {
 		saveDefaultConfig();
 		config = loadConfigFile();
 		loadConfig();
@@ -86,7 +90,9 @@ public class ServerClusters extends Plugin {
 	}
 
 	public void onDisable() {
+        getWarpManager().destroy();
         getClusterManager().destroy();
+		getTeleportManager().destroy();
 	}
 	
 	private void loadConfig() {
@@ -124,6 +130,9 @@ public class ServerClusters extends Plugin {
 				}
 			}
 		}
+
+        getLogger().info("Loading Warp Manager...");
+        wm = new WarpManager(this);
 		
 	}
 
@@ -174,6 +183,7 @@ public class ServerClusters extends Plugin {
 		getBukkitCommandExecutor().registerCommand(new TpahereCommand(this, "tpahere", "serverclusters.command.tpahere"));
 		getBukkitCommandExecutor().registerCommand(new TpacceptCommand(this, "tpaccept", "serverclusters.command.tpaccept"));
 		getBukkitCommandExecutor().registerCommand(new TpdenyCommand(this, "tpdeny", "serverclusters.command.tpdeny"));
+        getBukkitCommandExecutor().registerCommand(new WarpCommand(this, "warp", "serverclusters.command.warp"));
 	}
 
 	/**
@@ -184,6 +194,10 @@ public class ServerClusters extends Plugin {
         loadConfig();
         setupCommands(false);
 	}
+
+    public WarpManager getWarpManager() {
+        return wm;
+    }
 
 	public TeleportManager getTeleportManager() {
 		return tm;

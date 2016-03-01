@@ -1,13 +1,20 @@
 package de.themoep.serverclusters.bungee.manager;
 
 import de.themoep.serverclusters.bungee.ServerClusters;
+import de.themoep.serverclusters.bungee.storage.YamlStorage;
 
-public class SpawnManager {
+public class SpawnManager extends Manager {
 
-	private ServerClusters plugin = null;
+    private YamlStorage spawnStorage;
 	
 	public SpawnManager(ServerClusters plugin) {
-		this.plugin = plugin;
+        super(plugin);
+		spawnStorage = new YamlStorage(plugin, "spawns");
 	}
+
+    @Override
+    public void destroy() {
+        spawnStorage.close();
+    }
 
 }

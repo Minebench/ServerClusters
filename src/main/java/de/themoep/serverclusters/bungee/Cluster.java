@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import de.themoep.serverclusters.bungee.enums.Backend;
@@ -34,6 +36,12 @@ public class Cluster implements Comparable<Cluster> {
 	 * List of aliases of this cluster
 	 */
 	private List<String> aliaslist = new ArrayList<String>();
+
+	/**
+	 * Map of warpnames to their locations
+	 */
+
+    private Map<String, LocationInfo> warps = new HashMap<String, LocationInfo>();
 	
 	/**
 	 * Map of players UUID's to the servername they logged out of
@@ -221,6 +229,55 @@ public class Cluster implements Comparable<Cluster> {
             }
         }
 	}
+
+    /**
+     * Get a set of the names of all warps
+     * @return A set of warp names
+     */
+    public Set<String> getWarps() {
+        return warps.keySet();
+    }
+
+    /**
+     * Get the location of a warp
+     * @param name The name of the warp (case insensitive)
+     * @return The location, <tt>null</tt> if not found
+     */
+    public LocationInfo getWarp(String name) {
+        if(warps.containsKey(name))
+            return warps.get(name);
+        for(String w : warps.keySet()) {
+            if(w.equalsIgnoreCase(name)) {
+                return warps.get(w);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add a new warp point to this cluster
+     * @param name The name of the warp
+     * @param location The location of the warp
+     */
+	public void addWarp(String name, LocationInfo location) {
+		warps.put(name, location);
+	}
+
+    /**
+     * Removes a warp
+     * @param name The name of the warp (case insensitive)
+     * @return The old location, <tt>null</tt> if there was no warp with this name
+     */
+    public LocationInfo removeWarp(String name) {
+        if(warps.containsKey(name))
+            return warps.remove(name);
+        for(String w : warps.keySet()) {
+            if(w.equalsIgnoreCase(name)) {
+                return warps.remove(w);
+            }
+        }
+        return null;
+    }
 
 	/**
 	 * Get the name of the cluster

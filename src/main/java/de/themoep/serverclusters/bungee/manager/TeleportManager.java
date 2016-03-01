@@ -19,15 +19,19 @@ import java.util.Map;
  * ServerClusters
  * Copyright (C) 2016 Max Lee (https://github.com/Phoenix616/)
  */
-public class TeleportManager {
-    private final ServerClusters plugin;
+public class TeleportManager extends Manager {
 
     private Map<String, List<Request>> requestMap = new HashMap<String, List<Request>>();
 
     private Map<String, Request> cachedRequests = new HashMap<String, Request>();
 
     public TeleportManager(ServerClusters plugin) {
-        this.plugin = plugin;
+        super(plugin);
+    }
+
+    @Override
+    public void destroy() {
+        // Nothing to do here
     }
 
     /**

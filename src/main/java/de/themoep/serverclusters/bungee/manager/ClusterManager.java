@@ -12,16 +12,14 @@ import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class ClusterManager {
-
-	private ServerClusters plugin;
+public class ClusterManager extends Manager {
 		
 	private Map<String, Cluster> clustermap = new HashMap<String, Cluster>();
 
     private Set<UUID> stayincluster = new HashSet<UUID>();
  	
 	public ClusterManager(ServerClusters plugin) {
-		this.plugin = plugin;
+		super(plugin);
 	}
 
 	/**

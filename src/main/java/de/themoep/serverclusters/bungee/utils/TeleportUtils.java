@@ -4,11 +4,14 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import de.themoep.serverclusters.bungee.Cluster;
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.logging.Level;
 
 /**
  * Created by Phoenix616 on 05.01.2015.
@@ -57,6 +60,22 @@ public class TeleportUtils {
         out.writeUTF(player.getName());
         out.writeUTF(target.getName());
         target.getServer().sendData("ServerClusters", out.toByteArray());
+    }
+
+    /**
+     * Teleports a player to a location
+     * @param player The player to teleport
+     * @param location The location to teleport to
+     * @return <tt>true</tt> if all worked without any error; <tt>false</tt> if the server of the location wasn't found
+     */
+    public boolean teleport(ProxiedPlayer player, LocationInfo location) {
+        ServerInfo server = plugin.getProxy().getServerInfo(location.getServer());
+        if(server == null) {
+            plugin.getLogger().log(Level.SEVERE, "Could not teleport player " + player.getName() + " as the server " + server.getName() + " does not ecist for the following location object: " + location);
+            return false;
+        }
+        teleportToLocation(player, server, location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        return true;
     }
 
     /**
