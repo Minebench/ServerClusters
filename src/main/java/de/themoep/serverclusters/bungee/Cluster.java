@@ -3,6 +3,7 @@ package de.themoep.serverclusters.bungee;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +17,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import org.bukkit.configuration.InvalidConfigurationException;
 
 public class Cluster implements Comparable<Cluster> {
 
@@ -92,7 +92,7 @@ public class Cluster implements Comparable<Cluster> {
         if(plugin.getBackend() == Backend.MYSQL) {
             try {
                 logoutStorage = new MysqlStorage(plugin, "logoutserver_" + getName());
-            } catch(InvalidConfigurationException e) {
+            } catch(InvalidPropertiesFormatException e) {
                 e.printStackTrace();
             } catch(SQLException e) {
                 e.printStackTrace();

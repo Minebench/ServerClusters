@@ -1,7 +1,6 @@
 package de.themoep.serverclusters.bungee.storage;
 
 import de.themoep.serverclusters.bungee.ServerClusters;
-import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.InvalidPropertiesFormatException;
 import java.util.UUID;
 
 public class MysqlStorage extends ValueStorage {
@@ -23,7 +23,7 @@ public class MysqlStorage extends ValueStorage {
     private String dburl;
     private String dbtableprefix;
 
-    public MysqlStorage(ServerClusters plugin, String name) throws InvalidConfigurationException, SQLException {
+    public MysqlStorage(ServerClusters plugin, String name) throws InvalidPropertiesFormatException, SQLException {
         super(plugin, name);
 
         dbuser = plugin.getConfig().getString("mysql.user");
@@ -43,7 +43,7 @@ public class MysqlStorage extends ValueStorage {
             initDb();
         } else {
             plugin.getLogger().warning("MySQL settings not or not fully configured! Falling back to YAML backend!");
-            throw new InvalidConfigurationException("We are missing at least one parameter to establish a database connection!");
+            throw new InvalidPropertiesFormatException("We are missing at least one parameter to establish a database connection!");
         }
     }
     
