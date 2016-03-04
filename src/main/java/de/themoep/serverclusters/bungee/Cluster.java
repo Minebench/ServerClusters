@@ -336,6 +336,8 @@ public class Cluster implements Comparable<Cluster> {
 	}
 
     public void destroy() {
-        logoutStorage.close();
+        if(logoutStorage != null) {
+			logoutStorage.close();
+		}
     }
 }
