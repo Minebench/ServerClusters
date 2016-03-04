@@ -69,8 +69,6 @@ public class ServerClusters extends Plugin {
 		config = loadConfigFile();
 		loadConfig();
 		setupCommands(true);
-
-        bukkitCommandExecutor = new BukkitCommandExecutor(this);
 		teleportUtils = new TeleportUtils(this);
 		tm = new TeleportManager(this);
 
@@ -179,6 +177,7 @@ public class ServerClusters extends Plugin {
 		}
 
 		getLogger().log(infolevel, "Setting up Bukkit commands");
+		bukkitCommandExecutor = new BukkitCommandExecutor(this);
 		getBukkitCommandExecutor().registerCommand(new TpaCommand(this, "tpa", "serverclusters.command.tpa"));
 		getBukkitCommandExecutor().registerCommand(new TpahereCommand(this, "tpahere", "serverclusters.command.tpahere"));
 		getBukkitCommandExecutor().registerCommand(new TpacceptCommand(this, "tpaccept", "serverclusters.command.tpaccept"));
