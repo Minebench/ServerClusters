@@ -1,6 +1,7 @@
 package de.themoep.serverclusters.bungee;
 
 import de.themoep.serverclusters.bungee.bukkitcommands.BukkitCommand;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
@@ -27,17 +28,23 @@ public class BukkitCommandExecutor {
         return true;
     }
 
-    public boolean execute(String commandName, String sender, String[] args) {
+    public boolean execute(String commandName, String senderName, String[] args) {
         BukkitCommand command = commandMap.get(commandName);
 
         if(command == null)
             return false;
 
-        ProxiedPlayer player = plugin.getProxy().getPlayer(sender);
-        if(player == null)
+        CommandSender sender = null;
+        if("[@]".equalsIgnoreCase(senderName)) {
+            sender = plugin.getProxy().getConsole();
+        } else {
+            sender = plugin.getProxy().getPlayer(senderName);
+        }
+
+        if(sender == null)
             return false;
 
-        command.run(player, args);
+        command.run(sender, args);
         return true;
     }
 }

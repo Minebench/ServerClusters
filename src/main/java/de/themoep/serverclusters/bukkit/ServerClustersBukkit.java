@@ -39,16 +39,23 @@ public class ServerClustersBukkit extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        Player player = null;
+        String senderName = sender.getName();
         if(sender instanceof Player) {
-            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-            out.writeUTF("RunCommand");
-            out.writeUTF(sender.getName());
-            out.writeUTF(cmd.getName());
-            out.writeUTF(StringUtils.join(args, " "));
-            ((Player) sender).sendPluginMessage(this, "ServerClusters", out.toByteArray());
+            player = (Player) sender;
+        } else if(getServer().getOnlinePlayers().size() > 0){
+            senderName = "[@]";
+            player = getServer().getOnlinePlayers().iterator().next();
+        } else {
+            sender.sendMessage(ChatColor.RED + "This command can only be run with at least one player online as it relies on plugin messages!");
             return true;
         }
-        sender.sendMessage(ChatColor.RED + "This command can only be run by a player!");
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("RunCommand");
+        out.writeUTF(senderName);
+        out.writeUTF(cmd.getName());
+        out.writeUTF(StringUtils.join(args, " "));
+        player.sendPluginMessage(this, "ServerClusters", out.toByteArray());
         return true;
     }
 }
