@@ -7,6 +7,7 @@
     <groupId>de.themoep.serverclusters</groupId>
     <artifactId>parent</artifactId>
     <version>parent</version>
+    <packaging>pom</packaging>
 
     <modules>
         <module>bungee</module>
