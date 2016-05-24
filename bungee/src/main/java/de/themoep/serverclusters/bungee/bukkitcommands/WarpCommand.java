@@ -2,6 +2,8 @@ package de.themoep.serverclusters.bungee.bukkitcommands;
 
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
+import de.themoep.serverclusters.bungee.ServerNotFoundException;
+import de.themoep.serverclusters.bungee.WarpInfo;
 import de.themoep.vnpbungee.VNPBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -24,15 +26,15 @@ public class WarpCommand extends BukkitCommand {
     @Override
     public void run(CommandSender sender, String[] args) {
         if(args.length == 0) {
-            Iterator<String> globalWarps = plugin.getWarpManager().getGlobalWarps().iterator();
+            Iterator<WarpInfo> globalWarps = plugin.getWarpManager().getGlobalWarps(sender).iterator();
 
             if(globalWarps.hasNext()) {
                 sender.sendMessage(ChatColor.YELLOW + "Globale Warps:");
 
                 ComponentBuilder builder = new ComponentBuilder(" ");
                 while(globalWarps.hasNext()) {
-                    String globalWarp = globalWarps.next();
-                    builder.append(globalWarp).color(ChatColor.WHITE).event(
+                    WarpInfo globalWarp = globalWarps.next();
+                    builder.append(globalWarp.getName()).color(ChatColor.WHITE).event(
                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + globalWarp)
                     ).event(
                             new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + globalWarp + " zu warpen!"))
@@ -45,17 +47,22 @@ public class WarpCommand extends BukkitCommand {
                 sender.sendMessage(builder.create());
             }
 
-            if(sender instanceof ProxiedPlayer) {
-                Iterator<String> clusterWarps = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender).getWarps().iterator();
+            if(sender instanceof ProxiedPlayer && !sender.hasPermission("serverclusters.command.warp.intercluster")) {
+                Iterator<WarpInfo> clusterWarps = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender).getWarps(sender).iterator();
 
                 if(clusterWarps.hasNext()) {
                     sender.sendMessage(ChatColor.YELLOW + "Server Warps:");
 
                     ComponentBuilder builder = new ComponentBuilder(" ");
                     while(clusterWarps.hasNext()) {
-                        String clusterWarp = clusterWarps.next();
-                        builder.append(clusterWarp).color(ChatColor.WHITE).event(
-                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterWarp)
+                        WarpInfo clusterWarp = clusterWarps.next();
+                        String clusterStr = "";
+                        Cluster cluster = plugin.getClusterManager().getClusterByServer(clusterWarp.getServer());
+                        if(cluster != null) {
+                            clusterStr = cluster.getName() + ":";
+                        }
+                        builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
+                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterStr + clusterWarp)
                         ).event(
                                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + clusterWarp + " zu warpen!"))
                         ).retain(ComponentBuilder.FormatRetention.NONE);
@@ -68,15 +75,15 @@ public class WarpCommand extends BukkitCommand {
                 }
             } else {
                 for(Cluster cluster : plugin.getClusterManager().getClusterlist()) {
-                    Iterator<String> clusterWarps = cluster.getWarps().iterator();
+                    Iterator<WarpInfo> clusterWarps = cluster.getWarps(sender).iterator();
 
                     if(clusterWarps.hasNext()) {
                         sender.sendMessage(ChatColor.YELLOW + cluster.getName() + " Warps:");
 
                         ComponentBuilder builder = new ComponentBuilder(" ");
                         while(clusterWarps.hasNext()) {
-                            String clusterWarp = clusterWarps.next();
-                            builder.append(clusterWarp).color(ChatColor.WHITE).event(
+                            WarpInfo clusterWarp = clusterWarps.next();
+                            builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + cluster.getName() + ":" + clusterWarp)
                             ).event(
                                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + cluster.getName() + ":" + clusterWarp + " zu warpen!"))
@@ -93,7 +100,24 @@ public class WarpCommand extends BukkitCommand {
             return;
         }
 
-        String warpName = args[0];
+        WarpInfo warp = plugin.getWarpManager().getWarp(args[0]);
+        if(warp == null && sender instanceof ProxiedPlayer) {
+            Cluster cluster = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender);
+            if(cluster != null) {
+                warp = cluster.getWarp(args[0]);
+            }
+        }
+
+        if(warp == null) {
+            sender.sendMessage(ChatColor.YELLOW + "Der Warp " + ChatColor.RED + args[0] + ChatColor.YELLOW + " existiert nicht.");
+            return;
+        }
+
+        if(!plugin.getWarpManager().checkAccess(sender, warp)) {
+            sender.sendMessage(ChatColor.YELLOW + "Du hast nicht genügend Rechte um den Warp " + ChatColor.RED + warp.getName() + ChatColor.YELLOW + " zu nutzen!");
+            return;
+        }
+
         List<ProxiedPlayer> players = new ArrayList<ProxiedPlayer>();
 
         if(args.length == 1) {
@@ -115,8 +139,14 @@ public class WarpCommand extends BukkitCommand {
         }
 
         if(players.size() > 0) {
-            for(ProxiedPlayer player : players) {
-                plugin.getWarpManager().warp(player, warpName);
+            try {
+                for(ProxiedPlayer player : players) {
+                    plugin.getWarpManager().warpPlayer(player, warp);
+                }
+            } catch(ServerNotFoundException e) {
+                if(args.length >= 2) {
+                    sender.sendMessage(ChatColor.RED + "Configuration error: " + ChatColor.YELLOW + e.getMessage());
+                }
             }
         }
     }
@@ -135,19 +165,19 @@ public class WarpCommand extends BukkitCommand {
             }
         }
         if(args.length < 2) {
-            for(String warp : plugin.getWarpManager().getGlobalWarps()) {
-                if(args.length == 0 || warp.toLowerCase().startsWith(args[0].toLowerCase())) {
+            for(WarpInfo warp : plugin.getWarpManager().getGlobalWarps()) {
+                if(args.length == 0 || warp.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
                     if(sender.hasPermission("serverclusters.globalwarp." + warp)) {
-                        pl.add(warp);
+                        pl.add(warp.getName());
                     }
                 }
             }
             if(sender instanceof ProxiedPlayer) {
                 Cluster cluster = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender);
-                for(String warp : cluster.getWarps()) {
-                    if(args.length == 0 || warp.toLowerCase().startsWith(args[0].toLowerCase())) {
+                for(WarpInfo warp : cluster.getWarps()) {
+                    if(args.length == 0 || warp.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
                         if(sender.hasPermission("serverclusters.warp." + cluster.getName() + "." + warp)) {
-                            pl.add(warp);
+                            pl.add(warp.getName());
                         }
                     }
                 }

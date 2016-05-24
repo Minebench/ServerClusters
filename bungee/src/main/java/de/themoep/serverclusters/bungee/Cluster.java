@@ -2,11 +2,12 @@ package de.themoep.serverclusters.bungee;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import de.themoep.serverclusters.bungee.enums.Backend;
@@ -14,6 +15,7 @@ import de.themoep.serverclusters.bungee.storage.MysqlStorage;
 import de.themoep.serverclusters.bungee.storage.ValueStorage;
 import de.themoep.serverclusters.bungee.storage.YamlStorage;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -38,10 +40,10 @@ public class Cluster implements Comparable<Cluster> {
 	private List<String> aliaslist = new ArrayList<String>();
 
 	/**
-	 * Map of warpnames to their locations
+	 * Map of lowercase warpnames to their warp info
 	 */
 
-    private Map<String, LocationInfo> warps = new HashMap<String, LocationInfo>();
+    private Map<String, WarpInfo> warps = new HashMap<String, WarpInfo>();
 	
 	/**
 	 * Map of players UUID's to the servername they logged out of
@@ -231,36 +233,43 @@ public class Cluster implements Comparable<Cluster> {
 	}
 
     /**
-     * Get a set of the names of all warps
-     * @return A set of warp names
+     * Get a collection of all warps of this cluster
+     * @return Collection of warp info
      */
-    public Set<String> getWarps() {
-        return warps.keySet();
+    public Collection<WarpInfo> getWarps() {
+        return warps.values();
     }
+
+	/**
+	 * Get a collection of all warps of this cluster a sender has access to
+	 * @param sender The sender to check permissions for
+	 * @return Collection of warp info
+	 */
+	public Collection<WarpInfo> getWarps(CommandSender sender) {
+		Collection<WarpInfo> warps = new HashSet<WarpInfo>();
+		for(WarpInfo warp : getWarps()) {
+			if(plugin.getWarpManager().checkAccess(sender, warp)) {
+				warps.add(warp);
+			}
+		}
+		return warps;
+	}
 
     /**
      * Get the location of a warp
      * @param name The name of the warp (case insensitive)
      * @return The location, <tt>null</tt> if not found
      */
-    public LocationInfo getWarp(String name) {
-        if(warps.containsKey(name))
-            return warps.get(name);
-        for(String w : warps.keySet()) {
-            if(w.equalsIgnoreCase(name)) {
-                return warps.get(w);
-            }
-        }
-        return null;
+    public WarpInfo getWarp(String name) {
+		return warps.get(name.toLowerCase());
     }
 
     /**
      * Add a new warp point to this cluster
-     * @param name The name of the warp
-     * @param location The location of the warp
+     * @param warp Info about the warp
      */
-	public void addWarp(String name, LocationInfo location) {
-		warps.put(name, location);
+	public void addWarp(WarpInfo warp) {
+		warps.put(warp.getName().toLowerCase(), warp);
 	}
 
     /**
@@ -269,14 +278,7 @@ public class Cluster implements Comparable<Cluster> {
      * @return The old location, <tt>null</tt> if there was no warp with this name
      */
     public LocationInfo removeWarp(String name) {
-        if(warps.containsKey(name))
-            return warps.remove(name);
-        for(String w : warps.keySet()) {
-            if(w.equalsIgnoreCase(name)) {
-                return warps.remove(w);
-            }
-        }
-        return null;
+		return warps.remove(name.toLowerCase());
     }
 
 	/**
@@ -340,4 +342,8 @@ public class Cluster implements Comparable<Cluster> {
 			logoutStorage.close();
 		}
     }
+
+	public boolean hasAccess(CommandSender sender) {
+		return sender.hasPermission("serverclusters.cluster." + getName());
+	}
 }

@@ -71,7 +71,7 @@ public class TeleportUtils {
     public boolean teleport(ProxiedPlayer player, LocationInfo location) {
         ServerInfo server = plugin.getProxy().getServerInfo(location.getServer());
         if(server == null) {
-            plugin.getLogger().log(Level.SEVERE, "Could not teleport player " + player.getName() + " as the server " + server.getName() + " does not ecist for the following location object: " + location);
+            plugin.getLogger().log(Level.SEVERE, "Could not teleport player " + player.getName() + " as the server " + location.getServer() + " does not exist for the following location object: " + location);
             return false;
         }
         teleportToLocation(player, server, location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
