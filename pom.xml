@@ -4,27 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.themoep</groupId>
-    <artifactId>serverclusters</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>ServerClusters</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.8-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.themoep</groupId>
-            <artifactId>vnpbungee</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <groupId>de.themoep.serverclusters</groupId>
+    <artifactId>parent</artifactId>
+    <version>parent</version>
+
+    <modules>
+        <module>bungee</module>
+        <module>bukkit</module>
+        <module>plugin</module>
+    </modules>
 
     <repositories>
         <repository>
