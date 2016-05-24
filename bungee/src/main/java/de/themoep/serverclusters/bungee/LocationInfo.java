@@ -54,4 +54,9 @@ public class LocationInfo {
     public float getPitch() {
         return pitch;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "{server=" + getServer() + ",world=" + getWorld() + ",x=" + getX() + ",y=" + getY() + ",z=" + getZ() + ",yaw=" + getYaw() + ",pitch=" + getPitch() + "}";
+    }
 }
