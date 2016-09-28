@@ -17,12 +17,12 @@ public class TpaconfirmCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(!sender.hasPermission(getPermission())) {
+        if (!sender.hasPermission(getPermission())) {
             return;
         }
-        if(sender instanceof ProxiedPlayer) {
+        if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer player = (ProxiedPlayer) sender;
-            if(!plugin.getTeleportManager().applyCachedRequest(player)) {
+            if (!plugin.getTeleportManager().applyCachedRequest(player)) {
                 sender.sendMessage(ChatColor.RED + "Du hast keine Anfrage die du bestätigen müsstest!");
             }
         } else {

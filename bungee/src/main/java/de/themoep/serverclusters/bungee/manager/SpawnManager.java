@@ -5,12 +5,12 @@ import de.themoep.serverclusters.bungee.storage.YamlStorage;
 
 public class SpawnManager extends Manager {
 
-    private YamlStorage spawnStorage;
-	
-	public SpawnManager(ServerClusters plugin) {
+    private final YamlStorage spawnStorage;
+
+    public SpawnManager(ServerClusters plugin) {
         super(plugin);
-		spawnStorage = new YamlStorage(plugin, "spawns");
-	}
+        spawnStorage = new YamlStorage(plugin, "spawns");
+    }
 
     @Override
     public void destroy() {

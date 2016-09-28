@@ -23,40 +23,40 @@ import java.util.List;
 
 public class ClusterCommand extends Command implements TabExecutor {
 
-	ServerClusters plugin;
+    ServerClusters plugin;
 
-	public ClusterCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-		super(name, permission, aliases);
-		this.plugin = plugin;
-	}
+    public ClusterCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
+        super(name, permission, aliases);
+        this.plugin = plugin;
+    }
 
-	@Override
-	public void execute(CommandSender sender, String[] args) {		
-		if(sender.hasPermission(getPermission())) {
-			if(args.length == 0) {
-				//send cluster list
-				// TODO: Change messages to language system!
-				sender.sendMessage(new ComponentBuilder("Verfügbare Server:").color(ChatColor.YELLOW).create());
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (sender.hasPermission(getPermission())) {
+            if (args.length == 0) {
+                //send cluster list
+                // TODO: Change messages to language system!
+                sender.sendMessage(new ComponentBuilder("Verfügbare Server:").color(ChatColor.YELLOW).create());
 
-                
-				List<Cluster> cl = plugin.getClusterManager().getClusterlist();
-				Collections.sort(cl);
 
-				for(Cluster c : cl) {
-					if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
-						boolean current = (sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*"));
+                List<Cluster> cl = plugin.getClusterManager().getClusterlist();
+                Collections.sort(cl);
 
-						if(c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
-							continue;
-						}
+                for (Cluster c : cl) {
+                    if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
+                        boolean current = (sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*"));
 
-						ComponentBuilder msg = new ComponentBuilder(" ");
+                        if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
+                            continue;
+                        }
 
-						HoverEvent he;
-						if(current) {
+                        ComponentBuilder msg = new ComponentBuilder(" ");
+
+                        HoverEvent he;
+                        if (current) {
                             msg.append(ChatColor.RED + ">").bold(true).color(ChatColor.RED);
                             he = new HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT, 
+                                    HoverEvent.Action.SHOW_TEXT,
                                     new ComponentBuilder("Hier befindest du dich!")
                                             .create()
                             );
@@ -71,87 +71,87 @@ public class ClusterCommand extends Command implements TabExecutor {
                             );
                         }
 
-						msg.append(c.getName()).bold(false);
-                        
+                        msg.append(c.getName()).bold(false);
+
                         ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + c.getName());
-						if(current) {
+                        if (current) {
                             msg.color(ChatColor.YELLOW);
                         } else {
                             msg.color(ChatColor.GREEN);
                             msg.event(ce);
                         }
-						msg.event(he);
+                        msg.event(he);
                         int playerCount = 0;
-                        if(!sender.hasPermission("vanish.see") && plugin.getVnpbungee() != null) {
+                        if (!sender.hasPermission("vanish.see") && plugin.getVnpbungee() != null) {
                             VNPBungee vnpBungee = (VNPBungee) ProxyServer.getInstance().getPluginManager().getPlugin("VNPBungee");
-                            for(ProxiedPlayer p : c.getPlayerlist()) {
-                                if(vnpBungee.getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED) {
+                            for (ProxiedPlayer p : c.getPlayerlist()) {
+                                if (vnpBungee.getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED) {
                                     playerCount++;
                                 }
                             }
                         } else {
                             playerCount = c.getPlayerlist().size();
                         }
-						msg.append(" - " + playerCount + " Spieler").color(ChatColor.WHITE);
-						msg.event(he);
-						if(!current) msg.event(ce);
-						sender.sendMessage(msg.create());
-					}
-				}
-				
-			} else if(args.length == 1 && sender instanceof ProxiedPlayer){
+                        msg.append(" - " + playerCount + " Spieler").color(ChatColor.WHITE);
+                        msg.event(he);
+                        if (!current) msg.event(ce);
+                        sender.sendMessage(msg.create());
+                    }
+                }
 
-				Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
-				if(targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
-					// ERROR no perms
-					// ERROR Cluster not found
-					sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
-				} else {
-					// connect player to cluster
-					ProxiedPlayer p = (ProxiedPlayer) sender;
-					if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())) {
-						sender.sendMessage(ChatColor.RED + "Du bist bereits auf " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.RED + "!");
-					} else {
-						p.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
-						targetCluster.connectPlayer(p);
-					}
-				}
-			} else {
-				if(!sender.hasPermission("serverclusters.command.cluster.others")){
-					sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You don't have the permission serverclusters.command.cluster.others");
-				} else {
-					Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
-					if(targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
-						// ERROR no perms
-						// ERROR Cluster not found
-						sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
-					} else {
-						ArrayList<String> playerlist = new ArrayList<String>(Arrays.asList(args));
-						playerlist.remove(0);
-						for(String playername : playerlist) {
-							ProxiedPlayer p = plugin.getProxy().getPlayer(playername);
-							if(p == null){
-								sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Player " + ChatColor.RED + playername + ChatColor.YELLOW + " is not online!");
-							} else if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())){
-								sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Player " + ChatColor.RED + playername + ChatColor.YELLOW + " is already on " + ChatColor.RED + targetCluster.getName() + ChatColor.YELLOW + "!");
-							} else {
-								p.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
-								targetCluster.connectPlayer(p);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+            } else if (args.length == 1 && sender instanceof ProxiedPlayer) {
 
-	public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
-		List<String> cl = new ArrayList<String>();
-		for(Cluster c : plugin.getClusterManager().getClusterlist())
-			if(args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
-				cl.add(c.getName());
-		return cl;
-	}
+                Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
+                if (targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
+                    // ERROR no perms
+                    // ERROR Cluster not found
+                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
+                } else {
+                    // connect player to cluster
+                    ProxiedPlayer p = (ProxiedPlayer) sender;
+                    if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())) {
+                        sender.sendMessage(ChatColor.RED + "Du bist bereits auf " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.RED + "!");
+                    } else {
+                        p.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+                        targetCluster.connectPlayer(p);
+                    }
+                }
+            } else {
+                if (!sender.hasPermission("serverclusters.command.cluster.others")) {
+                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You don't have the permission serverclusters.command.cluster.others");
+                } else {
+                    Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
+                    if (targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
+                        // ERROR no perms
+                        // ERROR Cluster not found
+                        sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
+                    } else {
+                        ArrayList<String> playerlist = new ArrayList<String>(Arrays.asList(args));
+                        playerlist.remove(0);
+                        for (String playername : playerlist) {
+                            ProxiedPlayer p = plugin.getProxy().getPlayer(playername);
+                            if (p == null) {
+                                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Player " + ChatColor.RED + playername + ChatColor.YELLOW + " is not online!");
+                            } else if (targetCluster == plugin.getClusterManager().getClusterByServer(p.getServer().getInfo().getName())) {
+                                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Player " + ChatColor.RED + playername + ChatColor.YELLOW + " is already on " + ChatColor.RED + targetCluster.getName() + ChatColor.YELLOW + "!");
+                            } else {
+                                p.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+                                targetCluster.connectPlayer(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
+        List<String> cl = new ArrayList<String>();
+        for (Cluster c : plugin.getClusterManager().getClusterlist())
+            if (args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
+                cl.add(c.getName());
+        return cl;
+    }
 
 
 }

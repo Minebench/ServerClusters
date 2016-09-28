@@ -18,7 +18,7 @@ import java.util.logging.Level;
  */
 public class TeleportUtils {
 
-    ServerClusters plugin;
+    private final ServerClusters plugin;
 
     public TeleportUtils(ServerClusters plugin) {
         this.plugin = plugin;
@@ -33,12 +33,12 @@ public class TeleportUtils {
     public boolean teleportToPlayer(ProxiedPlayer player, ProxiedPlayer target) {
         Cluster playerCluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
         Cluster targetCluster = plugin.getClusterManager().getClusterByServer(target.getServer().getInfo().getName());
-        if(player.getServer().getInfo().getName().equals(target.getServer().getInfo().getName())) {
+        if (player.getServer().getInfo().getName().equals(target.getServer().getInfo().getName())) {
             teleportToPlayerPM(player, target);
             player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " teleportiert");
             return true;
-        } else if (playerCluster == targetCluster || player.hasPermission("serverclusters.teleport.intercluster")){
-            if(playerCluster != targetCluster)
+        } else if (playerCluster == targetCluster || player.hasPermission("serverclusters.teleport.intercluster")) {
+            if (playerCluster != targetCluster)
                 player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
             player.connect(target.getServer().getInfo());
             teleportToPlayerPM(player, target);
@@ -64,13 +64,13 @@ public class TeleportUtils {
 
     /**
      * Teleports a player to a location
-     * @param player The player to teleport
+     * @param player   The player to teleport
      * @param location The location to teleport to
      * @return <tt>true</tt> if all worked without any error; <tt>false</tt> if the server of the location wasn't found
      */
     public boolean teleport(ProxiedPlayer player, LocationInfo location) {
         ServerInfo server = plugin.getProxy().getServerInfo(location.getServer());
-        if(server == null) {
+        if (server == null) {
             plugin.getLogger().log(Level.SEVERE, "Could not teleport player " + player.getName() + " as the server " + location.getServer() + " does not exist for the following location object: " + location);
             return false;
         }
@@ -82,15 +82,15 @@ public class TeleportUtils {
      * Teleport a player to a location on a server
      * @param player Player to teleport
      * @param server Server to teleport to
-     * @param world World to teleport to
-     * @param x X coordinate of the location
-     * @param y X coordinate of the location
-     * @param z Z coordinate of the location
-     * @param yaw Yaw of the location
-     * @param pitch Pitch of the location
+     * @param world  World to teleport to
+     * @param x      X coordinate of the location
+     * @param y      X coordinate of the location
+     * @param z      Z coordinate of the location
+     * @param yaw    Yaw of the location
+     * @param pitch  Pitch of the location
      */
     public void teleportToLocation(ProxiedPlayer player, ServerInfo server, String world, double x, double y, double z, float yaw, float pitch) {
-        if(!player.getServer().getInfo().getName().equals(server.getName())) {
+        if (!player.getServer().getInfo().getName().equals(server.getName())) {
             player.connect(server);
         }
         teleportToLocationPM(player, server, world, x, y, z, yaw, pitch);
@@ -100,12 +100,12 @@ public class TeleportUtils {
      * Helper method to send the plugin message for teleporting to locations
      * @param player Player to teleport
      * @param server Server to teleport to
-     * @param world World to teleport to
-     * @param x X coordinate of the location
-     * @param y X coordinate of the location
-     * @param z Z coordinate of the location
-     * @param yaw Yaw of the location
-     * @param pitch Pitch of the location
+     * @param world  World to teleport to
+     * @param x      X coordinate of the location
+     * @param y      X coordinate of the location
+     * @param z      Z coordinate of the location
+     * @param yaw    Yaw of the location
+     * @param pitch  Pitch of the location
      */
     private void teleportToLocationPM(ProxiedPlayer player, ServerInfo server, String world, double x, double y, double z, float yaw, float pitch) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();

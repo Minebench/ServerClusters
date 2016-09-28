@@ -31,18 +31,19 @@ public class TeleportManager implements Listener {
      */
     @EventHandler
     public void OnPlayerLogin(PlayerJoinEvent event) {
-        if(this.isQueued(event.getPlayer().getName(), 15)) {
-            QueueEntry entry = this.getQueueEntry(event.getPlayer().getName());
-            if(entry.getType() == EntryType.LOCATION) {
+        if (isQueued(event.getPlayer().getName(), 15)) {
+            QueueEntry entry = getQueueEntry(event.getPlayer().getName());
+            if (entry.getType() == EntryType.LOCATION) {
                 Location targetloc = entry.getLocation();
-                if(targetloc != null)
-                    this.teleport(event.getPlayer(), targetloc);
-            } else if(entry.getType() == EntryType.STRING){
+                if (targetloc != null) {
+                    teleport(event.getPlayer(), targetloc);
+                }
+            } else if (entry.getType() == EntryType.STRING) {
                 String s = entry.getString();
-                if(s != null) {
-                    Player targetplayer = Bukkit.getPlayer(s);
-                    if(targetplayer != null && targetplayer.isOnline()) {
-                        this.teleport(event.getPlayer(), targetplayer);
+                if (s != null) {
+                    Player targetplayer = plugin.getServer().getPlayer(s);
+                    if (targetplayer != null && targetplayer.isOnline()) {
+                        teleport(event.getPlayer(), targetplayer);
                     }
                 }
             }
@@ -53,17 +54,17 @@ public class TeleportManager implements Listener {
      * Teleports a player to a target location.
      * If the player is not online it will queue it 'til he is online and teleport him then.
      * @param playername The name of the player to teleport
-     * @param target The location where to teleport the player to
+     * @param target     The location where to teleport the player to
      * @return byte: 1 if the player was teleported,
-     *               0 if the teleport was queued
+     * 0 if the teleport was queued
      */
     public byte teleport(String playername, Location target) {
-        Player player = Bukkit.getPlayer(playername);
-        if(player != null && player.isOnline()) {
+        Player player = plugin.getServer().getPlayer(playername);
+        if (player != null && player.isOnline()) {
             teleport(player, target);
             return 1;
         } else {
-            this.addQueueEntry(playername, target);
+            addQueueEntry(playername, target);
             return 0;
         }
     }
@@ -73,10 +74,10 @@ public class TeleportManager implements Listener {
      * @param player The player to teleport
      * @param target The location to teleport to
      * @return byte: 1 if the player was teleported,
-     *              -1 if the player or target was not found was not found or is null
+     * -1 if the player or target was not found was not found or is null
      */
     public byte teleport(Player player, Location target) {
-        if(target != null && player != null && player.isOnline()) {
+        if (target != null && player != null && player.isOnline()) {
             player.teleport(target);
             removeQueueEntry(player.getName());
             plugin.getLogger().log(Level.INFO, "Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
@@ -91,14 +92,14 @@ public class TeleportManager implements Listener {
      * @param playername Name of the player to teleport
      * @param targetname Name of the player to teleport to
      * @return byte: 1 if the player was teleported,
-     *               0 if the teleport was queued,
-     *              -1 if the target was not found
+     * 0 if the teleport was queued,
+     * -1 if the target was not found
      */
     public byte teleport(String playername, String targetname) {
-        Player target = Bukkit.getPlayer(targetname);
-        if(target != null && target.isOnline()) {
-            Player player = Bukkit.getPlayer(playername);
-            if(player != null && player.isOnline()) {
+        Player target = plugin.getServer().getPlayer(targetname);
+        if (target != null && target.isOnline()) {
+            Player player = plugin.getServer().getPlayer(playername);
+            if (player != null && player.isOnline()) {
                 teleport(player, target);
                 return 1;
             } else {
@@ -114,10 +115,10 @@ public class TeleportManager implements Listener {
      * @param player The player to teleport
      * @param target The player to teleport to
      * @return byte: 1 if the player was teleported,
-     *              -1 if the player or the target was not found or is null
+     * -1 if the player or the target was not found or is null
      */
     public byte teleport(Player player, Player target) {
-        if(target != null && target.isOnline() && player != null && player.isOnline()) {
+        if (target != null && target.isOnline() && player != null && player.isOnline()) {
             player.teleport(target);
             removeQueueEntry(player.getName());
             Location loc = target.getLocation();
@@ -131,7 +132,7 @@ public class TeleportManager implements Listener {
      * Get if a player is queued for teleport
      * @param playername Name of the player to check
      * @return boolean: true if queued,
-     *                  false if not
+     * false if not
      */
     public boolean isQueued(String playername) {
         return tpQueue.containsKey(playername);
@@ -141,7 +142,7 @@ public class TeleportManager implements Listener {
      * Get if a player is queued for teleport
      * @param player Name of the player to check
      * @return boolean: true if queued,
-     *                  false if not
+     * false if not
      */
     public boolean isQueued(Player player) {
         return isQueued(player.getName());
@@ -150,13 +151,13 @@ public class TeleportManager implements Listener {
     /**
      * Get if a player was queued for teleport in the last x seconds
      * @param playername Name of the player to check
-     * @param x How far back the player has to be gotten queued
+     * @param x          How far back the player has to be gotten queued
      * @return boolean: true if queued in the last x seconds,
-     *                  false if not
+     * false if not
      */
     public boolean isQueued(String playername, int x) {
-        if(isQueued(playername)) {
-            QueueEntry entry = this.getQueueEntry(playername);
+        if (isQueued(playername)) {
+            QueueEntry entry = getQueueEntry(playername);
             return entry != null && entry.getTimeStamp() + x * 1000 > System.currentTimeMillis();
         }
         return false;
@@ -183,7 +184,7 @@ public class TeleportManager implements Listener {
     /**
      * Add a new location entry to the teleport queue
      * @param playername The name of the player to queue
-     * @param targetloc The targeted location
+     * @param targetloc  The targeted location
      */
     private void addQueueEntry(String playername, Location targetloc) {
         tpQueue.put(playername, new QueueEntry(targetloc));

@@ -26,12 +26,12 @@ public class PluginMessageListener implements Listener {
 
     @EventHandler
     public void onPluginMessageReceive(PluginMessageEvent event) {
-        if(event.getTag().equals("ServerClusters")) {
+        if (event.getTag().equals("ServerClusters")) {
             ProxiedPlayer receiver = (ProxiedPlayer) event.getReceiver();
             if (receiver != null) {
                 ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
                 String subchannel = in.readUTF();
-                if(subchannel.equals("GetPlayerLocation")) {
+                if (subchannel.equals("GetPlayerLocation")) {
                     String reason = in.readUTF();
                     String sender = in.readUTF();
 
@@ -43,16 +43,16 @@ public class PluginMessageListener implements Listener {
                     float yaw = in.readFloat();
                     float pitch = in.readFloat();
                     plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/GetPlayerLocation/" + reason + " from " + sender);
-                    if(reason.equals("Info")) {
-
-                    } else if(reason.equals("SetHome")) {
-
-                    } else if(reason.equals("SetWarp")) {
-
-                    } else if(reason.equals("SetSpawn")) {
-
+                    if (reason.equals("Info")) {
+                        // /getpos command or something like that
+                    } else if (reason.equals("SetHome")) {
+                        // set a home, not implemented yet and I'm not even sure if this is the correct way to do it
+                    } else if (reason.equals("SetWarp")) {
+                        // set warp, currently not possible, may get implemented otherwise
+                    } else if (reason.equals("SetSpawn")) {
+                        // look above
                     }
-                } else if(subchannel.equals("RunCommand")) {
+                } else if (subchannel.equals("RunCommand")) {
                     String sender = in.readUTF();
                     String command = in.readUTF();
                     String locStr = in.readUTF();

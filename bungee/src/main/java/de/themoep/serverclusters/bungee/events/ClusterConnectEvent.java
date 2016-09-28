@@ -9,39 +9,39 @@ import net.md_5.bungee.api.plugin.Event;
 
 
 public class ClusterConnectEvent extends Event {
-	
-	private ServerClusters plugin = null;
-	private Cluster target = null;
-	private ServerConnectEvent event = null;
-	
-	public ClusterConnectEvent(ServerClusters plugin, ServerConnectEvent event, Cluster target) {
-		this.target = target;
-		this.plugin = plugin;
-		this.event = event;
-	}
 
-	/**
-	 * Get the cluster the player tries to connect to
-	 * @return The targeted cluster
-	 */
-	public Cluster getTarget() {
-		return target;
-	}
+    private ServerClusters plugin = null;
+    private Cluster target = null;
+    private ServerConnectEvent event = null;
 
-	/**
-	 * Sets which cluster the player should connect to
-	 * @param cluster The target cluster
-	 */
-	public void setTarget(Cluster cluster) {
-		event.setTarget(plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
-		target = cluster;
-	}
+    public ClusterConnectEvent(ServerClusters plugin, ServerConnectEvent event, Cluster target) {
+        this.target = target;
+        this.plugin = plugin;
+        this.event = event;
+    }
 
-	/**
-	 * Get the player of the event
-	 * @return The ProxiedPlayer
-	 */
-	public ProxiedPlayer getPlayer() {
-		return event.getPlayer();
-	}
+    /**
+     * Get the cluster the player tries to connect to
+     * @return The targeted cluster
+     */
+    public Cluster getTarget() {
+        return target;
+    }
+
+    /**
+     * Sets which cluster the player should connect to
+     * @param cluster The target cluster
+     */
+    public void setTarget(Cluster cluster) {
+        event.setTarget(plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
+        target = cluster;
+    }
+
+    /**
+     * Get the player of the event
+     * @return The ProxiedPlayer
+     */
+    public ProxiedPlayer getPlayer() {
+        return event.getPlayer();
+    }
 }

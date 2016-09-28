@@ -21,7 +21,7 @@ public class LocationInfo {
         this.z = z;
     }
 
-    public LocationInfo(String server, String world, double x, double y, double z, float yaw, float pitch){
+    public LocationInfo(String server, String world, double x, double y, double z, float yaw, float pitch) {
         this(server, world, x, y, z);
         this.yaw = yaw;
         this.pitch = pitch;

@@ -17,7 +17,7 @@ public abstract class ValueStorage {
 
     public String getValue(String playerName) {
         ProxiedPlayer player = plugin.getProxy().getPlayer(playerName);
-        if(player != null) {
+        if (player != null) {
             return getValue(player.getUniqueId());
         }
         return null;

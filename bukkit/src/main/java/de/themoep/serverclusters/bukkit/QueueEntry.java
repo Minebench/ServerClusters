@@ -8,19 +8,17 @@ import org.bukkit.Location;
  */
 public class QueueEntry {
 
-    private Location loc = null;
-    private String string = null;
-    private EntryType type = null;
-    private Long timestamp;
+    private final Location loc;
+    private final String string;
+    private final EntryType type;
+    private final Long timestamp;
 
     /**
      * An location entry in a player queue.
      * @param loc The location
      */
     public QueueEntry(Location loc) {
-        this.loc = loc;
-        this.type = EntryType.LOCATION;
-        this.timestamp = System.currentTimeMillis();
+        this(null, loc, EntryType.STRING);
     }
 
     /**
@@ -28,8 +26,13 @@ public class QueueEntry {
      * @param string The location
      */
     public QueueEntry(String string) {
+        this(string, null, EntryType.STRING);
+    }
+
+    private QueueEntry(String string, Location loc, EntryType type) {
         this.string = string;
-        this.type = EntryType.STRING;
+        this.loc = loc;
+        this.type = type;
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -38,7 +41,7 @@ public class QueueEntry {
      * @return EntryType: the type
      */
     public EntryType getType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -46,7 +49,7 @@ public class QueueEntry {
      * @return long: The timestamp
      */
     public long getTimeStamp() {
-        return this.timestamp;
+        return timestamp;
     }
 
     /**
@@ -54,7 +57,7 @@ public class QueueEntry {
      * @return Location: the location, null if no location entry
      */
     public Location getLocation() {
-        return this.loc;
+        return loc;
     }
 
     /**
@@ -62,6 +65,6 @@ public class QueueEntry {
      * @return String: the string, null if no string entry
      */
     public String getString() {
-        return this.string;
+        return string;
     }
 }

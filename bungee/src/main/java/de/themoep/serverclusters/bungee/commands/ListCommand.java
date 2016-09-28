@@ -30,8 +30,8 @@ public class ListCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(sender.hasPermission(getPermission())) {
-            if(args.length == 0) {
+        if (sender.hasPermission(getPermission())) {
+            if (args.length == 0) {
                 //send cluster list
                 // TODO: Change messages to language system!
 
@@ -43,30 +43,31 @@ public class ListCommand extends Command implements TabExecutor {
                 sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
                 boolean checkVanished = plugin.getVnpbungee() != null;
 
-                for(Cluster c : cl) {
-                    if(sender.hasPermission("serverclusters.cluster." + c.getName())) {
+                for (Cluster c : cl) {
+                    if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
                         boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
 
-                        if(c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
+                        if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
                             continue;
                         }
 
                         List<String> clusterPlayers = new ArrayList<String>();
-                        for(ProxiedPlayer p : c.getPlayerlist()) {
+                        for (ProxiedPlayer p : c.getPlayerlist()) {
                             String name = "";
-                            if(checkVanished) {
-                                if(plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
-                                    if(!sender.hasPermission("vanish.see"))
+                            if (checkVanished) {
+                                if (plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
+                                    if (!sender.hasPermission("vanish.see"))
                                         continue;
                                     name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
                                 }
                             }
-                            if(p == sender) {
+                            if (p == sender) {
                                 name += ChatColor.ITALIC;
                             }
                             name += p.getDisplayName() + ChatColor.RESET;
                             clusterPlayers.add(name);
-                        };
+                        }
+                        ;
 
                         totalPlayers += clusterPlayers.size();
 
@@ -76,7 +77,7 @@ public class ListCommand extends Command implements TabExecutor {
 
                         HoverEvent he;
 
-                        if(current) {
+                        if (current) {
                             msg.append(ChatColor.RED + ">").bold(true).color(ChatColor.RED);
                             he = new HoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
@@ -95,7 +96,7 @@ public class ListCommand extends Command implements TabExecutor {
                         }
                         msg.append(c.getName()).bold(false);
 
-                        if(current) {
+                        if (current) {
                             msg.color(ChatColor.YELLOW);
                         } else {
                             msg.color(ChatColor.GREEN);
@@ -114,8 +115,8 @@ public class ListCommand extends Command implements TabExecutor {
 
     public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
         List<String> cl = new ArrayList<String>();
-        for(Cluster c : plugin.getClusterManager().getClusterlist())
-            if(args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
+        for (Cluster c : plugin.getClusterManager().getClusterlist())
+            if (args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
                 cl.add(c.getName());
         return cl;
     }

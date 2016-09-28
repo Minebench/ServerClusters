@@ -14,15 +14,17 @@ import java.util.Map;
 public class BukkitCommandExecutor {
 
     private final ServerClusters plugin;
-    private Map<String, BukkitCommand> commandMap = new HashMap<String, BukkitCommand>();
+    private final Map<String, BukkitCommand> commandMap = new HashMap<String, BukkitCommand>();
 
     public BukkitCommandExecutor(ServerClusters plugin) {
         this.plugin = plugin;
     }
 
     public boolean registerCommand(BukkitCommand command) {
-        if(commandMap.containsKey(command.getName()))
+        if (commandMap.containsKey(command.getName())) {
             return false;
+        }
+
         commandMap.put(command.getName(), command);
         plugin.getProxy().getPluginManager().registerCommand(plugin, command);
         return true;
@@ -31,18 +33,20 @@ public class BukkitCommandExecutor {
     public boolean execute(String commandName, String senderName, LocationInfo location, String[] args) {
         BukkitCommand command = commandMap.get(commandName);
 
-        if(command == null)
+        if (command == null) {
             return false;
+        }
 
         CommandSender sender = null;
-        if("[@]".equalsIgnoreCase(senderName)) {
+        if ("[@]".equalsIgnoreCase(senderName)) {
             sender = plugin.getProxy().getConsole();
         } else {
             sender = plugin.getProxy().getPlayer(senderName);
         }
 
-        if(sender == null)
+        if (sender == null) {
             return false;
+        }
 
         command.run(sender, location, args);
         return true;

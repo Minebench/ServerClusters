@@ -42,7 +42,7 @@ public class ServerClustersBukkit extends JavaPlugin {
         Player player = null;
         String senderName = sender.getName();
         String location = "";
-        if(sender instanceof Player) {
+        if (sender instanceof Player) {
             player = (Player) sender;
             location = player.getLocation().getWorld().getName() + " "
                     + player.getLocation().getX() + " "
@@ -50,7 +50,7 @@ public class ServerClustersBukkit extends JavaPlugin {
                     + player.getLocation().getZ() + " "
                     + player.getLocation().getYaw() + " "
                     + player.getLocation().getPitch();
-        } else if(getServer().getOnlinePlayers().size() > 0){
+        } else if (getServer().getOnlinePlayers().size() > 0) {
             senderName = "[@]";
             player = getServer().getOnlinePlayers().iterator().next();
         } else {

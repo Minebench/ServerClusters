@@ -15,13 +15,13 @@ public class MysqlStorage extends ValueStorage {
 
     private Connection conn;
 
-    private String dbuser;
-    private String dbpassword;
-    private String dbname;
-    private String dbhost;
-    private int dbport;
-    private String dburl;
-    private String dbtableprefix;
+    private final String dbuser;
+    private final String dbpassword;
+    private final String dbname;
+    private final String dbhost;
+    private final int dbport;
+    private final String dburl;
+    private final String dbtableprefix;
 
     public MysqlStorage(ServerClusters plugin, String name) throws InvalidPropertiesFormatException, SQLException {
         super(plugin, name);
@@ -33,7 +33,7 @@ public class MysqlStorage extends ValueStorage {
         dbport = plugin.getConfig().getInt("mysql.port");
         dbtableprefix = plugin.getConfig().getString("mysql.tableprefix", "serverclusters_");
 
-        if(dbhost != null && dbuser != null && dbpassword != null && dbname != null && dbport > 0) {
+        if (dbhost != null && dbuser != null && dbpassword != null && dbname != null && dbport > 0) {
             dburl = ("jdbc:mysql://" + dbhost + ":" + dbport + "/" + dbname);
 
             plugin.getLogger().info("Checking Database Connection...");
@@ -46,7 +46,7 @@ public class MysqlStorage extends ValueStorage {
             throw new InvalidPropertiesFormatException("We are missing at least one parameter to establish a database connection!");
         }
     }
-    
+
     /**
      * Connects to the Database.
      */
@@ -55,7 +55,7 @@ public class MysqlStorage extends ValueStorage {
         conn = (Connection) DriverManager.getConnection(dburl, dbuser, dbpassword);
         conn.setAutoCommit(true);
     }
-    
+
     /**
      * Initializes the databases for the plugin if they don't exist.
      */
@@ -86,12 +86,12 @@ public class MysqlStorage extends ValueStorage {
             sta.setString(1, playerId.toString());
             ResultSet rs = sta.executeQuery();
             sta.close();
-            if(rs.next()) {
+            if (rs.next()) {
                 return rs.getString("value");
             }
             return null;
         } catch (SQLException e) {
-            plugin.getLogger().severe("MySQL-Error! Something went wrong while fetching data for player with the id " + playerId + "! Does the table \""+ dbtableprefix + "_" + name + "\" exist?");
+            plugin.getLogger().severe("MySQL-Error! Something went wrong while fetching data for player with the id " + playerId + "! Does the table \"" + dbtableprefix + "_" + name + "\" exist?");
             //e.printStackTrace();
             return null;
         }
@@ -101,7 +101,7 @@ public class MysqlStorage extends ValueStorage {
     public void close() {
         try {
             conn.close();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             plugin.getLogger().severe("Error while closing the database connection for " + name);
             e.printStackTrace();
         }

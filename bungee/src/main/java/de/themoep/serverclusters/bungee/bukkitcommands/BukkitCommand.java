@@ -24,7 +24,7 @@ public abstract class BukkitCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(sender instanceof ProxiedPlayer) {
+        if (sender instanceof ProxiedPlayer) {
             ((ProxiedPlayer) sender).chat("/" + getName() + " " + StringUtils.join(args, " "));
         } else {
             sender.sendMessage(ChatColor.RED + "This command can only be run by a player and on the Bukkit server!");

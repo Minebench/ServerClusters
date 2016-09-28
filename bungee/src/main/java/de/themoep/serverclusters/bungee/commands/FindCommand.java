@@ -25,15 +25,15 @@ public class FindCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(args.length > 0) {
-            for(String name : args) {
+        if (args.length > 0) {
+            for (String name : args) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(name);
-                if(player == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VISIBLE && !sender.hasPermission("vanish.see"))) {
+                if (player == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VISIBLE && !sender.hasPermission("vanish.see"))) {
                     sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
                     return;
                 }
                 Cluster cluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
-                if(cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") || !sender.hasPermission("serverclusters.cluster." + cluster.getName())) {
+                if (cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") || !sender.hasPermission("serverclusters.cluster." + cluster.getName())) {
                     sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
                     return;
                 }
@@ -45,21 +45,21 @@ public class FindCommand extends Command implements TabExecutor {
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {
-        if(strings.length == 0) {
+        if (strings.length == 0) {
             List<String> playerNames = new ArrayList<String>();
-            for(ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if(plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+            for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
+                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
                     playerNames.add(player.getName());
                 }
             }
             Collections.sort(playerNames);
             return playerNames;
-        } else if(strings.length == 1) {
+        } else if (strings.length == 1) {
             String input = strings[0].toLowerCase();
             List<String> playerNames = new ArrayList<String>();
-            for(ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if(!player.getName().toLowerCase().startsWith(input)) continue;
-                if(plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+            for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
+                if (!player.getName().toLowerCase().startsWith(input)) continue;
+                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
                     playerNames.add(player.getName());
                 }
             }

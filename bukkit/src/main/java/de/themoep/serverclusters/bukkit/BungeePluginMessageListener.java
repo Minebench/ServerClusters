@@ -20,14 +20,15 @@ public class BungeePluginMessageListener implements PluginMessageListener {
     }
 
     public void onPluginMessageReceived(String channel, Player recevier, byte[] message) {
-        if(channel.equals("ServerClusters")) {
+        if (channel.equals("ServerClusters")) {
             ByteArrayDataInput in = ByteStreams.newDataInput(message);
             String subchannel = in.readUTF();
 
-            if(subchannel.equals("TeleportToPlayer")) {
+            if (subchannel.equals("TeleportToPlayer")) {
                 String playername = in.readUTF();
                 String targetname = in.readUTF();
                 plugin.getTeleportManager().teleport(playername, targetname);
+
             } else if (subchannel.equals("TeleportToLocation")) {
                 String playername = in.readUTF();
                 String worldname = in.readUTF();
@@ -36,8 +37,9 @@ public class BungeePluginMessageListener implements PluginMessageListener {
                 double z = in.readDouble();
                 float yaw = in.readFloat();
                 float pitch = in.readFloat();
-                Location loc = new Location(Bukkit.getWorld(worldname),x,y,z,yaw,pitch);
+                Location loc = new Location(Bukkit.getWorld(worldname), x, y, z, yaw, pitch);
                 plugin.getTeleportManager().teleport(playername, loc);
+
             } else if (subchannel.equals("GetPlayerLocation")) {
                 String reason = in.readUTF();
                 String sender = in.readUTF();

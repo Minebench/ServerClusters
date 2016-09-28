@@ -15,16 +15,16 @@ public class YamlStorage extends ValueStorage {
 
     private Configuration config;
 
-    protected final static ConfigurationProvider ymlCfg = ConfigurationProvider.getProvider( YamlConfiguration.class );
+    protected final static ConfigurationProvider ymlCfg = ConfigurationProvider.getProvider(YamlConfiguration.class);
 
-    protected File configFile;
+    protected final File configFile;
 
     public YamlStorage(ServerClusters plugin, String name) {
         super(plugin, name);
         configFile = new File(plugin.getDataFolder(), name + ".yml");
         try {
             config = ymlCfg.load(configFile);
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             // Config file not found. Assuming first load.
             plugin.getLogger().log(Level.INFO, "File '" + configFile.getName() + "' not found! Creating a new one!");
             config = new Configuration();
