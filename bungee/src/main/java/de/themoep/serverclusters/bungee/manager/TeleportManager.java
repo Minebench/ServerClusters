@@ -107,7 +107,7 @@ public class TeleportManager extends Manager {
                                     .event(
                                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + senderCluster.getName())
                                     ).event(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + senderCluster.getName() + "auszuführen und den Server zu wechseln!"))
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + senderCluster.getName() + " auszuführen und den Server zu wechseln!"))
                                     ).create()
                     );
                 }
@@ -129,6 +129,19 @@ public class TeleportManager extends Manager {
     }
 
     /**
+     * Remove a request
+     * @param request The Request to remove
+     * @return <tt>true</tt> if it was removed; <tt>false</tt> if it wasn't there anymore
+     */
+    private boolean removeRequest(Request request) {
+        List<Request> requestList = requestMap.get(request.getReceiver());
+        if (requestList == null || requestList.isEmpty())
+            return false;
+
+        return requestList.remove(request);
+    }
+
+    /**
      * Get the an open request
      * @param player The player to get the request for
      * @param sender The sender to search for
@@ -140,15 +153,10 @@ public class TeleportManager extends Manager {
             return null;
 
         if(sender == null || sender.isEmpty()) {
-            Request request = requestList.get(requestList.size() - 1);
-            if(request.wasHandled())
-                return null;
-            return request;
+            return requestList.get(requestList.size() - 1);
         } else {
             for(int i = requestList.size(); i > 0; i--) {
                 if(requestList.get(i).getSender().equalsIgnoreCase(sender)) {
-                    if(requestList.get(i).wasHandled())
-                        return null;
                     return requestList.get(i);
                 }
             }
@@ -179,6 +187,8 @@ public class TeleportManager extends Manager {
             return false;
         }
 
+        removeRequest(request);
+
         // TODO: Make timeout configurable
         if(request.getTimestamp() + 120 * 1000000 < System.currentTimeMillis()) {
             player.sendMessage(ChatColor.RED + "Die letzte Anfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.RED + " ist bereits ausgelaufen!");
@@ -200,8 +210,6 @@ public class TeleportManager extends Manager {
         } else if(request.getTarget() == TeleportTarget.SENDER) {
             r = plugin.getTeleportUtils().teleportToPlayer(player, sender);
         }
-        if(r)
-            request.setHandled();
 
         return r;
     }
@@ -229,6 +237,8 @@ public class TeleportManager extends Manager {
             return false;
         }
 
+        removeRequest(request);
+
         // TODO: Make timeout configurable
         if(request.getTimestamp() + 120 * 1000000 < System.currentTimeMillis()) {
             player.sendMessage(ChatColor.RED + "Die letzte Anfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.RED + " ist bereits ausgelaufen!");
@@ -248,7 +258,6 @@ public class TeleportManager extends Manager {
         private final String sender;
         private final String receiver;
         private final TeleportTarget target;
-        private boolean handled = false;
 
         public Request(String sender, String receiver, TeleportTarget target) {
             this.sender = sender;
@@ -278,12 +287,5 @@ public class TeleportManager extends Manager {
             return target;
         }
 
-        public void setHandled() {
-            this.handled = true;
-        }
-
-        public boolean wasHandled() {
-            return handled;
-        }
     }
 }
