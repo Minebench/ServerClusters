@@ -24,6 +24,7 @@ import de.themoep.serverclusters.bungee.commands.ListCommand;
 import de.themoep.serverclusters.bungee.commands.TpCommand;
 import de.themoep.serverclusters.bungee.commands.TphereCommand;
 import de.themoep.serverclusters.bungee.enums.Backend;
+import de.themoep.serverclusters.bungee.listeners.PluginMessageListener;
 import de.themoep.serverclusters.bungee.listeners.ServerConnectListener;
 import de.themoep.serverclusters.bungee.listeners.ServerSwitchListener;
 import de.themoep.serverclusters.bungee.manager.ClusterManager;
@@ -75,6 +76,7 @@ public class ServerClusters extends Plugin {
 		getProxy().registerChannel("ServerClusters");
 
 		getLogger().log(infolevel, "Registering Listeners...");
+		getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
 		getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
 		getProxy().getPluginManager().registerListener(this, new ServerConnectListener(this));
 

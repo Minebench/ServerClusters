@@ -7,6 +7,7 @@ import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.logging.Level;
@@ -14,7 +15,7 @@ import java.util.logging.Level;
 /**
  * Created by Phoenix616 on 11.01.2015.
  */
-public class PluginMessageListener {
+public class PluginMessageListener implements Listener {
 
 
     private ServerClusters plugin = null;
