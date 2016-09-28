@@ -27,8 +27,8 @@ public class PluginMessageListener implements Listener {
     @EventHandler
     public void onPluginMessageReceive(PluginMessageEvent event) {
         if (event.getTag().equals("ServerClusters")) {
-            ProxiedPlayer receiver = (ProxiedPlayer) event.getReceiver();
-            if (receiver != null) {
+            if (event.getReceiver() instanceof ProxiedPlayer) {
+                ProxiedPlayer receiver = (ProxiedPlayer) event.getReceiver();
                 ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
                 String subchannel = in.readUTF();
                 if (subchannel.equals("GetPlayerLocation")) {
@@ -82,6 +82,9 @@ public class PluginMessageListener implements Listener {
 
                     plugin.getBukkitCommandExecutor().execute(command, sender, loc, args);
                 }
+            } else {
+                // plugin message from the client
+                event.setCancelled(true);
             }
         }
     }
