@@ -1,13 +1,12 @@
 package de.themoep.serverclusters.bungee.bukkitcommands;
 
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.enums.TeleportTarget;
 import de.themoep.vnpbungee.VNPBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class TpahereCommand extends BukkitCommand {
 	}
 
 	@Override
-	public void run(CommandSender sender, String[] args) {
+	public void run(CommandSender sender, LocationInfo location, String[] args) {
 		if(sender.hasPermission(getPermission())) {
 			// TODO: Change messages to language system!
 			if(args.length == 1) {
@@ -35,7 +34,7 @@ public class TpahereCommand extends BukkitCommand {
                         }
                     }
 					if(toTeleport != null && (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see"))) {
-						plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER);
+						plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER, location);
                     } else {
                         sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
                     }

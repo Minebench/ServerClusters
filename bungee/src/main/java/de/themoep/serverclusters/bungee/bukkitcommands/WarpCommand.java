@@ -1,6 +1,7 @@
 package de.themoep.serverclusters.bungee.bukkitcommands;
 
 import de.themoep.serverclusters.bungee.Cluster;
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.ServerNotFoundException;
 import de.themoep.serverclusters.bungee.WarpInfo;
@@ -24,7 +25,7 @@ public class WarpCommand extends BukkitCommand {
     }
 
     @Override
-    public void run(CommandSender sender, String[] args) {
+    public void run(CommandSender sender, LocationInfo location, String[] args) {
         if(args.length == 0) {
             Iterator<WarpInfo> globalWarps = plugin.getWarpManager().getGlobalWarps(sender).iterator();
 

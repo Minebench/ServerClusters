@@ -1,6 +1,7 @@
 package de.themoep.serverclusters.bungee.bukkitcommands;
 
 import de.themoep.serverclusters.bungee.Cluster;
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.enums.TeleportTarget;
 import de.themoep.vnpbungee.VNPBungee;
@@ -11,8 +12,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class TpaCommand extends BukkitCommand {
 	}
 
 	@Override
-	public void run(CommandSender sender, String[] args) {
+	public void run(CommandSender sender, LocationInfo location, String[] args) {
 		if(sender.hasPermission(getPermission())) {
 			// TODO: Change messages to language system!
 			if(args.length == 1) {
@@ -52,14 +51,14 @@ public class TpaCommand extends BukkitCommand {
                         }
 
                         if(senderCluster.equals(targetCluster)) {
-                            plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER);
+                            plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER, location);
                         } else {
                             if(sender.hasPermission("serverclusters.command.tpa.intercluster")) {
                                 if(sender.hasPermission("serverclusters.cluster." + targetCluster.getName())) {
                                     if(sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
-                                        plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER);
+                                        plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER, location);
                                     } else {
-                                        plugin.getTeleportManager().cacheRequest(p, target, TeleportTarget.RECEIVER);
+                                        plugin.getTeleportManager().cacheRequest(p, target, TeleportTarget.RECEIVER, location);
                                         p.sendMessage(new ComponentBuilder(target.getName()).color(ChatColor.RED)
                                                         .append("befindet sich auf einem anderen Server als du! (" + targetCluster.getName() + ")").color(ChatColor.YELLOW)
                                                         .create()

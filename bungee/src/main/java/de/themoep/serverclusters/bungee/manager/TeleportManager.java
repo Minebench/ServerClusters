@@ -1,6 +1,7 @@
 package de.themoep.serverclusters.bungee.manager;
 
 import de.themoep.serverclusters.bungee.Cluster;
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.enums.TeleportTarget;
 import net.md_5.bungee.api.ChatColor;
@@ -40,8 +41,20 @@ public class TeleportManager extends Manager {
      * @param receiver The player who the request was sent to
      * @param target Where we should teleport to
      */
-    public void cacheRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
-        cachedRequests.put(sender.getName(), new Request(sender, receiver, target));
+    public void cacheRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target, LocationInfo location) {
+        cacheRequest(new Request(sender, receiver, target, location));
+    }
+
+    /**
+     * Cache a request if the user would get a warning for teleporting across clusters
+     * @param request The Request
+     */
+    public void cacheRequest(Request request) {
+        cachedRequests.put(request.getSender(), request);
+    }
+
+    private boolean isCached(Request request) {
+        return cachedRequests.containsValue(request);
     }
 
     /**
@@ -50,11 +63,23 @@ public class TeleportManager extends Manager {
      * @return <tt>true</tt> if the request was send successfully; <tt>false</tt> if no request was cached or the receiver was already offline
      */
     public boolean applyCachedRequest(ProxiedPlayer sender) {
-        Request r = cachedRequests.get(sender.getName());
-        if(r == null) {
-            return false;
+        boolean r = false;
+        Request request = cachedRequests.get(sender.getName());
+        if (request == null) {
+            return r;
         }
-        return addRequest(r);
+        if (request.getAction() == RequestAction.QUEUE) {
+            r = addRequest(request);
+            if (r) {
+                cachedRequests.remove(sender.getName());
+            }
+        } else if (request.getAction() == RequestAction.TELEPORT) {
+            r = acceptRequest(sender, request);
+            if (r) {
+                cachedRequests.remove(sender.getName());
+            }
+        }
+        return r;
     }
 
     /**
@@ -64,11 +89,16 @@ public class TeleportManager extends Manager {
      * @param target Where we should teleport to
      * @return <tt>true</tt> if the request was successfully added; <tt>false</tt> if the receiver isn't online anymore or an error occurred
      */
-    public boolean addRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
-        return addRequest(new Request(sender, receiver, target));
+    public boolean addRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target, LocationInfo location) {
+        if (location != null) {
+            return addRequest(new Request(sender, receiver, target, location));
+        }
+        sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Your location is unknown? Oo");
+        return false;
     }
 
     private boolean addRequest(Request request) {
+        request.setAction(RequestAction.TELEPORT);
         ProxiedPlayer receiver = plugin.getProxy().getPlayer(request.getReceiver());
         ProxiedPlayer sender = plugin.getProxy().getPlayer(request.getSender());
         if(receiver == null || sender == null) {
@@ -84,30 +114,30 @@ public class TeleportManager extends Manager {
             receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.RED + " fragt, ob er sich zu " + ChatColor.YELLOW + "dir" + ChatColor.GREEN + " teleportieren darf.");
         } else {
             receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.RED + " fragt, ob du dich zu " + ChatColor.YELLOW + "ihm" + ChatColor.GREEN + " teleportieren willst.");
-            Cluster senderCluster = plugin.getClusterManager().getPlayerCluster(sender);
-            Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(receiver);
-            if(senderCluster == null) {
+            Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
+            Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(sender);
+            if(receiverCluster == null) {
                 receiver.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster is " + sender.getName() + " on? Oo");
             }
             if(targetCluster == null) {
                 receiver.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster are you on? Oo");
             }
-            if(senderCluster != null && targetCluster != null && !senderCluster.equals(targetCluster)) {
-                if(sender.hasPermission("serverclusters.command.tpa.intercluster")) {
-                    if(sender.hasPermission("serverclusters.cluster." + targetCluster.getName())) {
-                        if(!sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
-                            receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " befindet sich auf einem anderen Server als du! (" + senderCluster.getName() + ")");
+            if(receiverCluster != null && targetCluster != null && !receiverCluster.equals(targetCluster)) {
+                if(receiver.hasPermission("serverclusters.command.tpahere.intercluster")) {
+                    if(receiver.hasPermission("serverclusters.cluster." + targetCluster.getName())) {
+                        if(!receiver.hasPermission("serverclusters.command.tpahere.intercluster.nowarning")) {
+                            receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " befindet sich auf einem anderen Server als du! (" + receiverCluster.getName() + ")");
                         }
                     } else {
                         receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + sender.getName() + " gerade befindet!");
                     }
                 } else {
                     receiver.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
-                                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + senderCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + receiverCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
                                     .event(
-                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + senderCluster.getName())
+                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + receiverCluster.getName())
                                     ).event(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + senderCluster.getName() + " auszuführen und den Server zu wechseln!"))
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + receiverCluster.getName() + " auszuführen und den Server zu wechseln!"))
                                     ).create()
                     );
                 }
@@ -170,7 +200,7 @@ public class TeleportManager extends Manager {
      * @return <tt>true</tt> if he was teleported, <tt>false</tt> if not
      */
     public boolean acceptLastRequest(ProxiedPlayer player) {
-        return acceptRequest(player, null);
+        return acceptRequest(player, (String) null);
     }
 
     /**
@@ -182,11 +212,21 @@ public class TeleportManager extends Manager {
     public boolean acceptRequest(ProxiedPlayer player, String senderName) {
         // TODO: Change messages to language system!
         Request request = getRequest(player, senderName);
-        if(request == null) {
+        if (request == null) {
             player.sendMessage(ChatColor.RED + "Du hast keine offenen Anfragen" + (senderName == null || senderName.isEmpty() ? "!" : " von " + ChatColor.YELLOW + senderName + ChatColor.RED + "!"));
             return false;
         }
 
+        return acceptRequest(player, request);
+    }
+
+    /**
+     * Accept a teleport request
+     * @param player The player who wants to accept the request
+     * @param request The Request to accept
+     * @return <tt>true</tt> if he was teleported, <tt>false</tt> if not
+     */
+    public boolean acceptRequest(ProxiedPlayer player, Request request) {
         removeRequest(request);
 
         // TODO: Make timeout configurable
@@ -201,6 +241,60 @@ public class TeleportManager extends Manager {
             return false;
         }
 
+        ProxiedPlayer receiver = plugin.getProxy().getPlayer(request.getReceiver());
+        if(receiver == null) {
+            player.sendMessage(ChatColor.YELLOW + request.getReceiver() + ChatColor.RED + " ist nichtmehr online!");
+            return false;
+        }
+
+        if (!isCached(request) && request.getTarget() == TeleportTarget.RECEIVER) {
+            Cluster senderCluster = plugin.getClusterManager().getPlayerCluster(sender);
+            if(senderCluster == null) {
+                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster are you on? Oo");
+                return false;
+            }
+            Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
+            if(receiverCluster == null) {
+                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster is "+ receiver.getName() + " on? Oo");
+                return false;
+            }
+
+            if(!senderCluster.equals(receiverCluster)) {
+                if(sender.hasPermission("serverclusters.command.tpa.intercluster")) {
+                    if(sender.hasPermission("serverclusters.cluster." + receiverCluster.getName())) {
+                        if(!sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
+                            request.setAction(RequestAction.TELEPORT);
+                            cacheRequest(request);
+                            sender.sendMessage(new ComponentBuilder(receiver.getName()).color(ChatColor.RED)
+                                            .append("befindet sich auf einem anderen Server als du! (" + receiverCluster.getName() + ")").color(ChatColor.YELLOW)
+                                            .create()
+                            );
+                            sender.sendMessage(new ComponentBuilder("Nutze ").color(ChatColor.YELLOW)
+                                            .append("/tpaconfirm").color(ChatColor.RED).event(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm")
+                                            ).event(
+                                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuführen!"))
+                                            ).retain(ComponentBuilder.FormatRetention.NONE)
+                                            .append(" um dich trotzdem zu ihm zu teleportieren!").color(ChatColor.YELLOW)
+                                            .create()
+                            );
+                        }
+                    } else {
+                        receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + receiver.getName() + " gerade befindet!");
+                    }
+                } else {
+                    sender.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
+                                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + receiverCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                                    .event(
+                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + receiverCluster.getName())
+                                    ).event(
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + receiverCluster.getName() + " auszuführen und den Server zu wechseln!"))
+                                    ).create()
+                    );
+                }
+            }
+        }
+
         player.sendMessage(ChatColor.GREEN + "Teleportationsanfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.GREEN + " akzeptiert!");
         sender.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.GREEN + " hat deine Teleportationsanfrage angenommen!");
 
@@ -208,7 +302,7 @@ public class TeleportManager extends Manager {
         if(request.getTarget() == TeleportTarget.RECEIVER) {
             r = plugin.getTeleportUtils().teleportToPlayer(sender, player);
         } else if(request.getTarget() == TeleportTarget.SENDER) {
-            r = plugin.getTeleportUtils().teleportToPlayer(player, sender);
+            r = plugin.getTeleportUtils().teleport(player, request.getLocation());
         }
 
         return r;
@@ -258,17 +352,21 @@ public class TeleportManager extends Manager {
         private final String sender;
         private final String receiver;
         private final TeleportTarget target;
+        private final LocationInfo location;
+        private RequestAction action = RequestAction.QUEUE;
 
-        public Request(String sender, String receiver, TeleportTarget target) {
+        public Request(String sender, String receiver, TeleportTarget target, LocationInfo location) {
             this.sender = sender;
             this.receiver = receiver;
             this.target = target;
+            this.location = location;
         }
 
-        public Request(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
+        public Request(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target, LocationInfo location) {
             this.sender = sender.getName();
             this.receiver = receiver.getName();
             this.target = target;
+            this.location = location;
         }
 
         public long getTimestamp() {
@@ -287,5 +385,31 @@ public class TeleportManager extends Manager {
             return target;
         }
 
+        public LocationInfo getLocation() {
+            return location;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "{timestamp=" + timestamp + ",sender=" + sender + ",receiver=" + receiver + ",target=" + target + ",location=" + location + "}";
+        }
+
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public RequestAction getAction() {
+            return action;
+        }
+
+        public void setAction(RequestAction action) {
+            this.action = action;
+        }
+    }
+
+    private enum RequestAction {
+        TELEPORT,
+        QUEUE
     }
 }

@@ -28,7 +28,7 @@ public class BukkitCommandExecutor {
         return true;
     }
 
-    public boolean execute(String commandName, String senderName, String[] args) {
+    public boolean execute(String commandName, String senderName, LocationInfo location, String[] args) {
         BukkitCommand command = commandMap.get(commandName);
 
         if(command == null)
@@ -44,7 +44,7 @@ public class BukkitCommandExecutor {
         if(sender == null)
             return false;
 
-        command.run(sender, args);
+        command.run(sender, location, args);
         return true;
     }
 }

@@ -1,5 +1,6 @@
 package de.themoep.serverclusters.bungee.bukkitcommands;
 
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.utils.StringUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -30,5 +31,5 @@ public abstract class BukkitCommand extends Command implements TabExecutor {
         }
     }
 
-    public abstract void run(CommandSender sender, String[] args);
+    public abstract void run(CommandSender sender, LocationInfo location, String[] args);
 }
