@@ -48,6 +48,10 @@ public class BukkitCommandExecutor {
             return false;
         }
 
+        if (sender instanceof ProxiedPlayer && location == null) {
+            return false;
+        }
+
         command.run(sender, location, args);
         return true;
     }

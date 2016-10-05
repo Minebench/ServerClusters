@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 
 import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -55,32 +56,35 @@ public class PluginMessageListener implements Listener {
                 } else if (subchannel.equals("RunCommand")) {
                     String sender = in.readUTF();
                     String command = in.readUTF();
-                    String locStr = in.readUTF();
-                    String[] locParts = locStr.split(" ");
                     LocationInfo loc = null;
-                    if (locParts.length == 6) {
+
+                    // Sender is player
+                    if (in.readBoolean()) {
                         ProxiedPlayer player = plugin.getProxy().getPlayer(sender);
-                        if (player != null) {
-                            try {
-                                loc = new LocationInfo(
-                                        player.getServer().getInfo().getName(),
-                                        locParts[0],
-                                        Double.parseDouble(locParts[1]),
-                                        Double.parseDouble(locParts[2]),
-                                        Double.parseDouble(locParts[3]),
-                                        Float.parseFloat(locParts[4]),
-                                        Float.parseFloat(locParts[5])
-                                );
-                            } catch (NumberFormatException e) {
-                                plugin.getLogger().log(Level.WARNING, receiver.getName() + " received an invalid plugin message on channel ServerClusters/RunCommand/" + command + " from " + sender + "! Invalid location string: " + locStr);
-                            }
+                        if (player == null) {
+                            plugin.getLogger().log(Level.WARNING, receiver.getName() + " received an invalid plugin message on channel ServerClusters/RunCommand/" + command + " from " + sender + "! Could not find player for that sender?");
+                            ((ProxiedPlayer) event.getReceiver()).sendMessage(ChatColor.RED + "Something went wrong while processing this command! Please contact an admin!");
+                            return;
                         }
+
+                        loc = new LocationInfo(
+                                player.getServer().getInfo().getName(),
+                                in.readUTF(),
+                                in.readDouble(),
+                                in.readDouble(),
+                                in.readDouble(),
+                                in.readFloat(),
+                                in.readFloat()
+                        );
                     }
+
                     String argsStr = in.readUTF();
                     String[] args = argsStr.split(" ");
                     plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/RunCommand/" + command + " '" + argsStr + "' from " + sender + (loc != null ? " at " + loc : ""));
 
-                    plugin.getBukkitCommandExecutor().execute(command, sender, loc, args);
+                    if (!plugin.getBukkitCommandExecutor().execute(command, sender, loc, args)) {
+                        plugin.getLogger().log(Level.WARNING, "Error while running ServerClusters/RunCommand/" + command + " from " + sender + "! Command failed to execute?");
+                    }
                 }
             } else {
                 // plugin message from the client

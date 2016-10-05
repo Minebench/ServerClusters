@@ -39,17 +39,10 @@ public class ServerClustersBukkit extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player player = null;
+        Player player;
         String senderName = sender.getName();
-        String location = "";
         if (sender instanceof Player) {
             player = (Player) sender;
-            location = player.getLocation().getWorld().getName() + " "
-                    + player.getLocation().getX() + " "
-                    + player.getLocation().getY() + " "
-                    + player.getLocation().getZ() + " "
-                    + player.getLocation().getYaw() + " "
-                    + player.getLocation().getPitch();
         } else if (getServer().getOnlinePlayers().size() > 0) {
             senderName = "[@]";
             player = getServer().getOnlinePlayers().iterator().next();
@@ -61,7 +54,15 @@ public class ServerClustersBukkit extends JavaPlugin {
         out.writeUTF("RunCommand");
         out.writeUTF(senderName);
         out.writeUTF(cmd.getName());
-        out.writeUTF(location);
+        out.writeBoolean(sender instanceof Player);
+        if (sender instanceof Player) {
+            out.writeUTF(player.getLocation().getWorld().getName());
+            out.writeDouble(player.getLocation().getX());
+            out.writeDouble(player.getLocation().getY());
+            out.writeDouble(player.getLocation().getZ());
+            out.writeFloat(player.getLocation().getYaw());
+            out.writeFloat(player.getLocation().getPitch());
+        }
         out.writeUTF(StringUtils.join(args, " "));
         player.sendPluginMessage(this, "ServerClusters", out.toByteArray());
         return true;
