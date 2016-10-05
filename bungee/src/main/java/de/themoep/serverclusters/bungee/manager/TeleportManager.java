@@ -185,7 +185,7 @@ public class TeleportManager extends Manager {
         if (sender == null || sender.isEmpty()) {
             return requestList.get(requestList.size() - 1);
         } else {
-            for (int i = requestList.size(); i > 0; i--) {
+            for (int i = requestList.size() - 1; i >= 0; i--) {
                 if (requestList.get(i).getSender().equalsIgnoreCase(sender)) {
                     return requestList.get(i);
                 }
