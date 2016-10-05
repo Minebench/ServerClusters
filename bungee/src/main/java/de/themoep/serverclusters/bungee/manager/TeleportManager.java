@@ -266,7 +266,7 @@ public class TeleportManager extends Manager {
                             request.setAction(RequestAction.TELEPORT);
                             cacheRequest(request);
                             sender.sendMessage(new ComponentBuilder(receiver.getName()).color(ChatColor.RED)
-                                            .append("befindet sich auf einem anderen Server als du! (" + receiverCluster.getName() + ")").color(ChatColor.YELLOW)
+                                            .append(" befindet sich auf dem Server " + receiverCluster.getName() + "!").color(ChatColor.YELLOW)
                                             .create()
                             );
                             sender.sendMessage(new ComponentBuilder("Nutze ").color(ChatColor.YELLOW)
