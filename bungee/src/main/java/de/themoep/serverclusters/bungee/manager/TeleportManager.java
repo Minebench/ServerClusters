@@ -298,14 +298,12 @@ public class TeleportManager extends Manager {
         player.sendMessage(ChatColor.GREEN + "Teleportationsanfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.GREEN + " akzeptiert!");
         sender.sendMessage(ChatColor.YELLOW + player.getName() + ChatColor.GREEN + " hat deine Teleportationsanfrage angenommen!");
 
-        boolean r = false;
         if (request.getTarget() == TeleportTarget.RECEIVER) {
-            r = plugin.getTeleportUtils().teleportToPlayer(sender, player);
+            plugin.getTeleportUtils().teleportToPlayer(sender, player);
         } else if (request.getTarget() == TeleportTarget.SENDER) {
-            r = plugin.getTeleportUtils().teleport(player, request.getLocation());
+            return plugin.getTeleportUtils().teleport(player, request.getLocation());
         }
-
-        return r;
+        return true;
     }
 
     /**

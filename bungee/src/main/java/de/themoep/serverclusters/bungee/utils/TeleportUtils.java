@@ -28,25 +28,20 @@ public class TeleportUtils {
      * Teleports a player to a targeted player, checks if the player is allowed to teleport between clusters! (serverclusters.teleport.intercluster)
      * @param player The player to teleport
      * @param target The player to teleport to
-     * @return True if player got teleported, false if not
      */
-    public boolean teleportToPlayer(ProxiedPlayer player, ProxiedPlayer target) {
+    public void teleportToPlayer(ProxiedPlayer player, ProxiedPlayer target) {
         Cluster playerCluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
         Cluster targetCluster = plugin.getClusterManager().getClusterByServer(target.getServer().getInfo().getName());
         if (player.getServer().getInfo().getName().equals(target.getServer().getInfo().getName())) {
             teleportToPlayerPM(player, target);
             player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " teleportiert");
-            return true;
-        } else if (playerCluster == targetCluster || player.hasPermission("serverclusters.teleport.intercluster")) {
+        } else {
             if (playerCluster != targetCluster)
                 player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
             player.connect(target.getServer().getInfo());
             teleportToPlayerPM(player, target);
             player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " teleportiert");
-            return true;
-        } else
-            player.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You are not allowed to teleport between clusters!");
-        return false;
+        }
     }
 
     /**

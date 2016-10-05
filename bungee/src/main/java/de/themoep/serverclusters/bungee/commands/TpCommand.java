@@ -32,16 +32,11 @@ public class TpCommand extends Command implements TabExecutor {
 
         // TODO: Change messages to language system!
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " <playername> [<targetplayer>]");
+            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + getName() + " <playername> [<targetplayer>]");
             return;
         }
 
-        if (!(sender instanceof ProxiedPlayer)) {
-            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
-            return;
-        }
-
-        ProxiedPlayer player = (ProxiedPlayer) sender;
+        ProxiedPlayer player;
         if (args.length > 1) {
             player = plugin.getProxy().getPlayer(args[1]);
             if (player == null) {
@@ -51,11 +46,18 @@ public class TpCommand extends Command implements TabExecutor {
                     }
                 }
             }
+        } else if (sender instanceof ProxiedPlayer) {
+            player = (ProxiedPlayer) sender;
+        } else {
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "To run this command from the console use /" + getName() + " <playername> <targetplayer>");
+            return;
         }
+
         if (player == null) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[1] + " was not found online!");
             return;
         }
+
         ProxiedPlayer target = plugin.getProxy().getPlayer(args[0]);
         if (target == null) {
             for (ProxiedPlayer t : plugin.getProxy().getPlayers()) {
@@ -64,16 +66,18 @@ public class TpCommand extends Command implements TabExecutor {
                 }
             }
         }
-        if (target != null) {
-            Cluster playerCluster = plugin.getClusterManager().getPlayerCluster(player);
-            Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(target);
-            if (playerCluster == targetCluster || player.hasPermission("serverclusters.command.tp.intercluster")) {
-                plugin.getTeleportUtils().teleportToPlayer(player, target);
-            } else {
-                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You are not allowed to teleport between clusters!");
-            }
-        } else {
+
+        if (target == null) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
+            return;
+        }
+
+        Cluster playerCluster = plugin.getClusterManager().getPlayerCluster(player);
+        Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(target);
+        if (playerCluster == targetCluster || !(sender instanceof ProxiedPlayer) || player.hasPermission("serverclusters.command.tp.intercluster")) {
+            plugin.getTeleportUtils().teleportToPlayer(player, target);
+        } else {
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You are not allowed to teleport between clusters!");
         }
     }
 
