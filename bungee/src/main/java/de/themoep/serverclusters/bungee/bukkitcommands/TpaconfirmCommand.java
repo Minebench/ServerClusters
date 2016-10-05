@@ -1,22 +1,19 @@
-package de.themoep.serverclusters.bungee.commands;
+package de.themoep.serverclusters.bungee.bukkitcommands;
 
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
-public class TpaconfirmCommand extends Command {
+public class TpaconfirmCommand extends BukkitCommand {
 
-    private ServerClusters plugin;
-
-    public TpaconfirmCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public TpaconfirmCommand(ServerClusters plugin, String name, String permission) {
+        super(plugin, name, permission);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void run(CommandSender sender, LocationInfo location, String[] args) {
         if (!sender.hasPermission(getPermission())) {
             return;
         }
@@ -29,5 +26,9 @@ public class TpaconfirmCommand extends Command {
         if (!plugin.getTeleportManager().applyCachedRequest(player)) {
             sender.sendMessage(ChatColor.RED + "Du hast keine Anfrage die du bestätigen müsstest!");
         }
+    }
+
+    public Iterable<String> onTabComplete(CommandSender commandSender, String[] strings) {
+        return null;
     }
 }

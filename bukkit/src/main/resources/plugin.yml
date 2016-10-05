@@ -28,6 +28,12 @@ commands:
       usage: /<command> [<playername>]
       permission: serverclusters.command.ctpdeny
       permission-message: You don't have the permission <permission>
+   tpaconfirm:
+      aliases: [ctpaconfirm]
+      description: Confirms a previous teleport action
+      usage: /<command>
+      permission: serverclusters.command.tpaconfirm
+      permission-message: You don't have the permission <permission>
    warp:
       aliases: [cwarp,warps]
       description: Teleports to and displays warps
@@ -42,6 +48,8 @@ permissions:
    serverclusters.command.tpaccept:
       default: op
    serverclusters.command.tpdeny:
+      default: op
+   serverclusters.command.tpaconfirm:
       default: op
    serverclusters.command.warp:
       default: op

@@ -15,7 +15,6 @@ commandaliases:
   find: [cfind]
   tp: [ctp, tpc]
   tphere: [ctphere, s]
-  tpaconfirm: [ctpaconfirm]
 cluster:
   Freebuild:
     server:
