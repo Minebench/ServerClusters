@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class ListCommand extends Command implements TabExecutor {
+public class ListCommand extends Command {
 
     private ServerClusters plugin;
 
@@ -30,96 +30,85 @@ public class ListCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (sender.hasPermission(getPermission())) {
-            if (args.length == 0) {
-                //send cluster list
-                // TODO: Change messages to language system!
+        if (!sender.hasPermission(getPermission())) {
+            return;
+        }
+        //send cluster list
+        // TODO: Change messages to language system!
 
-                List<Cluster> cl = plugin.getClusterManager().getClusterlist();
-                Collections.sort(cl);
+        List<Cluster> cl = plugin.getClusterManager().getClusterlist();
+        Collections.sort(cl);
 
-                int totalPlayers = 0;
+        int totalPlayers = 0;
 
-                sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
-                boolean checkVanished = plugin.getVnpbungee() != null;
+        sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
+        boolean checkVanished = plugin.getVnpbungee() != null;
 
-                for (Cluster c : cl) {
-                    if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
-                        boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
+        for (Cluster c : cl) {
+            if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
+                boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
 
-                        if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
-                            continue;
-                        }
-
-                        List<String> clusterPlayers = new ArrayList<String>();
-                        for (ProxiedPlayer p : c.getPlayerlist()) {
-                            String name = "";
-                            if (checkVanished) {
-                                if (plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
-                                    if (!sender.hasPermission("vanish.see"))
-                                        continue;
-                                    name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
-                                }
-                            }
-                            if (p == sender) {
-                                name += ChatColor.ITALIC;
-                            }
-                            name += p.getDisplayName() + ChatColor.RESET;
-                            clusterPlayers.add(name);
-                        }
-                        ;
-
-                        totalPlayers += clusterPlayers.size();
-
-                        String playerList = clusterPlayers.toString().substring(1, clusterPlayers.toString().length() - 1);
-
-                        ComponentBuilder msg = new ComponentBuilder(" ");
-
-                        HoverEvent he;
-
-                        if (current) {
-                            msg.append(ChatColor.RED + ">").bold(true).color(ChatColor.RED);
-                            he = new HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
-                                    new ComponentBuilder("Hier befindest du dich!")
-                                            .create()
-                            );
-                            msg.event(he);
-                        } else {
-                            he = new HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
-                                    new ComponentBuilder("Klicke zum Beitreten von ").italic(true)
-                                            .append(c.getName()).color(ChatColor.GREEN)
-                                            .append("!").color(ChatColor.RESET).italic(true)
-                                            .create()
-                            );
-                        }
-                        msg.append(c.getName()).bold(false);
-
-                        if (current) {
-                            msg.color(ChatColor.YELLOW);
-                        } else {
-                            msg.color(ChatColor.GREEN);
-                            msg.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + c.getName()));
-                        }
-                        msg.event(he);
-                        msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
-                        msg.append(playerList).color(ChatColor.WHITE);
-                        sender.sendMessage(msg.create());
-                    }
+                if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
+                    continue;
                 }
-                sender.sendMessage(new ComponentBuilder("Gesamt: " + totalPlayers).create());
+
+                List<String> clusterPlayers = new ArrayList<String>();
+                for (ProxiedPlayer p : c.getPlayerlist()) {
+                    String name = "";
+                    if (checkVanished) {
+                        if (plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
+                            if (!sender.hasPermission("vanish.see"))
+                                continue;
+                            name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
+                        }
+                    }
+                    if (p == sender) {
+                        name += ChatColor.ITALIC;
+                    }
+                    name += p.getDisplayName() + ChatColor.RESET;
+                    clusterPlayers.add(name);
+                }
+                ;
+
+                totalPlayers += clusterPlayers.size();
+
+                String playerList = clusterPlayers.toString().substring(1, clusterPlayers.toString().length() - 1);
+
+                ComponentBuilder msg = new ComponentBuilder(" ");
+
+                HoverEvent he;
+
+                if (current) {
+                    msg.append(ChatColor.RED + ">").bold(true).color(ChatColor.RED);
+                    he = new HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            new ComponentBuilder("Hier befindest du dich!")
+                                    .create()
+                    );
+                    msg.event(he);
+                } else {
+                    he = new HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            new ComponentBuilder("Klicke zum Beitreten von ").italic(true)
+                                    .append(c.getName()).color(ChatColor.GREEN)
+                                    .append("!").color(ChatColor.RESET).italic(true)
+                                    .create()
+                    );
+                }
+                msg.append(c.getName()).bold(false);
+
+                if (current) {
+                    msg.color(ChatColor.YELLOW);
+                } else {
+                    msg.color(ChatColor.GREEN);
+                    msg.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + c.getName()));
+                }
+                msg.event(he);
+                msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
+                msg.append(playerList).color(ChatColor.WHITE);
+                sender.sendMessage(msg.create());
             }
         }
+        sender.sendMessage(new ComponentBuilder("Gesamt: " + totalPlayers).create());
     }
-
-    public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
-        List<String> cl = new ArrayList<String>();
-        for (Cluster c : plugin.getClusterManager().getClusterlist())
-            if (args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
-                cl.add(c.getName());
-        return cl;
-    }
-
-
 }

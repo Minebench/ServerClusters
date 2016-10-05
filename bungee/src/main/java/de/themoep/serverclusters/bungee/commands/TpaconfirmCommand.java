@@ -20,13 +20,14 @@ public class TpaconfirmCommand extends Command {
         if (!sender.hasPermission(getPermission())) {
             return;
         }
-        if (sender instanceof ProxiedPlayer) {
-            ProxiedPlayer player = (ProxiedPlayer) sender;
-            if (!plugin.getTeleportManager().applyCachedRequest(player)) {
-                sender.sendMessage(ChatColor.RED + "Du hast keine Anfrage die du bestätigen müsstest!");
-            }
-        } else {
+        if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(ChatColor.RED + "This command can only be run by a player!");
+            return;
+        }
+
+        ProxiedPlayer player = (ProxiedPlayer) sender;
+        if (!plugin.getTeleportManager().applyCachedRequest(player)) {
+            sender.sendMessage(ChatColor.RED + "Du hast keine Anfrage die du bestätigen müsstest!");
         }
     }
 }
