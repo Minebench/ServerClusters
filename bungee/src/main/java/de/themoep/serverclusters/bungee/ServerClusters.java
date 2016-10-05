@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -102,11 +103,7 @@ public class ServerClusters extends Plugin {
         cm = new ClusterManager(this);
         Configuration section = getConfig().getSection("cluster");
         for (String clustername : section.getKeys()) {
-            Cluster cluster = new Cluster(this, clustername, getConfig().getStringList("cluster." + clustername + ".server"));
-            cluster.setAliaslist(getConfig().getStringList("cluster." + clustername + ".alias"));
-            cluster.setHidden(getConfig().getBoolean("cluster." + clustername + ".hidden", false));
-            cluster.setDefaultServer(getConfig().getString("cluster." + clustername + ".default", null));
-            getClusterManager().addCluster(cluster);
+            getClusterManager().addCluster(new Cluster(this, clustername, section.getSection(clustername)));
         }
 
         for (String servername : getProxy().getServers().keySet()) {
@@ -119,7 +116,7 @@ public class ServerClusters extends Plugin {
                     }
                 }
                 if (addserver) {
-                    Cluster cluster = new Cluster(this, servername, Arrays.asList(servername));
+                    Cluster cluster = new Cluster(this, servername, Collections.singletonList(servername));
                     getClusterManager().addCluster(cluster);
                 }
             }

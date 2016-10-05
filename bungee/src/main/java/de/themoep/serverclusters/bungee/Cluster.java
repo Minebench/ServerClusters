@@ -23,6 +23,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.config.Configuration;
 
 public class Cluster implements Comparable<Cluster> {
 
@@ -48,6 +49,11 @@ public class Cluster implements Comparable<Cluster> {
      */
 
     private Map<String, WarpInfo> warps = new HashMap<String, WarpInfo>();
+
+    /**
+     * Allow ignoring the last logout server. This also stops storing of that value!
+     */
+    private boolean ignoreLogoutServer = true;
 
     /**
      * Map of players UUID's to the servername they logged out of
@@ -89,9 +95,18 @@ public class Cluster implements Comparable<Cluster> {
         this.serverlist = serverlist;
         this.defaultServer = defaultServer;
 
-        if (serverlist.size() > 1) {
+        if (serverlist.size() > 1 && !shouldIgnoreLogoutServer()) {
             initLogoutStorage();
         }
+    }
+
+    public Cluster(ServerClusters plugin, String name, Configuration config) {
+        this(plugin, name, config.getStringList("server"),config.getString("default", null));
+
+        setAliaslist(config.getStringList("alias"));
+        setHidden(config.getBoolean("hidden", false));
+        setDefaultServer(config.getString("cluster", null));
+        setIgnoreLogoutServer(config.getBoolean("ignoreLogoutServer", false));
     }
 
     private void initLogoutStorage() {
@@ -163,7 +178,7 @@ public class Cluster implements Comparable<Cluster> {
      * @return The name of the default server
      */
     public String getDefaultServer() {
-        return defaultServer;
+        return defaultServer != null ? defaultServer : getServerlist().get(0);
     }
 
     /**
@@ -171,10 +186,8 @@ public class Cluster implements Comparable<Cluster> {
      * @param defaultServer The name of the default server
      */
     public void setDefaultServer(String defaultServer) {
-        if (defaultServer != null) {
-            if (getServerlist().contains(defaultServer)) {
-                this.defaultServer = defaultServer;
-            }
+        if (defaultServer == null || getServerlist().contains(defaultServer)) {
+            this.defaultServer = defaultServer;
         }
     }
 
@@ -184,7 +197,7 @@ public class Cluster implements Comparable<Cluster> {
      * @param servername The name of the server the player logged out from as a string
      */
     public void setLogoutServer(ProxiedPlayer player, String servername) {
-        if (getServerlist().contains(servername)) {
+        if (!shouldIgnoreLogoutServer() && getServerlist().contains(servername)) {
             logoutStorage.putValue(player.getUniqueId(), servername);
             logoutCache.put(player.getUniqueId(), servername);
         }
@@ -196,7 +209,7 @@ public class Cluster implements Comparable<Cluster> {
      * @return The servername as a string, null if not found
      */
     public String getLogoutServer(UUID playerid) {
-        if (logoutCache != null) {
+        if (!shouldIgnoreLogoutServer() && logoutCache != null) {
             try {
                 return logoutCache.get(playerid);
             } catch (ExecutionException e) {
@@ -364,5 +377,13 @@ public class Cluster implements Comparable<Cluster> {
 
     public boolean hasAccess(CommandSender sender) {
         return sender.hasPermission("serverclusters.cluster." + getName());
+    }
+
+    public boolean shouldIgnoreLogoutServer() {
+        return ignoreLogoutServer;
+    }
+
+    public void setIgnoreLogoutServer(boolean ignoreLogoutServer) {
+        this.ignoreLogoutServer = ignoreLogoutServer;
     }
 }
