@@ -313,7 +313,7 @@ public class TeleportManager extends Manager {
      * @param player The player who wants to deny the request
      * @return <tt>true</tt> if a request by that player was found, <tt>false</tt> if not
      */
-    private boolean denyLastRequest(ProxiedPlayer player) {
+    public boolean denyLastRequest(ProxiedPlayer player) {
         return denyRequest(player, null);
     }
 
@@ -323,7 +323,7 @@ public class TeleportManager extends Manager {
      * @param senderName The name of the player who sent the request
      * @return <tt>true</tt> if a request by that player was found, <tt>false</tt> if not
      */
-    private boolean denyRequest(ProxiedPlayer player, String senderName) {
+    public boolean denyRequest(ProxiedPlayer player, String senderName) {
         // TODO: Change messages to language system!
         Request request = getRequest(player, senderName);
         if (request == null) {

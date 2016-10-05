@@ -26,9 +26,9 @@ public class TpdenyCommand extends BukkitCommand {
             }
             ProxiedPlayer p = (ProxiedPlayer) sender;
             if (args.length == 0) {
-                plugin.getTeleportManager().acceptLastRequest(p);
+                plugin.getTeleportManager().denyLastRequest(p);
             } else if (args.length == 1) {
-                plugin.getTeleportManager().acceptRequest(p, args[0]);
+                plugin.getTeleportManager().denyRequest(p, args[0]);
             } else {
                 sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " [<playername>]");
             }
