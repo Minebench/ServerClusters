@@ -111,9 +111,9 @@ public class TeleportManager extends Manager {
 
         sender.sendMessage(ChatColor.GREEN + "Teleportationsanfrage an " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + " gesendet!");
         if (request.getTarget() == TeleportTarget.RECEIVER) {
-            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.RED + " fragt, ob er sich zu " + ChatColor.YELLOW + "dir" + ChatColor.GREEN + " teleportieren darf.");
+            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + " fragt, ob er sich zu " + ChatColor.YELLOW + "dir" + ChatColor.GREEN + " teleportieren darf.");
         } else {
-            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.RED + " fragt, ob du dich zu " + ChatColor.YELLOW + "ihm" + ChatColor.GREEN + " teleportieren willst.");
+            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + " fragt, ob du dich zu " + ChatColor.YELLOW + "ihm" + ChatColor.GREEN + " teleportieren willst.");
             Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
             Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(sender);
             if (receiverCluster == null) {
