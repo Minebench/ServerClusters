@@ -39,10 +39,10 @@ public class WarpCommand extends BukkitCommand {
                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + globalWarp)
                     ).event(
                             new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + globalWarp + " zu warpen!"))
-                    ).retain(ComponentBuilder.FormatRetention.NONE);
+                    );
 
                     if (globalWarps.hasNext()) {
-                        builder.append(", ").color(ChatColor.YELLOW);
+                        builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
                     }
                 }
                 sender.sendMessage(builder.create());
@@ -66,10 +66,10 @@ public class WarpCommand extends BukkitCommand {
                                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterStr + clusterWarp)
                         ).event(
                                 new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + clusterWarp + " zu warpen!"))
-                        ).retain(ComponentBuilder.FormatRetention.NONE);
+                        );
 
                         if (clusterWarps.hasNext()) {
-                            builder.append(", ").color(ChatColor.YELLOW);
+                            builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
                         }
                     }
                     sender.sendMessage(builder.create());
@@ -88,10 +88,10 @@ public class WarpCommand extends BukkitCommand {
                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + cluster.getName() + ":" + clusterWarp)
                             ).event(
                                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + cluster.getName() + ":" + clusterWarp + " zu warpen!"))
-                            ).retain(ComponentBuilder.FormatRetention.NONE);
+                            );
 
                             if (clusterWarps.hasNext()) {
-                                builder.append(", ").color(ChatColor.YELLOW);
+                                builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
                             }
                         }
                         sender.sendMessage(builder.create());

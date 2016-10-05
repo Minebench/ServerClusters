@@ -274,8 +274,10 @@ public class TeleportManager extends Manager {
                                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm")
                                             ).event(
                                                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuführen!"))
-                                            ).retain(ComponentBuilder.FormatRetention.NONE)
-                                            .append(" um dich trotzdem zu ihm zu teleportieren!").color(ChatColor.YELLOW)
+                                            )
+                                            .append(" um dich trotzdem zu ihm zu teleportieren!")
+                                            .retain(ComponentBuilder.FormatRetention.NONE)
+                                            .color(ChatColor.YELLOW)
                                             .create()
                             );
                         }

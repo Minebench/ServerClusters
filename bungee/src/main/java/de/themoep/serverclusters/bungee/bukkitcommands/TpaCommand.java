@@ -94,8 +94,10 @@ public class TpaCommand extends BukkitCommand {
                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm")
                             ).event(
                                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuführen!"))
-                            ).retain(ComponentBuilder.FormatRetention.NONE)
-                            .append(" um trotzdem eine Anfrage zu senden und den Server automatisch zu wechseln sobald deine Anfragen angenommen wird!").color(ChatColor.YELLOW)
+                            )
+                            .append(" um trotzdem eine Anfrage zu senden und den Server automatisch zu wechseln sobald deine Anfragen angenommen wird!")
+                            .retain(ComponentBuilder.FormatRetention.NONE)
+                            .color(ChatColor.YELLOW)
                             .create()
             );
         }
