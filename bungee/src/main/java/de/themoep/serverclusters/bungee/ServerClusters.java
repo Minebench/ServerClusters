@@ -18,6 +18,7 @@ import de.themoep.serverclusters.bungee.commands.ClusterCommand;
 import de.themoep.serverclusters.bungee.commands.FindCommand;
 import de.themoep.serverclusters.bungee.commands.ListCommand;
 import de.themoep.serverclusters.bungee.commands.TpCommand;
+import de.themoep.serverclusters.bungee.commands.TpaconfirmCommand;
 import de.themoep.serverclusters.bungee.commands.TphereCommand;
 import de.themoep.serverclusters.bungee.enums.Backend;
 import de.themoep.serverclusters.bungee.listeners.PluginMessageListener;
@@ -150,7 +151,7 @@ public class ServerClusters extends Plugin {
         commandList.add(new TphereCommand(this, "tphere", "serverclusters.command.tphere", tphal.toArray(new String[tphal.size()])));
 
         List<String> tpac = getConfig().getStringList("commandaliases.tpaconfirm");
-        commandList.add(new TphereCommand(this, "tpaconfirm", "serverclusters.command.tpaconfirm", tpac.toArray(new String[tpac.size()])));
+        commandList.add(new TpaconfirmCommand(this, "tpaconfirm", "serverclusters.command.tpaconfirm", tpac.toArray(new String[tpac.size()])));
 
         List<String> fal = getConfig().getStringList("commandaliases.find");
         commandList.add(new FindCommand(this, "find", "serverclusters.command.find", fal.toArray(new String[fal.size()])));

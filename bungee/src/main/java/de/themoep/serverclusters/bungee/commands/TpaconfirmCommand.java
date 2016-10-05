@@ -10,8 +10,8 @@ public class TpaconfirmCommand extends Command {
 
     private ServerClusters plugin;
 
-    public TpaconfirmCommand(ServerClusters plugin, String name, String permission) {
-        super(name, permission);
+    public TpaconfirmCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
+        super(name, permission, aliases);
         this.plugin = plugin;
     }
 
