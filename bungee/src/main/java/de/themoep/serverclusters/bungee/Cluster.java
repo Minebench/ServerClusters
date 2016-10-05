@@ -9,7 +9,11 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import de.themoep.serverclusters.bungee.enums.Backend;
 import de.themoep.serverclusters.bungee.storage.MysqlStorage;
 import de.themoep.serverclusters.bungee.storage.ValueStorage;
@@ -48,9 +52,9 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * Map of players UUID's to the servername they logged out of
      */
-    private HashMap<UUID, String> logoutmap = new HashMap<UUID, String>();
+    private LoadingCache<UUID, String> logoutCache = null;
 
-    private ValueStorage logoutStorage;
+    private ValueStorage logoutStorage = null;
 
     /**
      * The default server of this cluster one connects to the first time
@@ -103,6 +107,18 @@ public class Cluster implements Comparable<Cluster> {
         if (logoutStorage == null) {
             logoutStorage = new YamlStorage(plugin, "logoutserver_" + getName());
         }
+        logoutCache = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .build(new CacheLoader<UUID, String>() {
+                    @Override
+                    public String load(UUID uuid) throws Exception {
+                        //make the expensive call
+                        if(logoutStorage != null) {
+                            return logoutStorage.getValue(uuid);
+                        }
+                        return null;
+                    }
+                });
     }
 
     /**
@@ -169,7 +185,8 @@ public class Cluster implements Comparable<Cluster> {
      */
     public void setLogoutServer(ProxiedPlayer player, String servername) {
         if (getServerlist().contains(servername)) {
-            logoutmap.put(player.getUniqueId(), servername);
+            logoutStorage.putValue(player.getUniqueId(), servername);
+            logoutCache.put(player.getUniqueId(), servername);
         }
     }
 
@@ -179,15 +196,14 @@ public class Cluster implements Comparable<Cluster> {
      * @return The servername as a string, null if not found
      */
     public String getLogoutServer(UUID playerid) {
-        if (logoutmap.containsKey(playerid))
-            return logoutmap.get(playerid);
-        if (logoutStorage == null)
-            return null;
-        String logoutServer = logoutStorage.getValue(playerid);
-        if (logoutServer == null)
-            return null;
-        logoutmap.put(playerid, logoutServer);
-        return logoutServer;
+        if (logoutCache != null) {
+            try {
+                return logoutCache.get(playerid);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     public String getLogoutServer(String playername) {

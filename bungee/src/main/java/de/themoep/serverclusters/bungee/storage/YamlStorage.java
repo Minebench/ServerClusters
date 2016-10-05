@@ -40,6 +40,11 @@ public class YamlStorage extends ValueStorage {
         return config.getString(playerId.toString());
     }
 
+    @Override
+    public void putValue(UUID playerId, String value) {
+        config.set(playerId.toString(), value);
+    }
+
     public Configuration getConfig() {
         return config;
     }

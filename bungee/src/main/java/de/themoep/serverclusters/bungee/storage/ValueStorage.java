@@ -25,5 +25,7 @@ public abstract class ValueStorage {
 
     public abstract String getValue(UUID playerId);
 
+    public abstract void putValue(UUID playerId, String value);
+
     public abstract void close();
 }

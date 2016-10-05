@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.InvalidPropertiesFormatException;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class MysqlStorage extends ValueStorage {
 
@@ -91,10 +92,29 @@ public class MysqlStorage extends ValueStorage {
             }
             return null;
         } catch (SQLException e) {
-            plugin.getLogger().severe("MySQL-Error! Something went wrong while fetching data for player with the id " + playerId + "! Does the table \"" + dbtableprefix + "_" + name + "\" exist?");
+            plugin.getLogger().log(Level.SEVERE, "MySQL-Error! Something went wrong while fetching data for player with the id " + playerId + "! Does the table \"" + dbtableprefix + "_" + name + "\" exist?", e);
             //e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public void putValue(final UUID playerId, final String value) {
+        plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
+            public void run() {
+                try {
+                    PreparedStatement sta;
+                    sta = conn.prepareStatement("INSERT INTO " + dbtableprefix + "_" + name + " (`playerid`,`value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE value=VALUES(`value`)");
+                    sta.setString(1, playerId.toString());
+                    sta.setString(2, value);
+                    sta.executeQuery();
+                    sta.close();
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.SEVERE, "MySQL-Error! Something went wrong while inserting data for player with the id " + playerId + "!", e);
+                    //e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
