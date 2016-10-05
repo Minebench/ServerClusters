@@ -73,6 +73,9 @@ public class PluginMessageListener implements Listener {
 
             String argsStr = in.readUTF();
             String[] args = argsStr.split(" ");
+            if (args.length == 1 && args[0].isEmpty()) {
+                args = new String[]{};
+            }
             plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/RunCommand/" + command + " '" + argsStr + "' from " + sender + (loc != null ? " at " + loc : ""));
 
             if (!plugin.getBukkitCommandExecutor().execute(command, sender, loc, args)) {
