@@ -60,7 +60,7 @@ public class TpaCommand extends BukkitCommand {
                                     } else {
                                         plugin.getTeleportManager().cacheRequest(p, target, TeleportTarget.RECEIVER, location);
                                         p.sendMessage(new ComponentBuilder(target.getName()).color(ChatColor.RED)
-                                                        .append("befindet sich auf einem anderen Server als du! (" + targetCluster.getName() + ")").color(ChatColor.YELLOW)
+                                                        .append(" befindet sich auf dem Server " + targetCluster.getName() + "!").color(ChatColor.YELLOW)
                                                         .create()
                                         );
                                         p.sendMessage(new ComponentBuilder("Nutze ").color(ChatColor.YELLOW)
