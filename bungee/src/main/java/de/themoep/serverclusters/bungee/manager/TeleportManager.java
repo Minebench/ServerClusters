@@ -126,7 +126,7 @@ public class TeleportManager extends Manager {
                 if (receiver.hasPermission("serverclusters.command.tpahere.intercluster")) {
                     if (receiver.hasPermission("serverclusters.cluster." + targetCluster.getName())) {
                         if (!receiver.hasPermission("serverclusters.command.tpahere.intercluster.nowarning")) {
-                            receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " befindet sich auf einem anderen Server als du! (" + receiverCluster.getName() + ")");
+                            receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " befindet sich auf dem Server " + targetCluster.getName() + "!");
                         }
                     } else {
                         receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + sender.getName() + " gerade befindet!");
