@@ -10,22 +10,30 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 
+import javax.script.Bindings;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class WarpManager extends Manager {
 
     private final YamlStorage warpStorage;
 
-    private final Map<String, WarpInfo> globalWarps = new HashMap<String, WarpInfo>();
+    private final Map<String, WarpInfo> globalWarps = new HashMap<>();
+    private int teleportDelay;
+    private Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
 
     public WarpManager(ServerClusters plugin) {
         super(plugin);
+        teleportDelay = plugin.getConfig().getInt("teleportDelay", 5);
         warpStorage = new YamlStorage(plugin, "warps");
 
         Configuration globalSection = warpStorage.getConfig().getSection("global");
@@ -87,7 +95,7 @@ public class WarpManager extends Manager {
      * @param warp   The warp to teleport to
      * @return <tt>true</tt> if the teleport was initiated, <tt>false</tt> if not (the player gets an error message)
      */
-    public boolean warpPlayer(ProxiedPlayer player, WarpInfo warp) throws ServerNotFoundException {
+    public boolean warpPlayer(CommandSender sender, ProxiedPlayer player, final WarpInfo warp) throws ServerNotFoundException {
         player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "...");
         ServerInfo server = plugin.getProxy().getServerInfo(warp.getServer());
         if (server == null) {
@@ -95,8 +103,35 @@ public class WarpManager extends Manager {
             plugin.getLogger().severe("There is no server with the name " + warp.getServer() + " for the warp " + warp.getName());
             throw new ServerNotFoundException("There is no server with the name " + warp.getServer() + " for the warp " + warp.getName());
         }
-        plugin.getTeleportUtils().teleport(player, warp);
+
+        final UUID playerId = player.getUniqueId();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
+                if (player != null && player.isConnected()) {
+                    plugin.getTeleportUtils().teleport(player, warp);
+                }
+            }
+        };
+
+        if (teleportDelay <= 0 || player.hasPermission("serverclusters.bypass.delay") || (sender != player && sender.hasPermission("serverclusters.bypass.delay"))) {
+            runnable.run();
+        } else {
+            if (teleportTasks.containsKey(playerId)) {
+                teleportTasks.get(player.getUniqueId()).cancel();
+            }
+            teleportTasks.put(playerId, plugin.getProxy().getScheduler().schedule(plugin, runnable, 5, TimeUnit.SECONDS));
+        }
         return true;
+    }
+
+    public void cancelTeleport(ProxiedPlayer player) {
+        if (teleportTasks.containsKey(player.getUniqueId())) {
+            teleportTasks.get(player.getUniqueId()).cancel();
+            player.sendMessage(ChatColor.RED + "Teleportation abgebrochen! Du musst für " + teleportDelay + " Sekunden stillstehen!");
+        }
     }
 
     /**

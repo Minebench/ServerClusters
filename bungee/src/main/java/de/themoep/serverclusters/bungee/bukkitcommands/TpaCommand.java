@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class TpaCommand extends BukkitCommand {
+public class TpaCommand extends CooldownBukkitCommand {
 
     public TpaCommand(ServerClusters plugin, String name, String permission) {
         super(plugin, name, permission);

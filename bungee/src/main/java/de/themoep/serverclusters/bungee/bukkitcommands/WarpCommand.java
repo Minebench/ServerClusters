@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class WarpCommand extends BukkitCommand {
+public class WarpCommand extends CooldownBukkitCommand {
 
     public WarpCommand(ServerClusters plugin, String name, String permission) {
         super(plugin, name, permission);
@@ -142,7 +142,7 @@ public class WarpCommand extends BukkitCommand {
         if (players.size() > 0) {
             try {
                 for (ProxiedPlayer player : players) {
-                    plugin.getWarpManager().warpPlayer(player, warp);
+                    plugin.getWarpManager().warpPlayer(sender, player, warp);
                 }
             } catch (ServerNotFoundException e) {
                 if (args.length >= 2) {

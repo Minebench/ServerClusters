@@ -61,6 +61,7 @@ public class ServerClusters extends Plugin {
     private final List<Command> commandList = new ArrayList<Command>();
 
     private VNPBungee vnpbungee = null;
+    private long commandCooldown;
 
     public void onEnable() {
         loadConfig();
@@ -99,6 +100,8 @@ public class ServerClusters extends Plugin {
             getLogger().info("No or wrong backend option in config.yml. Only YAML and MYSQL is allowed! Falling back to YAML backend!");
             backend = Backend.YAML;
         }
+
+        commandCooldown = getConfig().getInt("commandCooldown", 10);
 
         getLogger().info("Loading Cluster Manager...");
         cm = new ClusterManager(this);
@@ -189,6 +192,10 @@ public class ServerClusters extends Plugin {
     public void reloadConfig() {
         loadConfig();
         setupCommands(false);
+    }
+
+    public long getCommandCooldown() {
+        return commandCooldown;
     }
 
     public WarpManager getWarpManager() {

@@ -11,13 +11,25 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class ServerClustersBukkit extends JavaPlugin {
 
     private TeleportManager tpman;
+    private int teleportDelay;
 
     public void onEnable() {
+
+        teleportDelay = getConfig().getInt("teleportDelay", -1);
+        if (teleportDelay == -1) {
+            teleportDelay = getConfig().getDefaults().getInt("teleportDelay");
+            getConfig().set("teleportDelay", teleportDelay);
+            saveConfig();
+        }
 
         getLogger().log(Level.INFO, "Initialising Teleport Manager");
         tpman = new TeleportManager(this);
@@ -43,6 +55,9 @@ public class ServerClustersBukkit extends JavaPlugin {
         String senderName = sender.getName();
         if (sender instanceof Player) {
             player = (Player) sender;
+            if ("warp".equals(cmd.getName()) && getTeleportDelay() > 0 && !player.hasPermission("serverclusters.bypass.delay")) {
+                getTeleportManager().addRequest(player.getUniqueId(), System.currentTimeMillis());
+            }
         } else if (getServer().getOnlinePlayers().size() > 0) {
             senderName = "[@]";
             player = getServer().getOnlinePlayers().iterator().next();
@@ -66,5 +81,9 @@ public class ServerClustersBukkit extends JavaPlugin {
         out.writeUTF(StringUtils.join(args, " "));
         player.sendPluginMessage(this, "ServerClusters", out.toByteArray());
         return true;
+    }
+
+    public int getTeleportDelay() {
+        return teleportDelay;
     }
 }

@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class TpahereCommand extends BukkitCommand {
+public class TpahereCommand extends CooldownBukkitCommand {
 
     public TpahereCommand(ServerClusters plugin, String name, String permission) {
         super(plugin, name, permission);

@@ -81,6 +81,12 @@ public class PluginMessageListener implements Listener {
             if (!plugin.getBukkitCommandExecutor().execute(command, sender, loc, args)) {
                 plugin.getLogger().log(Level.WARNING, "Error while running ServerClusters/RunCommand/" + command + " from " + sender + "! Command failed to execute?");
             }
+        } else if ("CancelTeleport".equals(subchannel)) {
+            String playerId = in.readUTF();
+            ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
+            if (player != null) {
+                plugin.getWarpManager().cancelTeleport(player);
+            }
         }
     }
 }

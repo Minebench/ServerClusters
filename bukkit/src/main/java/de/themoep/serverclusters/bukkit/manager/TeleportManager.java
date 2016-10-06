@@ -1,16 +1,25 @@
 package de.themoep.serverclusters.bukkit.manager;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import de.themoep.serverclusters.bukkit.enums.EntryType;
 import de.themoep.serverclusters.bukkit.QueueEntry;
 import de.themoep.serverclusters.bukkit.ServerClustersBukkit;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -18,12 +27,81 @@ import java.util.logging.Level;
  */
 public class TeleportManager implements Listener {
 
-    private HashMap<String, QueueEntry> tpQueue = new HashMap<String, QueueEntry>();
+    private HashMap<String, QueueEntry> tpQueue = new HashMap<>();
+    private Map<UUID, Long> tpRequests = new HashMap<>();
 
     private ServerClustersBukkit plugin;
 
     public TeleportManager(ServerClustersBukkit plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (plugin.getTeleportDelay() <= 0) {
+            return;
+        }
+
+        if (event.getTo() == event.getFrom()) {
+            return;
+        }
+
+        if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
+            if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
+                cancelTeleport(event.getPlayer());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (plugin.getTeleportDelay() <= 0) {
+            return;
+        }
+
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        if (tpRequests.containsKey(event.getEntity().getUniqueId())) {
+            if (tpRequests.get(event.getEntity().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
+                cancelTeleport((Player) event.getEntity());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (plugin.getTeleportDelay() <= 0) {
+            return;
+        }
+
+        if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
+            if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
+                cancelTeleport(event.getPlayer());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (plugin.getTeleportDelay() <= 0) {
+            return;
+        }
+
+        if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
+            if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
+                cancelTeleport(event.getPlayer());
+            }
+        }
+    }
+
+    private void cancelTeleport(Player player) {
+        tpRequests.remove(player.getUniqueId());
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("CancelTeleport");
+        out.writeUTF(player.getName());
+        player.sendPluginMessage(plugin, "ServerClusters", out.toByteArray());
     }
 
     /**
@@ -78,6 +156,8 @@ public class TeleportManager implements Listener {
      */
     public byte teleport(Player player, Location target) {
         if (target != null && player != null && player.isOnline()) {
+            Block block = target.getBlock().getRelative(BlockFace.DOWN);
+            player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
             player.teleport(target);
             removeQueueEntry(player.getName());
             plugin.getLogger().log(Level.INFO, "Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
@@ -198,4 +278,7 @@ public class TeleportManager implements Listener {
         tpQueue.remove(playername);
     }
 
+    public void addRequest(UUID playerId, long time) {
+        tpRequests.put(playerId, time);
+    }
 }

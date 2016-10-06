@@ -16,6 +16,8 @@ commandaliases:
   tp: [ctp, tpc]
   tphere: [ctphere, s]
   delwarp: [cdelwarp]
+teleportDelay: 5
+commandCooldown: 10
 cluster:
   Freebuild:
     server:
