@@ -8,25 +8,25 @@ commands:
       aliases: [ctpa,call]
       description: Request a teleport to another player
       usage: /<command> <playername>
-      permission: serverclusters.command.ctpa
+      permission: serverclusters.command.tpa
       permission-message: You don't have the permission <permission>
    tpahere:
       aliases: [ctpahere]
       description: Request another player to teleport to you
       usage: /<command> <playername>
-      permission: serverclusters.command.ctpahere
+      permission: serverclusters.command.tpahere
       permission-message: You don't have the permission <permission>
    tpaccept:
       aliases: [ctpaccept,tpyes]
       description: Accepts a teleport request by another player
       usage: /<command> [<playername>]
-      permission: serverclusters.command.ctpaccept
+      permission: serverclusters.command.tpaccept
       permission-message: You don't have the permission <permission>
    tpdeny:
       aliases: [ctpdeny,tpno]
       description: Denies a teleport request by another player
       usage: /<command> [<playername>]
-      permission: serverclusters.command.ctpdeny
+      permission: serverclusters.command.tpdeny
       permission-message: You don't have the permission <permission>
    tpaconfirm:
       aliases: [ctpaconfirm]
