@@ -43,6 +43,19 @@ public class YamlStorage extends ValueStorage {
     @Override
     public void putValue(UUID playerId, String value) {
         config.set(playerId.toString(), value);
+        save();
+    }
+
+    /**
+     * save configuration to disk
+     */
+    public void save() {
+        try {
+            ymlCfg.save(config, configFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Unable to save configuration at " + configFile.getAbsolutePath());
+            e.printStackTrace();
+        }
     }
 
     public Configuration getConfig() {
@@ -51,11 +64,6 @@ public class YamlStorage extends ValueStorage {
 
     @Override
     public void close() {
-        try {
-            ymlCfg.save(config, configFile);
-        } catch (IOException e) {
-            plugin.getLogger().severe("Unable to save configuration at '" + configFile.getAbsolutePath() + "'");
-            e.printStackTrace();
-        }
+        save();
     }
 }

@@ -1,6 +1,7 @@
 package de.themoep.serverclusters.bungee;
 
 import com.google.common.base.Preconditions;
+import net.md_5.bungee.config.Configuration;
 
 public class LocationInfo {
     private String server;
@@ -70,5 +71,17 @@ public class LocationInfo {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "{server=" + getServer() + ",world=" + getWorld() + ",x=" + getX() + ",y=" + getY() + ",z=" + getZ() + ",yaw=" + getYaw() + ",pitch=" + getPitch() + "}";
+    }
+
+    public Configuration toConfig() {
+        Configuration config = new Configuration();;
+        config.set("server", getServer());
+        config.set("world", getWorld());
+        config.set("x", getX());
+        config.set("y", getY());
+        config.set("z", getZ());
+        config.set("pitch", getPitch());
+        config.set("pitch", getYaw());
+        return config;
     }
 }

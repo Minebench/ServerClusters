@@ -168,10 +168,14 @@ public class WarpManager extends Manager {
         WarpInfo warp = new WarpInfo(name, location);
         if (global) {
             globalWarps.put(name.toLowerCase(), warp);
+            warpStorage.getConfig().set("global." + warp.getName(), warp.toConfig());
+            warpStorage.save();
         } else {
             Cluster cluster = plugin.getClusterManager().getClusterByServer(location.getServer());
             if (cluster != null) {
                 cluster.addWarp(warp);
+                warpStorage.getConfig().set("cluster." + cluster.getName() + "." + warp.getName(), warp.toConfig());
+                warpStorage.save();
             } else {
                 throw new IllegalArgumentException("No Cluster found for server " + location.getServer() + " in provided location!");
             }
@@ -188,6 +192,8 @@ public class WarpManager extends Manager {
         WarpInfo warp = getGlobalWarp(name);
         if (warp != null) {
             globalWarps.remove(name.toLowerCase());
+            warpStorage.getConfig().set("global." + warp.getName(), null);
+            warpStorage.save();
             return warp;
         }
         Cluster cluster = null;
@@ -200,6 +206,8 @@ public class WarpManager extends Manager {
         }
         if (cluster != null) {
             warp = cluster.removeWarp(name);
+            warpStorage.getConfig().set("cluster." + cluster.getName() + "." + warp.getName(), null);
+            warpStorage.save();
         }
         return warp;
     }
