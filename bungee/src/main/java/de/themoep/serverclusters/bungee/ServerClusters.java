@@ -108,7 +108,7 @@ public class ServerClusters extends Plugin {
 
         for (String servername : getProxy().getServers().keySet()) {
             if (!section.getKeys().contains(servername)) {
-                Boolean addserver = true;
+                boolean addserver = true;
                 for (Cluster c : getClusterManager().getClusterlist()) {
                     if (c.containsServer(servername)) {
                         addserver = false;

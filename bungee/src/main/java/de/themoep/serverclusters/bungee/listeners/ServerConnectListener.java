@@ -26,7 +26,7 @@ public class ServerConnectListener implements Listener {
         if (event.getPlayer().getServer() == null) {
             plugin.getProxy().getPluginManager().callEvent(new ClusterConnectEvent(plugin, event, target));
             plugin.getProxy().getPluginManager().callEvent(new NetworkConnectEvent(plugin, event, target));
-        } else if (!target.getServerlist().toString().matches(".*\\b" + event.getPlayer().getServer().getInfo().getName().toLowerCase() + "\\b.*")) {
+        } else if (!target.containsServer(event.getPlayer().getServer().getInfo().getName())) {
             Cluster from = plugin.getClusterManager().getClusterByServer(event.getPlayer().getServer().getInfo().getName());
             plugin.getLogger().info("ServerConnectEvent - Origin: " + from.getName());
             plugin.getProxy().getPluginManager().callEvent(new ClusterSwitchEvent(plugin, event, from, target));

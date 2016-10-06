@@ -340,6 +340,9 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     public boolean containsServer(String servername) {
+        if (getServerlist().contains(servername)) {
+            return true;
+        }
         for (String s : getServerlist()) {
             if (s.equalsIgnoreCase(servername)) {
                 return true;
