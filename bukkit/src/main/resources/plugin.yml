@@ -40,6 +40,18 @@ commands:
       usage: /<command> [<playername>]
       permission: serverclusters.command.warp
       permission-message: You don't have the permission <permission>
+   setwarp:
+      aliases: [csetwarp]
+      description: Set cluster warp
+      usage: /<command> [<playername>]
+      permission: serverclusters.command.setwarp
+      permission-message: You don't have the permission <permission>
+   setglobalwarp:
+      aliases: [csetglobalwarp]
+      description: Set global warp
+      usage: /<command> [<playername>]
+      permission: serverclusters.command.setglobalwarp
+      permission-message: You don't have the permission <permission>
 permissions:
    serverclusters.command.tpa:
       default: op
@@ -52,4 +64,8 @@ permissions:
    serverclusters.command.tpaconfirm:
       default: op
    serverclusters.command.warp:
+      default: op
+   serverclusters.command.setwarp:
+      default: op
+   serverclusters.command.setglobalwarp:
       default: op

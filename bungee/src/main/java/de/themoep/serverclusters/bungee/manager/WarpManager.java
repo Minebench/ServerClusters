@@ -1,6 +1,7 @@
 package de.themoep.serverclusters.bungee.manager;
 
 import de.themoep.serverclusters.bungee.Cluster;
+import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.ServerNotFoundException;
 import de.themoep.serverclusters.bungee.WarpInfo;
@@ -122,6 +123,53 @@ public class WarpManager extends Manager {
     }
 
     /**
+     * Add a new warp or change the position of an existing one
+     * @param name The name of the warp
+     * @param location The location
+     * @param global Whether or not it should be global or cluster only
+     * @return The created WarpInfo
+     */
+    public WarpInfo addWarp(String name, LocationInfo location, boolean global) throws IllegalArgumentException {
+        WarpInfo warp = new WarpInfo(name, location);
+        if (global) {
+            globalWarps.put(name.toLowerCase(), warp);
+        } else {
+            Cluster cluster = plugin.getClusterManager().getClusterByServer(location.getServer());
+            if (cluster != null) {
+                cluster.addWarp(warp);
+            } else {
+                throw new IllegalArgumentException("No Cluster found for server " + location.getServer() + " in provided location!");
+            }
+        }
+        return warp;
+    }
+
+    /**
+     * Remove a warp (for cluster specifc warps use cluster:warp
+     * @param name The name of the warp
+     * @return The removed WarpInfo or null if none was found
+     */
+    public WarpInfo removeWarp(CommandSender sender, String name) {
+        WarpInfo warp = getGlobalWarp(name);
+        if (warp != null) {
+            globalWarps.remove(name.toLowerCase());
+            return warp;
+        }
+        Cluster cluster = null;
+        String[] parts = name.split(":");
+        if (parts.length == 2) {
+            cluster = plugin.getClusterManager().getCluster(parts[0]);
+            name = parts[1];
+        } else if (sender instanceof ProxiedPlayer) {
+            cluster = plugin.getClusterManager().getClusterByServer(((ProxiedPlayer) sender).getServer().getInfo().getName());
+        }
+        if (cluster != null) {
+            warp = cluster.removeWarp(name);
+        }
+        return warp;
+    }
+
+    /**
      * Get a collection of the global warps
      * @return Collection of global warp info
      */
@@ -156,8 +204,8 @@ public class WarpManager extends Manager {
     public WarpInfo getWarp(String warpName) {
         WarpInfo warp = getGlobalWarp(warpName);
         if (warp == null) {
-            if (warpName.contains(":")) {
-                String[] parts = warpName.split(":");
+            String[] parts = warpName.split(":");
+            if (parts.length == 2) {
                 Cluster cluster = plugin.getClusterManager().getCluster(parts[0]);
                 if (cluster != null) {
                     warp = cluster.getWarp(parts[1]);

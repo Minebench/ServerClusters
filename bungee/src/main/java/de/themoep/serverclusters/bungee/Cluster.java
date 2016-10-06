@@ -311,9 +311,9 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * Removes a warp
      * @param name The name of the warp (case insensitive)
-     * @return The old location, <tt>null</tt> if there was no warp with this name
+     * @return The old WarpInfo, <tt>null</tt> if there was no warp with this name
      */
-    public LocationInfo removeWarp(String name) {
+    public WarpInfo removeWarp(String name) {
         return warps.remove(name.toLowerCase());
     }
 

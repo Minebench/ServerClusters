@@ -15,6 +15,7 @@ commandaliases:
   find: [cfind]
   tp: [ctp, tpc]
   tphere: [ctphere, s]
+  delwarp: [cdelwarp]
 cluster:
   Freebuild:
     server:

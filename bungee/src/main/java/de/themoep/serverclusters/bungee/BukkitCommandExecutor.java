@@ -1,11 +1,13 @@
 package de.themoep.serverclusters.bungee;
 
 import de.themoep.serverclusters.bungee.bukkitcommands.BukkitCommand;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * ServerClusters
@@ -45,10 +47,12 @@ public class BukkitCommandExecutor {
         }
 
         if (sender == null) {
+            plugin.getLogger().log(Level.WARNING, "Error while trying to run " + commandName + " as " + senderName + "! Sender was not found?");
             return false;
         }
 
         if (sender instanceof ProxiedPlayer && location == null) {
+            sender.sendMessage(ChatColor.RED + "Error: Location was null?");
             return false;
         }
 

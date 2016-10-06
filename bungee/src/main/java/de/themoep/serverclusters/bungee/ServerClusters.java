@@ -4,18 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import de.themoep.serverclusters.bungee.bukkitcommands.SetwarpCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpaCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpacceptCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpahereCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpdenyCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.WarpCommand;
 import de.themoep.serverclusters.bungee.commands.ClusterCommand;
+import de.themoep.serverclusters.bungee.commands.DelwarpCommand;
 import de.themoep.serverclusters.bungee.commands.FindCommand;
 import de.themoep.serverclusters.bungee.commands.ListCommand;
 import de.themoep.serverclusters.bungee.commands.TpCommand;
@@ -150,6 +151,9 @@ public class ServerClusters extends Plugin {
         List<String> fal = getConfig().getStringList("commandaliases.find");
         commandList.add(new FindCommand(this, "find", "serverclusters.command.find", fal.toArray(new String[fal.size()])));
 
+        List<String> dwal = getConfig().getStringList("commandaliases.delwarp");
+        commandList.add(new DelwarpCommand(this, "delwarp", "serverclusters.command.delwarp", dwal.toArray(new String[fal.size()])));
+
         if (latebind) {
             getLogger().log(infolevel, "Scheduling the Registering of the Commands...");
             final ServerClusters plugin = this;
@@ -176,6 +180,7 @@ public class ServerClusters extends Plugin {
         getBukkitCommandExecutor().registerCommand(new TpdenyCommand(this, "tpdeny", "serverclusters.command.tpdeny"));
         getBukkitCommandExecutor().registerCommand(new TpaconfirmCommand(this, "tpaconfirm", "serverclusters.command.tpaconfirm"));
         getBukkitCommandExecutor().registerCommand(new WarpCommand(this, "warp", "serverclusters.command.warp"));
+        getBukkitCommandExecutor().registerCommand(new SetwarpCommand(this, "setwarp", "serverclusters.command.setwarp"));
     }
 
     /**

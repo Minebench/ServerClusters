@@ -8,6 +8,11 @@ public class WarpInfo extends LocationInfo {
         this.name = name;
     }
 
+    public WarpInfo(String name, LocationInfo location) {
+        super(location);
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

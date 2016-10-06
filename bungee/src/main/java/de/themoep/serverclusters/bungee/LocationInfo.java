@@ -27,6 +27,18 @@ public class LocationInfo {
         this.pitch = pitch;
     }
 
+    public LocationInfo(LocationInfo location) {
+        this(
+                location.getServer(),
+                location.getWorld(),
+                location.getX(),
+                location.getY(),
+                location.getZ(),
+                location.getYaw(),
+                location.getPitch()
+        );
+    }
+
     public String getServer() {
         return server;
     }
