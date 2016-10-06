@@ -19,6 +19,7 @@ import de.themoep.serverclusters.bungee.commands.ClusterCommand;
 import de.themoep.serverclusters.bungee.commands.DelwarpCommand;
 import de.themoep.serverclusters.bungee.commands.FindCommand;
 import de.themoep.serverclusters.bungee.commands.ListCommand;
+import de.themoep.serverclusters.bungee.commands.ServerClustersCommand;
 import de.themoep.serverclusters.bungee.commands.TpCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.TpaconfirmCommand;
 import de.themoep.serverclusters.bungee.commands.TphereCommand;
@@ -134,10 +135,14 @@ public class ServerClusters extends Plugin {
      * Initialize and register all commands
      * @param latebind If we should wait a second or not after initialization to registering commands, useful to overwrite bungee's or other plugins commands
      */
-    private void setupCommands(Boolean latebind) {
+    private void setupCommands(boolean latebind) {
         getLogger().log(infolevel, "Initializing Commands...");
 
-        commandList.clear();
+        getProxy().getPluginManager().unregisterCommands(this);
+
+        final List<Command> commandList = new ArrayList<>();
+
+        commandList.add(new ServerClustersCommand(this, "serverclusters", "serverclusters.command.serverclusters", new String[]{"sc", "sclusters"}));
 
         List<String> cal = getConfig().getStringList("commandaliases.cluster");
         commandList.add(new ClusterCommand(this, "cluster", "serverclusters.command.cluster", cal.toArray(new String[cal.size()])));
@@ -163,7 +168,7 @@ public class ServerClusters extends Plugin {
             getProxy().getScheduler().schedule(this, new Runnable() {
                 public void run() {
                     plugin.getLogger().log(infolevel, "Late-binding Commands...");
-                    for (Command c : plugin.commandList) {
+                    for (Command c : commandList) {
                         ProxyServer.getInstance().getPluginManager().registerCommand(plugin, c);
                     }
                 }
@@ -171,7 +176,7 @@ public class ServerClusters extends Plugin {
         } else {
             getLogger().log(infolevel, "Registering Commands...");
             for (Command c : commandList) {
-                ProxyServer.getInstance().getPluginManager().registerCommand(this, c);
+                getProxy().getPluginManager().registerCommand(this, c);
             }
         }
 
