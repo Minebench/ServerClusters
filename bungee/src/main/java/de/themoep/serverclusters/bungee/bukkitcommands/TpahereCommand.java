@@ -46,10 +46,11 @@ public class TpahereCommand extends CooldownBukkitCommand {
             }
         }
         if (toTeleport == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(toTeleport) == VNPBungee.VanishStatus.VANISHED && !sender.hasPermission("vanish.see"))) {
-            plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER, location);
-        } else {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
+            return;
         }
+
+        plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER, location);
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {
