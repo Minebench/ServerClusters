@@ -45,7 +45,7 @@ public class TpahereCommand extends BukkitCommand {
                 }
             }
         }
-        if (toTeleport != null && (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see"))) {
+        if (toTeleport == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(toTeleport) == VNPBungee.VanishStatus.VANISHED && !sender.hasPermission("vanish.see"))) {
             plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER, location);
         } else {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");

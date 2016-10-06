@@ -51,7 +51,7 @@ public class TpaCommand extends BukkitCommand {
             }
         }
 
-        if (target == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED && !sender.hasPermission("vanish.see"))) {
+        if (target == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(target) == VNPBungee.VanishStatus.VANISHED && !sender.hasPermission("vanish.see"))) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
             return;
         }
