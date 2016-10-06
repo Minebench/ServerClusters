@@ -53,7 +53,7 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * Allow ignoring the last logout server. This also stops storing of that value!
      */
-    private boolean ignoreLogoutServer = true;
+    private boolean ignoreLogoutServer = false;
 
     /**
      * Map of players UUID's to the servername they logged out of
@@ -70,7 +70,7 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * Whether or not this cluster should how up in the lists
      */
-    private boolean hidden;
+    private boolean hidden = false;
 
     /**
      * The cluster object
@@ -79,7 +79,7 @@ public class Cluster implements Comparable<Cluster> {
      * @param serverlist The list of servernames this cluster contains. Cannot be empty!
      */
     public Cluster(ServerClusters plugin, String name, List<String> serverlist) {
-        this(plugin, name, serverlist, serverlist.get(0));
+        this(plugin, name, serverlist, serverlist.get(0), false);
     }
 
     /**
@@ -88,12 +88,14 @@ public class Cluster implements Comparable<Cluster> {
      * @param name          The name of the cluster
      * @param serverlist    The list of servernames this cluster contains. Cannot be empty!
      * @param defaultServer The name of the default server the player's connect to if they weren't on the cluster before.
+     * @param ignoreLogoutServer Should we ignore the logout server on this cluster?
      */
-    public Cluster(ServerClusters plugin, String name, List<String> serverlist, String defaultServer) {
+    public Cluster(ServerClusters plugin, String name, List<String> serverlist, String defaultServer, boolean ignoreLogoutServer) {
         this.plugin = plugin;
         this.name = name;
         this.serverlist = serverlist;
         this.defaultServer = defaultServer;
+        this.ignoreLogoutServer = ignoreLogoutServer;
 
         if (getServerlist().size() > 1 && !shouldIgnoreLogoutServer()) {
             initLogoutStorage();
@@ -101,12 +103,17 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     public Cluster(ServerClusters plugin, String name, Configuration config) {
-        this(plugin, name, config.getStringList("server"),config.getString("default", null));
+        this(
+                plugin,
+                name,
+                config.getStringList("server"),
+                config.getString("default", null),
+                config.getBoolean("ignoreLogoutServer", false)
+        );
 
         setAliaslist(config.getStringList("alias"));
         setHidden(config.getBoolean("hidden", false));
         setDefaultServer(config.getString("cluster", null));
-        setIgnoreLogoutServer(config.getBoolean("ignoreLogoutServer", false));
     }
 
     private void initLogoutStorage() {
@@ -209,7 +216,7 @@ public class Cluster implements Comparable<Cluster> {
      * @return The servername as a string, null if not found
      */
     public String getLogoutServer(UUID playerid) {
-        if (serverlist.size() > 1 && !shouldIgnoreLogoutServer()) {
+        if (getServerlist().size() > 1 && !shouldIgnoreLogoutServer()) {
             try {
                 return logoutCache.get(playerid);
             } catch (ExecutionException e) {
@@ -253,9 +260,9 @@ public class Cluster implements Comparable<Cluster> {
      */
     public void addServer(String name) {
         int countOld = getServerlist().size();
-        if (!getServerlist().contains(name.toLowerCase())) {
-            getServerlist().add(name.toLowerCase());
-            if (countOld == 1) {
+        if (!getServerlist().contains(name)) {
+            getServerlist().add(name);
+            if (countOld == 1 && !shouldIgnoreLogoutServer()) {
                 initLogoutStorage();
             }
         }
@@ -343,9 +350,12 @@ public class Cluster implements Comparable<Cluster> {
 
     /**
      * @param c is a non-null Cluster.
-     * @throws NullPointerException if o is null.
+     * @throws IllegalArgumentException if o is null.
      */
     public int compareTo(Cluster c) {
+        if (c == null) {
+            throw new IllegalArgumentException("Cluster cannot be compared to null!");
+        }
         if (this == c) {
             return 0;
         }
