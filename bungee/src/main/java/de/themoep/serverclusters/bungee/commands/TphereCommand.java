@@ -39,6 +39,7 @@ public class TphereCommand extends Command implements TabExecutor {
                     }
                     if (toTeleport != null) {
                         plugin.getTeleportUtils().teleportToPlayer(toTeleport, p);
+                        sender.sendMessage(ChatColor.YELLOW + toTeleport.getName() + ChatColor.GREEN + " zu dir teleportiert");
                     } else {
                         sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
                     }
