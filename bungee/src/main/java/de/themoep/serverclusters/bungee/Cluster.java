@@ -95,7 +95,7 @@ public class Cluster implements Comparable<Cluster> {
         this.serverlist = serverlist;
         this.defaultServer = defaultServer;
 
-        if (serverlist.size() > 1 && !shouldIgnoreLogoutServer()) {
+        if (getServerlist().size() > 1 && !shouldIgnoreLogoutServer()) {
             initLogoutStorage();
         }
     }
@@ -197,7 +197,7 @@ public class Cluster implements Comparable<Cluster> {
      * @param servername The name of the server the player logged out from as a string
      */
     public void setLogoutServer(ProxiedPlayer player, String servername) {
-        if (!shouldIgnoreLogoutServer() && getServerlist().contains(servername)) {
+        if (getServerlist().size() > 1 && !shouldIgnoreLogoutServer() && getServerlist().contains(servername)) {
             logoutStorage.putValue(player.getUniqueId(), servername);
             logoutCache.put(player.getUniqueId(), servername);
         }
@@ -209,7 +209,7 @@ public class Cluster implements Comparable<Cluster> {
      * @return The servername as a string, null if not found
      */
     public String getLogoutServer(UUID playerid) {
-        if (!shouldIgnoreLogoutServer() && logoutCache != null) {
+        if (serverlist.size() > 1 && !shouldIgnoreLogoutServer()) {
             try {
                 return logoutCache.get(playerid);
             } catch (ExecutionException e) {
@@ -252,9 +252,9 @@ public class Cluster implements Comparable<Cluster> {
      * @param name String representing the name of the server
      */
     public void addServer(String name) {
-        int countOld = serverlist.size();
-        if (!serverlist.contains(name.toLowerCase())) {
-            serverlist.add(name.toLowerCase());
+        int countOld = getServerlist().size();
+        if (!getServerlist().contains(name.toLowerCase())) {
+            getServerlist().add(name.toLowerCase());
             if (countOld == 1) {
                 initLogoutStorage();
             }
