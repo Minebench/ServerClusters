@@ -73,6 +73,24 @@ public class LocationInfo {
         return this.getClass().getSimpleName() + "{server=" + getServer() + ",world=" + getWorld() + ",x=" + getX() + ",y=" + getY() + ",z=" + getZ() + ",yaw=" + getYaw() + ",pitch=" + getPitch() + "}";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof LocationInfo)) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        LocationInfo other = (LocationInfo) o;
+        return other.getServer().equalsIgnoreCase(getServer())
+                && other.getWorld().equalsIgnoreCase(getWorld())
+                && other.getX() == getX()
+                && other.getY() == getY()
+                && other.getZ() == getZ()
+                && other.getYaw() == getYaw()
+                && other.getPitch() == getPitch();
+    }
+
     public Configuration toConfig() {
         Configuration config = new Configuration();;
         config.set("server", getServer());
