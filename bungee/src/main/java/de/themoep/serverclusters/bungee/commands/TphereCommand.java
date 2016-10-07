@@ -24,32 +24,33 @@ public class TphereCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (sender.hasPermission(getPermission())) {
-            // TODO: Change messages to language system!
-            if (args.length == 1) {
-                if (sender instanceof ProxiedPlayer) {
-                    ProxiedPlayer p = (ProxiedPlayer) sender;
-                    ProxiedPlayer toTeleport = plugin.getProxy().getPlayer(args[0]);
-                    if (toTeleport == null) {
-                        for (ProxiedPlayer t : plugin.getProxy().getPlayers()) {
-                            if (t.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
-                                toTeleport = t;
-                            }
-                        }
-                    }
-                    if (toTeleport != null) {
-                        plugin.getTeleportUtils().teleportToPlayer(toTeleport, p);
-                        sender.sendMessage(ChatColor.YELLOW + toTeleport.getName() + ChatColor.GREEN + " zu dir teleportiert");
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
+        // TODO: Change messages to language system!
+        if (args.length != 1) {
+            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " <playername>");
+            return;
+        }
+
+        if (!(sender instanceof ProxiedPlayer)) {
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
+            return;
+        }
+
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        ProxiedPlayer toTeleport = plugin.getProxy().getPlayer(args[0]);
+        if (toTeleport == null) {
+            for (ProxiedPlayer t : plugin.getProxy().getPlayers()) {
+                if (t.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+                    toTeleport = t;
                 }
-            } else {
-                sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " <playername>");
             }
         }
+        if (toTeleport == null) {
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
+            return;
+        }
+
+        plugin.getTeleportUtils().teleportToPlayer(toTeleport, p);
+        sender.sendMessage(ChatColor.YELLOW + toTeleport.getName() + ChatColor.GREEN + " zu dir teleportiert");
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {

@@ -20,10 +20,6 @@ public class TpdenyCommand extends BukkitCommand {
 
     @Override
     public void run(CommandSender sender, LocationInfo location, String[] args) {
-        if (!sender.hasPermission(getPermission())) {
-            return;
-        }
-
         if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
             return;

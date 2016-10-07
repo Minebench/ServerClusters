@@ -17,9 +17,6 @@ public class TpaconfirmCommand extends BukkitCommand {
 
     @Override
     public void run(CommandSender sender, LocationInfo location, String[] args) {
-        if (!sender.hasPermission(getPermission())) {
-            return;
-        }
         if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(ChatColor.RED + "This command can only be run by a player!");
             return;

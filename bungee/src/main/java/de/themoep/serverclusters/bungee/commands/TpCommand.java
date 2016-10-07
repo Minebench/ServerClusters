@@ -27,10 +27,6 @@ public class TpCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(getPermission())) {
-            return;
-        }
-
         // TODO: Change messages to language system!
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + getName() + " <playername> [<targetplayer>]");

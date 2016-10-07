@@ -32,10 +32,6 @@ public class ClusterCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(getPermission())) {
-            return;
-        }
-
         if (args.length == 0) {
             //send cluster list
             // TODO: Change messages to language system!

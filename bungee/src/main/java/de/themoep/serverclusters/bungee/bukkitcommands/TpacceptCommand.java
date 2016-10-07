@@ -20,19 +20,17 @@ public class TpacceptCommand extends BukkitCommand {
 
     @Override
     public void run(CommandSender sender, LocationInfo location, String[] args) {
-        if (sender.hasPermission(getPermission())) {
-            if (!(sender instanceof ProxiedPlayer)) {
-                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
-                return;
-            }
-            ProxiedPlayer p = (ProxiedPlayer) sender;
-            if (args.length == 0) {
-                plugin.getTeleportManager().acceptLastRequest(p);
-            } else if (args.length == 1) {
-                plugin.getTeleportManager().acceptRequest(p, args[0]);
-            } else {
-                sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " [<playername>]");
-            }
+        if (!(sender instanceof ProxiedPlayer)) {
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
+            return;
+        }
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        if (args.length == 0) {
+            plugin.getTeleportManager().acceptLastRequest(p);
+        } else if (args.length == 1) {
+            plugin.getTeleportManager().acceptRequest(p, args[0]);
+        } else {
+            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " [<playername>]");
         }
     }
 

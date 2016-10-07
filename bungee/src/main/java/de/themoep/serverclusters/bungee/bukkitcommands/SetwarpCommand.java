@@ -26,6 +26,11 @@ public class SetwarpCommand extends BukkitCommand {
 
     @Override
     public void run(CommandSender sender, LocationInfo location, String[] args) {
+        if (!(sender instanceof ProxiedPlayer)) {
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
+            return;
+        }
+
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + getName() + " <warp> [global]");
             return;

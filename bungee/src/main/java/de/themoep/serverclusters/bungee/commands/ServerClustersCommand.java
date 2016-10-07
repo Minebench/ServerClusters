@@ -22,9 +22,6 @@ public class ServerClustersCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission(getPermission())) {
-            return;
-        }
         if (args.length == 0 || "version".equalsIgnoreCase(args[0])) {
             sender.sendMessage(ChatColor.YELLOW + plugin.getDescription().getName() + ChatColor.GREEN + " v" + plugin.getDescription().getVersion() + " by " + plugin.getDescription().getAuthor());
         } else if ("reload".equalsIgnoreCase(args[0])) {

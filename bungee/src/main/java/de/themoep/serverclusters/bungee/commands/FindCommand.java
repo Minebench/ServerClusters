@@ -25,22 +25,22 @@ public class FindCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (args.length > 0) {
-            for (String name : args) {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(name);
-                if (player == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VISIBLE && !sender.hasPermission("vanish.see"))) {
-                    sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
-                    return;
-                }
-                Cluster cluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
-                if (cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") || !sender.hasPermission("serverclusters.cluster." + cluster.getName())) {
-                    sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
-                    return;
-                }
-                sender.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GREEN + " ist online auf " + ChatColor.YELLOW + cluster.getName());
-            }
-        } else {
+        if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /" + getName() + " <username>");
+        }
+
+        for (String name : args) {
+            ProxiedPlayer player = plugin.getProxy().getPlayer(name);
+            if (player == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VISIBLE && !sender.hasPermission("vanish.see"))) {
+                sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
+                continue;
+            }
+            Cluster cluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
+            if (cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") || !sender.hasPermission("serverclusters.cluster." + cluster.getName())) {
+                sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
+                continue;
+            }
+            sender.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GREEN + " ist online auf " + ChatColor.YELLOW + cluster.getName());
         }
     }
 

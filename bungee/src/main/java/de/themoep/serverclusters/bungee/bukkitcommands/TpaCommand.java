@@ -26,10 +26,6 @@ public class TpaCommand extends CooldownBukkitCommand {
 
     @Override
     public void run(CommandSender sender, LocationInfo location, String[] args) {
-        if (!sender.hasPermission(getPermission())) {
-            return;
-        }
-
         // TODO: Change messages to language system!
         if (args.length != 1) {
             sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " <playername>");
