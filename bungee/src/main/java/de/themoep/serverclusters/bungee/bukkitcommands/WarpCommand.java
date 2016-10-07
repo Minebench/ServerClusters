@@ -36,9 +36,11 @@ public class WarpCommand extends CooldownBukkitCommand {
                 while (globalWarps.hasNext()) {
                     WarpInfo globalWarp = globalWarps.next();
                     builder.append(globalWarp.getName()).color(ChatColor.WHITE).event(
-                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + globalWarp)
+                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + globalWarp.getName())
                     ).event(
-                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + globalWarp + " zu warpen!"))
+                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                    ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + globalWarp.getName() + ChatColor.BLUE + " zu warpen!"
+                            ))
                     );
 
                     if (globalWarps.hasNext()) {
@@ -63,9 +65,11 @@ public class WarpCommand extends CooldownBukkitCommand {
                             clusterStr = cluster.getName() + ":";
                         }
                         builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
-                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterStr + clusterWarp)
+                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterStr + clusterWarp.getName())
                         ).event(
-                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + clusterWarp + " zu warpen!"))
+                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                        ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + clusterWarp.getName() + ChatColor.BLUE + " zu warpen!"
+                                ))
                         );
 
                         if (clusterWarps.hasNext()) {
@@ -85,9 +89,11 @@ public class WarpCommand extends CooldownBukkitCommand {
                         while (clusterWarps.hasNext()) {
                             WarpInfo clusterWarp = clusterWarps.next();
                             builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
-                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + cluster.getName() + ":" + clusterWarp)
+                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + cluster.getName() + ":" + clusterWarp.getName())
                             ).event(
-                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um zu " + cluster.getName() + ":" + clusterWarp + " zu warpen!"))
+                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                            ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + cluster.getName() + ":" + clusterWarp.getName() + ChatColor.BLUE + " zu warpen!"
+                                    ))
                             );
 
                             if (clusterWarps.hasNext()) {
