@@ -27,7 +27,7 @@ public class TpCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (sender.hasPermission(getPermission())) {
+        if (!sender.hasPermission(getPermission())) {
             return;
         }
 
