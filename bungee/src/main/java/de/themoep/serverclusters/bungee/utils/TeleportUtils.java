@@ -25,7 +25,7 @@ public class TeleportUtils {
     }
 
     /**
-     * Teleports a player to a targeted player, checks if the player is allowed to teleport between clusters! (serverclusters.teleport.intercluster)
+     * Teleports a player to a targeted player
      * @param player The player to teleport
      * @param target The player to teleport to
      */
