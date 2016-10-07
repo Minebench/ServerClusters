@@ -99,7 +99,7 @@ public class LocationInfo {
         config.set("y", getY());
         config.set("z", getZ());
         config.set("pitch", getPitch());
-        config.set("pitch", getYaw());
+        config.set("yaw", getYaw());
         return config;
     }
 }
