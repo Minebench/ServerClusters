@@ -24,7 +24,7 @@ public class TpaconfirmCommand extends BukkitCommand {
 
         ProxiedPlayer player = (ProxiedPlayer) sender;
         if (!plugin.getTeleportManager().applyCachedRequest(player)) {
-            sender.sendMessage(ChatColor.RED + "Du hast keine Anfrage die du bestätigen müsstest!");
+            sender.sendMessage(ChatColor.RED + "Du hast keine Anfrage die du best\u00e4tigen m\u00fcsstest!");
         }
     }
 

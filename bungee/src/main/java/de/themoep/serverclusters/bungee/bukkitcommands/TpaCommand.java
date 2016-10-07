@@ -94,8 +94,9 @@ public class TpaCommand extends CooldownBukkitCommand {
                             .append("/tpaconfirm").color(ChatColor.RED).event(
                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm")
                             ).event(
-                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuführen!"))
-                            )
+                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                    ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpaconfirm" + ChatColor.BLUE + " auszuf\u00fchren!")
+                            ))
                             .append(" um trotzdem eine Anfrage zu senden und den Server automatisch zu wechseln sobald deine Anfragen angenommen wird!")
                             .retain(ComponentBuilder.FormatRetention.NONE)
                             .color(ChatColor.YELLOW)

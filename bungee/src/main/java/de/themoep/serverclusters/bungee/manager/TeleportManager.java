@@ -137,8 +137,10 @@ public class TeleportManager extends Manager {
                                     .event(
                                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + receiverCluster.getName())
                                     ).event(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + receiverCluster.getName() + " auszuführen und den Server zu wechseln!"))
-                                    ).create()
+                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                            ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/server " + receiverCluster.getName() + ChatColor.BLUE + "auszuf\u00fchren und den Server zu wechseln!"
+                                    )))
+                                    .create()
                     );
                 }
             }
@@ -146,13 +148,17 @@ public class TeleportManager extends Manager {
         receiver.sendMessage(new ComponentBuilder("Nutze /tpaccept um die Anfrage anzunehmen.")
                         .color(ChatColor.GRAY)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaccept auszuführen und die Anfrage anzunehmen!")))
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpaccept" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage anzunehmen!"
+                        )))
                         .create()
         );
         receiver.sendMessage(new ComponentBuilder("Nutze /tpdeny um die Anfrage abzulehnen.")
                         .color(ChatColor.GRAY)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + sender.getName()))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpdeny auszuführen und die Anfrage abzulehnen!")))
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpdeny" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage abzulehnen!"
+                        )))
                         .create()
         );
         return true;

@@ -82,11 +82,12 @@ public class PluginMessageListener implements Listener {
                 plugin.getLogger().log(Level.WARNING, "Error while running ServerClusters/RunCommand/" + command + " from " + sender + "! Command failed to execute?");
             }
         } else if ("CancelTeleport".equals(subchannel)) {
-            String playerId = in.readUTF();
-            ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
+            String playerName = in.readUTF();
+            ProxiedPlayer player = plugin.getProxy().getPlayer(playerName);
             if (player != null) {
                 plugin.getWarpManager().cancelTeleport(player);
             }
+            plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/CancelTeleport '" + playerName + "'");
         }
     }
 }

@@ -96,7 +96,6 @@ public class WarpManager extends Manager {
      * @return <tt>true</tt> if the teleport was initiated, <tt>false</tt> if not (the player gets an error message)
      */
     public boolean warpPlayer(CommandSender sender, ProxiedPlayer player, final WarpInfo warp) throws ServerNotFoundException {
-        player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "...");
         ServerInfo server = plugin.getProxy().getServerInfo(warp.getServer());
         if (server == null) {
             player.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The warp " + warp.getName() + " was configured wrong! Please contact an admin.");
@@ -112,6 +111,7 @@ public class WarpManager extends Manager {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
                 if (player != null && player.isConnected()) {
                     plugin.getTeleportUtils().teleport(player, warp);
+                    player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + warp.getName() + ChatColor.GREEN + " teleportiert!");
                 }
             }
         };
@@ -119,10 +119,11 @@ public class WarpManager extends Manager {
         if (teleportDelay <= 0 || player.hasPermission("serverclusters.bypass.delay") || (sender != player && sender.hasPermission("serverclusters.bypass.delay"))) {
             runnable.run();
         } else {
+            player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "! Bleibe " + teleportDelay + " Sekunden ruhig stehen...");
             if (teleportTasks.containsKey(playerId)) {
-                teleportTasks.get(player.getUniqueId()).cancel();
+                plugin.getProxy().getScheduler().cancel(teleportTasks.get(player.getUniqueId()));
             }
-            teleportTasks.put(playerId, plugin.getProxy().getScheduler().schedule(plugin, runnable, 5, TimeUnit.SECONDS));
+            teleportTasks.put(playerId, plugin.getProxy().getScheduler().schedule(plugin, runnable, teleportDelay, TimeUnit.SECONDS));
         }
         return true;
     }
@@ -130,7 +131,7 @@ public class WarpManager extends Manager {
     public void cancelTeleport(ProxiedPlayer player) {
         if (teleportTasks.containsKey(player.getUniqueId())) {
             teleportTasks.get(player.getUniqueId()).cancel();
-            player.sendMessage(ChatColor.RED + "Teleportation abgebrochen! Du musst für " + teleportDelay + " Sekunden stillstehen!");
+            player.sendMessage(ChatColor.RED + "Teleportation abgebrochen! Du musst f\u00fcr " + teleportDelay + " Sekunden stehen bleiben!");
         }
     }
 
