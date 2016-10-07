@@ -144,7 +144,7 @@ public class WarpManager extends Manager {
         boolean access = false;
         Cluster cluster = plugin.getClusterManager().getClusterByServer(warp.getServer());
         if (cluster != null && cluster.hasAccess(sender)) {
-            if (globalWarps.containsValue(warp)) {
+            if (globalWarps.containsKey(warp.getName().toLowerCase())) {
                 access = sender.hasPermission("serverclusters.globalwarp." + warp.getName().toLowerCase());
             } else {
                 access = sender.hasPermission("serverclusters.warp." + cluster.getName().toLowerCase() + "." + warp.getName().toLowerCase());
