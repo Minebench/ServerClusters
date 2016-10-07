@@ -5,7 +5,9 @@ import com.google.common.io.ByteStreams;
 import de.themoep.serverclusters.bukkit.enums.EntryType;
 import de.themoep.serverclusters.bukkit.QueueEntry;
 import de.themoep.serverclusters.bukkit.ServerClustersBukkit;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -20,7 +22,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * Created by Phoenix616 on 08.01.2015.
@@ -31,6 +32,7 @@ public class TeleportManager implements Listener {
     private Map<UUID, Long> tpRequests = new HashMap<>();
 
     private ServerClustersBukkit plugin;
+    private Location safeLocation;
 
     public TeleportManager(ServerClustersBukkit plugin) {
         this.plugin = plugin;
@@ -157,6 +159,17 @@ public class TeleportManager implements Listener {
     public byte teleport(Player player, Location target) {
         if (target != null && player != null && player.isOnline()) {
             Block block = target.getBlock().getRelative(BlockFace.DOWN);
+            if (block.getType() == Material.AIR) {
+                if (player.getAllowFlight()) {
+                    player.setFlying(true);
+                } else {
+                    target = getSafeLocation(block);
+                    if (target == null) {
+                        player.sendMessage(ChatColor.RED + "No safe location found!");
+                        return -1;
+                    }
+                }
+            }
             player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
             player.teleport(target);
             removeQueueEntry(player.getName());
@@ -199,9 +212,21 @@ public class TeleportManager implements Listener {
      */
     public byte teleport(Player player, Player target) {
         if (target != null && target.isOnline() && player != null && player.isOnline()) {
-            player.teleport(target);
-            removeQueueEntry(player.getName());
             Location loc = target.getLocation();
+            Block block = loc.getBlock().getRelative(BlockFace.DOWN);
+            if (!player.isFlying() && (target.isFlying() || block.getType() == Material.AIR)) {
+                if (player.getAllowFlight()) {
+                    player.setFlying(true);
+                } else {
+                    loc = getSafeLocation(block);
+                    if (loc == null) {
+                        player.sendMessage(ChatColor.RED + "No safe location found!");
+                        return -1;
+                    }
+                }
+            }
+            player.teleport(loc);
+            removeQueueEntry(player.getName());
             plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
             return 1;
         }
@@ -280,5 +305,15 @@ public class TeleportManager implements Listener {
 
     public void addRequest(UUID playerId, long time) {
         tpRequests.put(playerId, time);
+    }
+
+    public Location getSafeLocation(Block block) {
+        while (block.getType() == Material.AIR && block.getY() >= 0) {
+            block = block.getRelative(BlockFace.DOWN);
+        }
+        if (block.getType() == Material.AIR) {
+            block = block.getWorld().getHighestBlockAt(block.getLocation());
+        }
+        return block == null || block.getType() == Material.AIR ? null : block.getLocation();
     }
 }
