@@ -1,5 +1,5 @@
 name: ServerClusters
 main: de.themoep.serverclusters.bungee.ServerClusters
-version: ${minecraft.plugin.version}
+version: '${minecraft.plugin.version}'
 author: Phoenix616
 softdepends: [VNPBungee]

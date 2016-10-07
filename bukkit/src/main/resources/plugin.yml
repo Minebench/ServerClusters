@@ -1,6 +1,6 @@
 name: ServerClustersBukkit
 main: de.themoep.serverclusters.bukkit.ServerClustersBukkit
-version: ${minecraft.plugin.version}
+version: '${minecraft.plugin.version}'
 description: Bukkit part of of the ServerClusters plugin
 authors: [Phoenix616]
 commands:
