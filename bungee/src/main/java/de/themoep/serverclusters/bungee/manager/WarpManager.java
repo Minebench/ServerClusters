@@ -149,10 +149,10 @@ public class WarpManager extends Manager {
                 access = sender.hasPermission("serverclusters.globalwarp." + warp.getName().toLowerCase());
             } else {
                 access = sender.hasPermission("serverclusters.warp." + cluster.getName().toLowerCase() + "." + warp.getName().toLowerCase());
-            }
-            if (sender instanceof ProxiedPlayer && !sender.hasPermission("serverclusters.command.warp.intercluster")) {
-                Cluster playerCluster = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender);
-                access &= cluster.equals(playerCluster);
+                if (sender instanceof ProxiedPlayer && !sender.hasPermission("serverclusters.command.warp.intercluster")) {
+                    Cluster playerCluster = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender);
+                    access &= cluster.equals(playerCluster);
+                }
             }
         }
         return access;
