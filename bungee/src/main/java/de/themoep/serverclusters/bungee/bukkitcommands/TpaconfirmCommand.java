@@ -6,6 +6,9 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class TpaconfirmCommand extends BukkitCommand {
 
     public TpaconfirmCommand(ServerClusters plugin, String name, String permission) {
@@ -29,6 +32,6 @@ public class TpaconfirmCommand extends BukkitCommand {
     }
 
     public Iterable<String> onTabComplete(CommandSender commandSender, String[] strings) {
-        return null;
+        return new ArrayList<>();
     }
 }

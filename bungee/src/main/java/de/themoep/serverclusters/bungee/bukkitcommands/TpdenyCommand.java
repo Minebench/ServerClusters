@@ -40,18 +40,16 @@ public class TpdenyCommand extends BukkitCommand {
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {
+        List<String> playerNames = new ArrayList<>();
         if (strings.length == 0) {
-            List<String> playerNames = new ArrayList<String>();
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
                 if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
                     playerNames.add(player.getName());
                 }
             }
             Collections.sort(playerNames);
-            return playerNames;
         } else if (strings.length == 1) {
             String input = strings[0].toLowerCase();
-            List<String> playerNames = new ArrayList<String>();
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
                 if (!player.getName().toLowerCase().startsWith(input)) continue;
                 if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
@@ -59,8 +57,7 @@ public class TpdenyCommand extends BukkitCommand {
                 }
             }
             Collections.sort(playerNames);
-            return playerNames;
         }
-        return null;
+        return playerNames;
     }
 }

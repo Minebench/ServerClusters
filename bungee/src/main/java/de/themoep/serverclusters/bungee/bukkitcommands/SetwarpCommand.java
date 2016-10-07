@@ -40,6 +40,38 @@ public class SetwarpCommand extends BukkitCommand {
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return null;
+        List<String> pl = new ArrayList<String>();
+        if (args.length > 0) {
+            for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+                if (plugin.getVnpbungee() != null
+                        && plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED
+                        && !sender.hasPermission("vanish.see")) {
+                    continue;
+                }
+                if (args.length == 1 || p.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                    pl.add(p.getName());
+                }
+            }
+        }
+        if (args.length < 2) {
+            for (WarpInfo warp : plugin.getWarpManager().getGlobalWarps()) {
+                if (args.length == 0 || warp.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+                    if (sender.hasPermission("serverclusters.globalwarp." + warp)) {
+                        pl.add(warp.getName());
+                    }
+                }
+            }
+            if (sender instanceof ProxiedPlayer) {
+                Cluster cluster = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender);
+                for (WarpInfo warp : cluster.getWarps()) {
+                    if (args.length == 0 || warp.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+                        if (sender.hasPermission("serverclusters.warp." + cluster.getName() + "." + warp)) {
+                            pl.add(warp.getName());
+                        }
+                    }
+                }
+            }
+        }
+        return pl;
     }
 }
