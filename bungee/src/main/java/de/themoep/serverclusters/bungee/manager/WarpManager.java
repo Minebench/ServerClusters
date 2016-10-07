@@ -58,7 +58,7 @@ public class WarpManager extends Manager {
             globalWarps.put(warpName.toLowerCase(), new WarpInfo(warpName, serverName, world, x, y, z, pitch, yaw));
         }
 
-        Configuration clusterSection = warpStorage.getConfig().getSection("warps");
+        Configuration clusterSection = warpStorage.getConfig().getSection("cluster");
         for (String clusterName : clusterSection.getKeys()) {
             Cluster c = plugin.getClusterManager().getCluster(clusterName);
             if (c == null) {
