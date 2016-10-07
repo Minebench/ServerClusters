@@ -115,17 +115,12 @@ public class WarpCommand extends CooldownBukkitCommand {
             }
         }
 
-        if (warp == null) {
+        if (warp == null || !plugin.getWarpManager().checkAccess(sender, warp)) {
             sender.sendMessage(ChatColor.YELLOW + "Der Warp " + ChatColor.RED + args[0] + ChatColor.YELLOW + " existiert nicht.");
             return;
         }
 
-        if (!plugin.getWarpManager().checkAccess(sender, warp)) {
-            sender.sendMessage(ChatColor.YELLOW + "Du hast nicht genügend Rechte um den Warp " + ChatColor.RED + warp.getName() + ChatColor.YELLOW + " zu nutzen!");
-            return;
-        }
-
-        List<ProxiedPlayer> players = new ArrayList<ProxiedPlayer>();
+        List<ProxiedPlayer> players = new ArrayList<>();
 
         if (args.length == 1) {
             if (sender instanceof ProxiedPlayer) {
