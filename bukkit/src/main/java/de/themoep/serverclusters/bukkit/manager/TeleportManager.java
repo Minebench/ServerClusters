@@ -160,7 +160,7 @@ public class TeleportManager implements Listener {
             player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
             player.teleport(target);
             removeQueueEntry(player.getName());
-            plugin.getLogger().log(Level.INFO, "Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
+            plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
             return 1;
         }
         return -1;
@@ -202,7 +202,7 @@ public class TeleportManager implements Listener {
             player.teleport(target);
             removeQueueEntry(player.getName());
             Location loc = target.getLocation();
-            plugin.getLogger().log(Level.INFO, "Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
+            plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
             return 1;
         }
         return -1;

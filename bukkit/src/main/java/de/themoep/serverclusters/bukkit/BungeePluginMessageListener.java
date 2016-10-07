@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import java.util.logging.Level;
+
 /**
  * Created by Phoenix616 on 08.01.2015.
  */
@@ -24,6 +26,8 @@ public class BungeePluginMessageListener implements PluginMessageListener {
             ByteArrayDataInput in = ByteStreams.newDataInput(message);
             String subchannel = in.readUTF();
 
+            plugin.debug(recevier.getName() + " received plugin message on subchannel '" + subchannel + "'");
+
             if (subchannel.equals("TeleportToPlayer")) {
                 String playername = in.readUTF();
                 String targetname = in.readUTF();
@@ -37,7 +41,7 @@ public class BungeePluginMessageListener implements PluginMessageListener {
                 double z = in.readDouble();
                 float yaw = in.readFloat();
                 float pitch = in.readFloat();
-                Location loc = new Location(Bukkit.getWorld(worldname), x, y, z, yaw, pitch);
+                Location loc = new Location(plugin.getServer().getWorld(worldname), x, y, z, yaw, pitch);
                 plugin.getTeleportManager().teleport(playername, loc);
 
             } else if (subchannel.equals("GetPlayerLocation")) {

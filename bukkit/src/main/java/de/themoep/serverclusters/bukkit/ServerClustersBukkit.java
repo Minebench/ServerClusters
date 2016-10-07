@@ -21,6 +21,7 @@ public class ServerClustersBukkit extends JavaPlugin {
 
     private TeleportManager tpman;
     private int teleportDelay;
+    private boolean debug;
 
     public void onEnable() {
 
@@ -30,6 +31,7 @@ public class ServerClustersBukkit extends JavaPlugin {
             getConfig().set("teleportDelay", teleportDelay);
             saveConfig();
         }
+        debug = getConfig().getBoolean("debug", true);
 
         getLogger().log(Level.INFO, "Initialising Teleport Manager");
         tpman = new TeleportManager(this);
@@ -85,5 +87,11 @@ public class ServerClustersBukkit extends JavaPlugin {
 
     public int getTeleportDelay() {
         return teleportDelay;
+    }
+
+    public void debug(String message) {
+        if (debug) {
+            getLogger().log(Level.INFO, "[Debug] " + message);
+        }
     }
 }
