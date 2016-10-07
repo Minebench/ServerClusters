@@ -26,8 +26,8 @@ public abstract class CooldownBukkitCommand extends BukkitCommand {
                 return;
             }
             cooldowns.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis());
-            super.execute(sender, args);
         }
+        super.execute(sender, args);
     }
 
     public int getCooldown(ProxiedPlayer player) {
