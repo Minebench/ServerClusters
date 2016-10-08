@@ -65,7 +65,7 @@ public class WarpManager extends Manager {
                 plugin.getLogger().log(Level.WARNING, "Cannot load warps for cluster " + clusterName + " ás this cluster does not exist!");
                 continue;
             }
-            Configuration warpSection = warpStorage.getConfig().getSection("warps." + c.getName());
+            Configuration warpSection = clusterSection.getSection(clusterName);
             for (String warpName : warpSection.getKeys()) {
                 Configuration warp = warpSection.getSection(warpName);
                 String serverName = warp.getString("server");
