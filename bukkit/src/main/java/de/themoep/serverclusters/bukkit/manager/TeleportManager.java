@@ -6,6 +6,7 @@ import de.themoep.serverclusters.bukkit.enums.EntryType;
 import de.themoep.serverclusters.bukkit.QueueEntry;
 import de.themoep.serverclusters.bukkit.ServerClustersBukkit;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -160,7 +161,7 @@ public class TeleportManager implements Listener {
         if (target != null && player != null && player.isOnline()) {
             Block block = target.getBlock().getRelative(BlockFace.DOWN);
             if (block.getType() == Material.AIR) {
-                if (player.getAllowFlight()) {
+                if (player.getAllowFlight() || player.getGameMode() == GameMode.CREATIVE) {
                     player.setFlying(true);
                 } else {
                     target = getSafeLocation(block);
@@ -168,6 +169,7 @@ public class TeleportManager implements Listener {
                         player.sendMessage(ChatColor.RED + "No safe location found!");
                         return -1;
                     }
+                    block = target.getBlock().getRelative(BlockFace.DOWN);
                 }
             }
             player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
@@ -215,7 +217,7 @@ public class TeleportManager implements Listener {
             Location loc = target.getLocation();
             Block block = loc.getBlock().getRelative(BlockFace.DOWN);
             if (!player.isFlying() && (target.isFlying() || block.getType() == Material.AIR)) {
-                if (player.getAllowFlight()) {
+                if (player.getAllowFlight() || player.getGameMode() == GameMode.CREATIVE) {
                     player.setFlying(true);
                 } else {
                     loc = getSafeLocation(block);
