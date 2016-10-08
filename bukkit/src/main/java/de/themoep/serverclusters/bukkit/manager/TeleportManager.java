@@ -314,6 +314,6 @@ public class TeleportManager implements Listener {
         if (block.getType() == Material.AIR) {
             block = block.getWorld().getHighestBlockAt(block.getLocation());
         }
-        return block == null || block.getType() == Material.AIR ? null : block.getLocation();
+        return block == null || block.getType() == Material.AIR ? null : block.getLocation().add(0, 1, 0);
     }
 }
