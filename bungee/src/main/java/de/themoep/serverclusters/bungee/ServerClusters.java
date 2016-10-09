@@ -182,7 +182,7 @@ public class ServerClusters extends Plugin {
         getBukkitCommandExecutor().registerCommand(new TpacceptCommand(this, "tpaccept", "serverclusters.command.tpaccept"));
         getBukkitCommandExecutor().registerCommand(new TpdenyCommand(this, "tpdeny", "serverclusters.command.tpdeny"));
         getBukkitCommandExecutor().registerCommand(new TpaconfirmCommand(this, "tpaconfirm", "serverclusters.command.tpaconfirm"));
-        getBukkitCommandExecutor().registerCommand(new SpawnCommand(this, "setspawn", "serverclusters.command.spawn"));
+        getBukkitCommandExecutor().registerCommand(new SpawnCommand(this, "spawn", "serverclusters.command.spawn"));
         getBukkitCommandExecutor().registerCommand(new SetspawnCommand(this, "setspawn", "serverclusters.command.setwarp"));
         getBukkitCommandExecutor().registerCommand(new WarpCommand(this, "warp", "serverclusters.command.warp"));
         getBukkitCommandExecutor().registerCommand(new SetwarpCommand(this, "setwarp", "serverclusters.command.setwarp"));
