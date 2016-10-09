@@ -11,7 +11,7 @@ public class QueueEntry {
     private final Location loc;
     private final String string;
     private final EntryType type;
-    private final Long timestamp;
+    private final long timestamp;
 
     /**
      * An location entry in a player queue.
