@@ -159,19 +159,18 @@ public class WarpCommand extends CooldownBukkitCommand {
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> pl = new ArrayList<String>();
-        if (args.length > 0) {
+        if (args.length > 1) {
             for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
                 if (plugin.getVnpbungee() != null
                         && plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED
                         && !sender.hasPermission("vanish.see")) {
                     continue;
                 }
-                if (args.length == 1 || p.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                if (args.length == 2 || p.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
                     pl.add(p.getName());
                 }
             }
-        }
-        if (args.length < 2) {
+        } else if (args.length < 2) {
             for (WarpInfo warp : plugin.getWarpManager().getGlobalWarps()) {
                 if (args.length == 0 || warp.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
                     if (sender.hasPermission("serverclusters.globalwarp." + warp)) {
