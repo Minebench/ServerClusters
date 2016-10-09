@@ -119,7 +119,7 @@ public class SpawnCommand extends CooldownBukkitCommand {
                         && !sender.hasPermission("vanish.see")) {
                     continue;
                 }
-                if (args.length == 0 || p.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                if (args.length == 0 || p.getName().toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
                     list.add(p.getName());
                 }
             }
