@@ -145,11 +145,12 @@ public class ClusterCommand extends Command implements TabExecutor {
         }
     }
 
-    public Iterable<String> onTabComplete(CommandSender arg0, String[] args) {
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> cl = new ArrayList<String>();
         for (Cluster c : plugin.getClusterManager().getClusterlist())
             if (args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
-                cl.add(c.getName());
+                if (sender.hasPermission("serverclusters.cluster." + c.getName().toLowerCase()))
+                    cl.add(c.getName());
         return cl;
     }
 
