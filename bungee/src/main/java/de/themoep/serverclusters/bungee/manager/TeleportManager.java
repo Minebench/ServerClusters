@@ -30,6 +30,9 @@ public class TeleportManager extends Manager {
     private final Map<String, Request> cachedRequests = new HashMap<String, Request>();
 
     private Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
+    
+    // TODO: Make timeout configurable
+    private final int timeout = 120;
 
     public TeleportManager(ServerClusters plugin) {
         super(plugin);
@@ -150,22 +153,31 @@ public class TeleportManager extends Manager {
                 }
             }
         }
-        receiver.sendMessage(new ComponentBuilder("Nutze /tpaccept um die Anfrage anzunehmen.")
-                        .color(ChatColor.GREEN)
+        receiver.sendMessage(new ComponentBuilder("Nutze ")
+                        .color(ChatColor.GOLD)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpaccept" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage anzunehmen!"
+                                ChatColor.BLUE + "Klicke um " + ChatColor.GREEN + "/tpaccept" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage anzunehmen!"
                         )))
+                        .append("/tpaccept")
+                        .color(ChatColor.GREEN)
+                        .append(" um die Anfrage anzunehmen.")
+                        .color(ChatColor.GOLD)
                         .create()
         );
-        receiver.sendMessage(new ComponentBuilder("Nutze /tpdeny um die Anfrage abzulehnen.")
-                        .color(ChatColor.RED)
+        receiver.sendMessage(new ComponentBuilder("Nutze ")
+                        .color(ChatColor.GOLD)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + sender.getName()))
                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpdeny" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage abzulehnen!"
+                                ChatColor.BLUE + "Klicke um " + ChatColor.RED + "/tpdeny" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage abzulehnen!"
                         )))
+                        .append("/tpdeny")
+                        .color(ChatColor.RED)
+                        .append(" um die Anfrage abzulehnen.")
+                        .color(ChatColor.GOLD)
                         .create()
         );
+        receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + timeout + " Sekunden" + ChatColor.GOLD + " ungültig!");
         return true;
     }
 
@@ -344,8 +356,7 @@ public class TeleportManager extends Manager {
 
         removeRequest(request);
 
-        // TODO: Make timeout configurable
-        if (request.getTimestamp() + 120 * 1000000 < System.currentTimeMillis()) {
+        if (request.getTimestamp() + timeout * 1000000 < System.currentTimeMillis()) {
             player.sendMessage(ChatColor.RED + "Die letzte Anfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.RED + " ist bereits ausgelaufen!");
             return false;
         }
