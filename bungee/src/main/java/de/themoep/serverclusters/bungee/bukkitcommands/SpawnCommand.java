@@ -53,6 +53,8 @@ public class SpawnCommand extends CooldownBukkitCommand {
                             sender.sendMessage(ChatColor.RED + "No cluster with the name " + ChatColor.YELLOW + args[i + 1] + ChatColor.RED + " found?");
                             return;
                         }
+                        i++;
+                        continue;
                     }
                 }
                 ProxiedPlayer player = plugin.getProxy().getPlayer(args[i]);
