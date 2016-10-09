@@ -111,9 +111,9 @@ public class TeleportManager extends Manager {
 
         sender.sendMessage(ChatColor.GREEN + "Teleportationsanfrage an " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + " gesendet!");
         if (request.getTarget() == TeleportTarget.RECEIVER) {
-            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + " fragt, ob er sich zu " + ChatColor.YELLOW + "dir" + ChatColor.GREEN + " teleportieren darf.");
+            receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob er sich zu " + ChatColor.RED + "dir" + ChatColor.GOLD + " teleportieren darf.");
         } else {
-            receiver.sendMessage(ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + " fragt, ob du dich zu " + ChatColor.YELLOW + "ihm" + ChatColor.GREEN + " teleportieren willst.");
+            receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob du dich zu " + ChatColor.RED + "ihm" + ChatColor.GOLD + " teleportieren willst.");
             Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
             Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(sender);
             if (receiverCluster == null) {
@@ -146,7 +146,7 @@ public class TeleportManager extends Manager {
             }
         }
         receiver.sendMessage(new ComponentBuilder("Nutze /tpaccept um die Anfrage anzunehmen.")
-                        .color(ChatColor.GRAY)
+                        .color(ChatColor.GREEN)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
                                 ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpaccept" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage anzunehmen!"
@@ -154,7 +154,7 @@ public class TeleportManager extends Manager {
                         .create()
         );
         receiver.sendMessage(new ComponentBuilder("Nutze /tpdeny um die Anfrage abzulehnen.")
-                        .color(ChatColor.GRAY)
+                        .color(ChatColor.RED)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + sender.getName()))
                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
                                 ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/tpdeny" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage abzulehnen!"
