@@ -82,7 +82,7 @@ public class WarpManager extends Manager {
                 }
                 ServerInfo server = plugin.getProxy().getServerInfo(serverName);
                 if (server == null) {
-                    plugin.getLogger().log(Level.WARNING, "There is no server with the name " + serverName + " for the global warp " + warpName);
+                    plugin.getLogger().log(Level.WARNING, "There is no server with the name '" + serverName + "' for the warp '" + warpName + "' of cluster '" + c.getName() + "'");
                 }
                 c.addWarp(new WarpInfo(warpName, serverName, world, x, y, z, pitch, yaw));
             }
