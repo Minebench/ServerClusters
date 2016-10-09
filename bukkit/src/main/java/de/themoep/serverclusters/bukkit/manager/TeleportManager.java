@@ -17,8 +17,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +37,6 @@ public class TeleportManager implements Listener {
     private Map<UUID, Long> tpRequests = new HashMap<>();
 
     private ServerClustersBukkit plugin;
-    private Location safeLocation;
 
     public TeleportManager(ServerClustersBukkit plugin) {
         this.plugin = plugin;
@@ -47,6 +50,10 @@ public class TeleportManager implements Listener {
 
         if (event.getTo() == event.getFrom()) {
             return;
+        }
+
+        if (isQueued(event.getPlayer(), 60)) {
+            event.setCancelled(true);
         }
 
         if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
@@ -66,6 +73,10 @@ public class TeleportManager implements Listener {
             return;
         }
 
+        if (isQueued((Player) event.getEntity(), 60)) {
+            event.setCancelled(true);
+        }
+
         if (tpRequests.containsKey(event.getEntity().getUniqueId())) {
             if (tpRequests.get(event.getEntity().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
                 cancelTeleport((Player) event.getEntity());
@@ -77,6 +88,10 @@ public class TeleportManager implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (plugin.getTeleportDelay() <= 0) {
             return;
+        }
+
+        if (isQueued(event.getPlayer(), 60)) {
+            event.setCancelled(true);
         }
 
         if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
@@ -92,10 +107,35 @@ public class TeleportManager implements Listener {
             return;
         }
 
+        if (isQueued(event.getPlayer(), 60)) {
+            event.setCancelled(true);
+        }
+
         if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
             if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
                 cancelTeleport(event.getPlayer());
             }
+        }
+    }
+
+    @EventHandler
+    public void onItemPickup(PlayerPickupItemEvent event) {
+        if (isQueued(event.getPlayer(), 60)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        if (isQueued(event.getPlayer(), 60)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (isQueued(event.getPlayer(), 60)) {
+            event.setCancelled(true);
         }
     }
 
@@ -108,11 +148,11 @@ public class TeleportManager implements Listener {
     }
 
     /**
-     * Teleport the player if he has an entry in the teleport queue which is younger then 15 seconds
+     * Teleport the player if he has an entry in the teleport queue
      */
     @EventHandler
     public void OnPlayerLogin(PlayerJoinEvent event) {
-        if (isQueued(event.getPlayer().getName(), 15)) {
+        if (isQueued(event.getPlayer())) {
             QueueEntry entry = getQueueEntry(event.getPlayer().getName());
             if (entry.getType() == EntryType.LOCATION) {
                 Location targetloc = entry.getLocation();
@@ -136,18 +176,20 @@ public class TeleportManager implements Listener {
      * If the player is not online it will queue it 'til he is online and teleport him then.
      * @param playername The name of the player to teleport
      * @param target     The location where to teleport the player to
-     * @return byte: 1 if the player was teleported,
-     * 0 if the teleport was queued
      */
-    public byte teleport(String playername, Location target) {
-        Player player = plugin.getServer().getPlayer(playername);
-        if (player != null && player.isOnline()) {
-            teleport(player, target);
-            return 1;
-        } else {
-            addQueueEntry(playername, target);
-            return 0;
-        }
+    public void teleport(final String playername, final Location target) {
+        addQueueEntry(playername, target);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isQueued(playername)) {
+                    Player player = plugin.getServer().getPlayer(playername);
+                    if (player != null && player.isOnline()) {
+                        teleport(player, target);
+                    }
+                }
+            }
+        }.runTaskLater(plugin, 10);
     }
 
     /**
@@ -186,23 +228,23 @@ public class TeleportManager implements Listener {
      * If the player is not online it will queue it 'til he is online and teleport him then.
      * @param playername Name of the player to teleport
      * @param targetname Name of the player to teleport to
-     * @return byte: 1 if the player was teleported,
-     * 0 if the teleport was queued,
-     * -1 if the target was not found
      */
-    public byte teleport(String playername, String targetname) {
-        Player target = plugin.getServer().getPlayer(targetname);
-        if (target != null && target.isOnline()) {
-            Player player = plugin.getServer().getPlayer(playername);
-            if (player != null && player.isOnline()) {
-                teleport(player, target);
-                return 1;
-            } else {
-                addQueueEntry(playername, targetname);
-                return 0;
+    public void teleport(final String playername, final String targetname) {
+        addQueueEntry(playername, targetname);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isQueued(playername)) {
+                    Player target = plugin.getServer().getPlayer(targetname);
+                    if (target != null && target.isOnline()) {
+                        Player player = plugin.getServer().getPlayer(playername);
+                        if (player != null && player.isOnline()) {
+                            teleport(player, target);
+                        }
+                    }
+                }
             }
-        }
-        return -1;
+        }.runTaskLater(plugin, 10);
     }
 
     /**
@@ -256,16 +298,28 @@ public class TeleportManager implements Listener {
     }
 
     /**
-     * Get if a player was queued for teleport in the last x seconds
+     * Get if a player was queued for teleport in the last x seconds and removes older entries
+     * @param player The player to check
+     * @param x      How far back the player has to be gotten queued
+     * @return boolean: true if queued in the last x seconds, false if not
+     */
+    public boolean isQueued(Player player, int x) {
+        return isQueued(player.getName(), x);
+    }
+
+    /**
+     * Get if a player was queued for teleport in the last x seconds and removes older entries
      * @param playername Name of the player to check
      * @param x          How far back the player has to be gotten queued
-     * @return boolean: true if queued in the last x seconds,
-     * false if not
+     * @return boolean: true if queued in the last x seconds, false if not
      */
     public boolean isQueued(String playername, int x) {
         if (isQueued(playername)) {
             QueueEntry entry = getQueueEntry(playername);
-            return entry != null && entry.getTimeStamp() + x * 1000 > System.currentTimeMillis();
+            if (entry != null && entry.getTimeStamp() + x * 1000 > System.currentTimeMillis()) {
+                return true;
+            }
+            removeQueueEntry(playername);
         }
         return false;
     }
@@ -301,8 +355,8 @@ public class TeleportManager implements Listener {
      * Remove an entry for a player from the teleport queue
      * @param playername The name of the player to remove
      */
-    private void removeQueueEntry(String playername) {
-        tpQueue.remove(playername);
+    private QueueEntry removeQueueEntry(String playername) {
+        return tpQueue.remove(playername);
     }
 
     public void addRequest(UUID playerId, long time) {
