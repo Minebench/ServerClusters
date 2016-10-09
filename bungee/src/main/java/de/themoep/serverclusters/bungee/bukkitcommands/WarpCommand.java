@@ -130,6 +130,10 @@ public class WarpCommand extends CooldownBukkitCommand {
                 return;
             }
         } else if (args.length >= 2) {
+            if (!sender.hasPermission("serverclusters.command.warp.others")) {
+                sender.sendMessage(ChatColor.RED + "You don't have the permissions to teleport other players!");
+                return;
+            }
             for (int i = 1; i < args.length; i++) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(args[i]);
                 if (player != null) {
