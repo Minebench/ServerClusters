@@ -15,6 +15,7 @@ commandaliases:
   find: [cfind]
   tp: [ctp, tpc]
   tphere: [ctphere, s]
+  delspawn: [cdelspawn]
   delwarp: [cdelwarp]
 teleportDelay: 5
 commandCooldown: 10

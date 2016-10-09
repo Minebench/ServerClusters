@@ -28,12 +28,9 @@ public class WarpManager extends Manager {
     private final YamlStorage warpStorage;
 
     private final Map<String, WarpInfo> globalWarps = new HashMap<>();
-    private int teleportDelay;
-    private Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
 
     public WarpManager(ServerClusters plugin) {
         super(plugin);
-        teleportDelay = plugin.getConfig().getInt("teleportDelay", 5);
         warpStorage = new YamlStorage(plugin, "warps");
 
         Configuration globalSection = warpStorage.getConfig().getSection("global");
@@ -98,7 +95,7 @@ public class WarpManager extends Manager {
     public boolean warpPlayer(CommandSender sender, ProxiedPlayer player, final WarpInfo warp) throws ServerNotFoundException {
         ServerInfo server = plugin.getProxy().getServerInfo(warp.getServer());
         if (server == null) {
-            player.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The warp " + warp.getName() + " was configured wrong! Please contact an admin.");
+            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The warp " + warp.getName() + " was configured wrong! Please contact an admin.");
             plugin.getLogger().severe("There is no server with the name " + warp.getServer() + " for the warp " + warp.getName());
             throw new ServerNotFoundException("There is no server with the name " + warp.getServer() + " for the warp " + warp.getName());
         }
@@ -116,23 +113,14 @@ public class WarpManager extends Manager {
             }
         };
 
-        if (teleportDelay <= 0 || player.hasPermission("serverclusters.bypass.delay") || (sender != player && sender.hasPermission("serverclusters.bypass.delay"))) {
+        if (plugin.getTeleportDelay() <= 0 || player.hasPermission("serverclusters.bypass.delay") || (sender != player && sender.hasPermission("serverclusters.bypass.delay"))) {
             runnable.run();
         } else {
-            player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "! Bleibe " + teleportDelay + " Sekunden ruhig stehen...");
-            if (teleportTasks.containsKey(playerId)) {
-                plugin.getProxy().getScheduler().cancel(teleportTasks.get(player.getUniqueId()));
-            }
-            teleportTasks.put(playerId, plugin.getProxy().getScheduler().schedule(plugin, runnable, teleportDelay, TimeUnit.SECONDS));
+            player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "! Bleibe " + plugin.getTeleportDelay() + " Sekunden ruhig stehen...");
+
+            plugin.getTeleportManager().scheduleDelayedTeleport(player, runnable);
         }
         return true;
-    }
-
-    public void cancelTeleport(ProxiedPlayer player) {
-        if (teleportTasks.containsKey(player.getUniqueId())) {
-            teleportTasks.get(player.getUniqueId()).cancel();
-            player.sendMessage(ChatColor.RED + "Teleportation abgebrochen! Du musst f\u00fcr " + teleportDelay + " Sekunden stehen bleiben!");
-        }
     }
 
     /**

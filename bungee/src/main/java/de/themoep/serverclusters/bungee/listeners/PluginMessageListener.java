@@ -85,7 +85,7 @@ public class PluginMessageListener implements Listener {
             String playerName = in.readUTF();
             ProxiedPlayer player = plugin.getProxy().getPlayer(playerName);
             if (player != null) {
-                plugin.getWarpManager().cancelTeleport(player);
+                plugin.getTeleportManager().cancelTeleport(player);
             }
             plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/CancelTeleport '" + playerName + "'");
         }

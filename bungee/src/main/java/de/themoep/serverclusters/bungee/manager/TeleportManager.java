@@ -10,11 +10,14 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ServerClusters
@@ -25,6 +28,8 @@ public class TeleportManager extends Manager {
     private final Map<String, List<Request>> requestMap = new HashMap<String, List<Request>>();
 
     private final Map<String, Request> cachedRequests = new HashMap<String, Request>();
+
+    private Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
 
     public TeleportManager(ServerClusters plugin) {
         super(plugin);
@@ -351,6 +356,20 @@ public class TeleportManager extends Manager {
 
         player.sendMessage(ChatColor.GRAY + "Teleportationsanfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.GRAY + " verweigert!");
         return true;
+    }
+
+    public void scheduleDelayedTeleport(ProxiedPlayer player, Runnable runnable) {
+        if (teleportTasks.containsKey(player.getUniqueId())) {
+            plugin.getProxy().getScheduler().cancel(teleportTasks.get(player.getUniqueId()));
+        }
+        teleportTasks.put(player.getUniqueId(), plugin.getProxy().getScheduler().schedule(plugin, runnable, plugin.getTeleportDelay(), TimeUnit.SECONDS));
+    }
+
+    public void cancelTeleport(ProxiedPlayer player) {
+        if (teleportTasks.containsKey(player.getUniqueId())) {
+            teleportTasks.get(player.getUniqueId()).cancel();
+            player.sendMessage(ChatColor.RED + "Teleportation abgebrochen! Du musst f\u00fcr " + plugin.getTeleportDelay() + " Sekunden stehen bleiben!");
+        }
     }
 
     private class Request {

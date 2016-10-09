@@ -71,6 +71,7 @@ public class Cluster implements Comparable<Cluster> {
      * Whether or not this cluster should how up in the lists
      */
     private boolean hidden = false;
+    private LocationInfo spawn;
 
     /**
      * The cluster object
@@ -398,5 +399,13 @@ public class Cluster implements Comparable<Cluster> {
 
     public void setIgnoreLogoutServer(boolean ignoreLogoutServer) {
         this.ignoreLogoutServer = ignoreLogoutServer;
+    }
+
+    public LocationInfo getSpawn() {
+        return spawn;
+    }
+
+    public void setSpawn(LocationInfo spawn) {
+        this.spawn = spawn;
     }
 }

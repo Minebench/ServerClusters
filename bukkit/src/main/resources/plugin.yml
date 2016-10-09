@@ -46,6 +46,18 @@ commands:
       usage: /<command> <warpname> [global]
       permission: serverclusters.command.setwarp
       permission-message: You don't have the permission <permission>
+   spawn:
+      aliases: [cspawn]
+      description: Teleports to the spawn
+      usage: /<command> [<playername>]
+      permission: serverclusters.command.spawn
+      permission-message: You don't have the permission <permission>
+   setspawn:
+      aliases: [csetspawn]
+      description: Set (cluster) spawn
+      usage: /<command> [global]
+      permission: serverclusters.command.setspawn
+      permission-message: You don't have the permission <permission>
 permissions:
    serverclusters.command.tpa:
       default: op
@@ -60,6 +72,10 @@ permissions:
    serverclusters.command.warp:
       default: op
    serverclusters.command.setwarp:
+      default: op
+   serverclusters.command.spawn:
+      default: op
+   serverclusters.command.setspawn:
       default: op
    serverclusters.command.setglobalwarp:
       default: op

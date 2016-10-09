@@ -57,7 +57,7 @@ public class ServerClustersBukkit extends JavaPlugin {
         String senderName = sender.getName();
         if (sender instanceof Player) {
             player = (Player) sender;
-            if ("warp".equals(cmd.getName()) && getTeleportDelay() > 0 && !player.hasPermission("serverclusters.bypass.delay")) {
+            if (("warp".equals(cmd.getName()) || "spawn".equals(cmd.getName())) && getTeleportDelay() > 0 && !player.hasPermission("serverclusters.bypass.delay")) {
                 getTeleportManager().addRequest(player.getUniqueId(), System.currentTimeMillis());
             }
         } else if (getServer().getOnlinePlayers().size() > 0) {
