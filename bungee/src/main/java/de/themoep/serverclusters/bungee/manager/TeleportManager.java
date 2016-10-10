@@ -177,7 +177,7 @@ public class TeleportManager extends Manager {
                         .color(ChatColor.GOLD)
                         .create()
         );
-        receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + timeout + " Sekunden" + ChatColor.GOLD + " ungültig!");
+        receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + timeout + " Sekunden" + ChatColor.GOLD + " ung\u00fcltig!");
         return true;
     }
 
