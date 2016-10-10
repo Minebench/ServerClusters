@@ -46,7 +46,7 @@ public class TpahereCommand extends CooldownBukkitCommand {
             return;
         }
 
-        plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER, location);
+        plugin.getTeleportManager().addRequest(p, toTeleport, TeleportTarget.SENDER);
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {

@@ -19,6 +19,7 @@ commandaliases:
   delwarp: [cdelwarp]
 teleportDelay: 5
 commandCooldown: 10
+teleportTimeout: 30
 cluster:
   Freebuild:
     server:

@@ -64,7 +64,7 @@ public class TpaCommand extends CooldownBukkitCommand {
         }
 
         if (senderCluster.equals(targetCluster)) {
-            plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER, location);
+            plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER);
             return;
         }
 
@@ -79,9 +79,9 @@ public class TpaCommand extends CooldownBukkitCommand {
         }
 
         if (sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
-            plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER, location);
+            plugin.getTeleportManager().addRequest(p, target, TeleportTarget.RECEIVER);
         } else {
-            plugin.getTeleportManager().cacheRequest(p, target, TeleportTarget.RECEIVER, location);
+            plugin.getTeleportManager().cacheRequest(p, target, TeleportTarget.RECEIVER);
             p.sendMessage(new ComponentBuilder(target.getName()).color(ChatColor.RED)
                             .append(" befindet sich auf dem Server " + targetCluster.getName() + "!").color(ChatColor.YELLOW)
                             .create()

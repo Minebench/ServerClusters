@@ -25,14 +25,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class TeleportManager extends Manager {
 
-    private final Map<String, List<Request>> requestMap = new HashMap<String, List<Request>>();
+    private final Map<String, List<Request>> requestMap = new HashMap<>();
 
-    private final Map<String, Request> cachedRequests = new HashMap<String, Request>();
+    private final Map<String, Request> cachedRequests = new HashMap<>();
 
     private Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
-    
-    // TODO: Make timeout configurable
-    private final int timeout = 120;
 
     public TeleportManager(ServerClusters plugin) {
         super(plugin);
@@ -49,8 +46,8 @@ public class TeleportManager extends Manager {
      * @param receiver The player who the request was sent to
      * @param target   Where we should teleport to
      */
-    public void cacheRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target, LocationInfo location) {
-        cacheRequest(new Request(sender, receiver, target, location));
+    public void cacheRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
+        cacheRequest(new Request(sender, receiver, target));
     }
 
     /**
@@ -74,7 +71,7 @@ public class TeleportManager extends Manager {
         boolean r = false;
         Request request = cachedRequests.get(sender.getName());
         if (request == null) {
-            return r;
+            return false;
         }
         if (request.getAction() == RequestAction.QUEUE) {
             r = addRequest(request);
@@ -97,12 +94,8 @@ public class TeleportManager extends Manager {
      * @param target   Where we should teleport to
      * @return <tt>true</tt> if the request was successfully added; <tt>false</tt> if the receiver isn't online anymore or an error occurred
      */
-    public boolean addRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target, LocationInfo location) {
-        if (location != null) {
-            return addRequest(new Request(sender, receiver, target, location));
-        }
-        sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Your location is unknown? Oo");
-        return false;
+    public boolean addRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
+        return addRequest(new Request(sender, receiver, target));
     }
 
     private boolean addRequest(Request request) {
@@ -177,7 +170,7 @@ public class TeleportManager extends Manager {
                         .color(ChatColor.GOLD)
                         .create()
         );
-        receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + timeout + " Sekunden" + ChatColor.GOLD + " ung\u00fcltig!");
+        receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + plugin.getTeleportTimeout() + " Sekunden" + ChatColor.GOLD + " ung\u00fcltig!");
         return true;
     }
 
@@ -326,7 +319,7 @@ public class TeleportManager extends Manager {
         if (request.getTarget() == TeleportTarget.RECEIVER) {
             plugin.getTeleportUtils().teleportToPlayer(sender, player);
         } else if (request.getTarget() == TeleportTarget.SENDER) {
-            return plugin.getTeleportUtils().teleport(player, request.getLocation());
+            plugin.getTeleportUtils().teleportToPlayer(player, sender);
         }
         return true;
     }
@@ -356,7 +349,7 @@ public class TeleportManager extends Manager {
 
         removeRequest(request);
 
-        if (request.getTimestamp() + timeout * 1000000 < System.currentTimeMillis()) {
+        if (request.getTimestamp() + plugin.getTeleportTimeout() * 1000000 < System.currentTimeMillis()) {
             player.sendMessage(ChatColor.RED + "Die letzte Anfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.RED + " ist bereits ausgelaufen!");
             return false;
         }
@@ -388,21 +381,18 @@ public class TeleportManager extends Manager {
         private final String sender;
         private final String receiver;
         private final TeleportTarget target;
-        private final LocationInfo location;
         private RequestAction action = RequestAction.QUEUE;
 
-        public Request(String sender, String receiver, TeleportTarget target, LocationInfo location) {
+        public Request(String sender, String receiver, TeleportTarget target) {
             this.sender = sender;
             this.receiver = receiver;
             this.target = target;
-            this.location = location;
         }
 
-        public Request(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target, LocationInfo location) {
+        public Request(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
             this.sender = sender.getName();
             this.receiver = receiver.getName();
             this.target = target;
-            this.location = location;
         }
 
         public long getTimestamp() {
@@ -421,13 +411,9 @@ public class TeleportManager extends Manager {
             return target;
         }
 
-        public LocationInfo getLocation() {
-            return location;
-        }
-
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "{timestamp=" + timestamp + ",sender=" + sender + ",receiver=" + receiver + ",target=" + target + ",location=" + location + "}";
+            return getClass().getSimpleName() + "{timestamp=" + timestamp + ",sender=" + sender + ",receiver=" + receiver + ",target=" + target + "}";
         }
 
         @Override

@@ -50,6 +50,7 @@ public class ServerClusters extends Plugin {
     private VNPBungee vnpbungee = null;
     private long commandCooldown;
     private int teleportDelay;
+    private int teleportTimeout;
 
     public void onEnable() {
         loadConfig();
@@ -92,6 +93,7 @@ public class ServerClusters extends Plugin {
 
         teleportDelay = getConfig().getInt("teleportDelay", 5);
         commandCooldown = getConfig().getInt("commandCooldown", 10);
+        teleportTimeout = getConfig().getInt("teleportTimeout", 30);
 
         getLogger().info("Loading Cluster Manager...");
         cm = new ClusterManager(this);
@@ -202,6 +204,10 @@ public class ServerClusters extends Plugin {
 
     public long getCommandCooldown() {
         return commandCooldown;
+    }
+
+    public int getTeleportTimeout() {
+        return teleportTimeout;
     }
 
     public SpawnManager getSpawnManager() {
