@@ -31,7 +31,7 @@ public class SpawnManager extends Manager {
             Double y = global.getDouble("y", Double.NaN);
             Double z = global.getDouble("z", Double.NaN);
             float pitch = global.getFloat("pitch", 0);
-            float yaw = global.getFloat("pitch", 0);
+            float yaw = global.getFloat("yaw", 0);
 
             if (serverName == null || serverName.isEmpty() || world == null || world.isEmpty() || x.isNaN() || y.isNaN() || z.isNaN()) {
                 plugin.getLogger().log(Level.SEVERE, ChatColor.YELLOW + "Could not load the global spawn! It was configured wrong!");
@@ -58,7 +58,7 @@ public class SpawnManager extends Manager {
             Double y = spawn.getDouble("y", Double.NaN);
             Double z = spawn.getDouble("z", Double.NaN);
             float pitch = spawn.getFloat("pitch", 0);
-            float yaw = spawn.getFloat("pitch", 0);
+            float yaw = spawn.getFloat("yaw", 0);
 
             if (serverName == null || serverName.isEmpty() || world == null || world.isEmpty() || x.isNaN() || y.isNaN() || z.isNaN()) {
                 plugin.getLogger().log(Level.SEVERE, ChatColor.YELLOW + "Could not load the spawn for cluster '" + c.getName() + "'! It was configured wrong!");

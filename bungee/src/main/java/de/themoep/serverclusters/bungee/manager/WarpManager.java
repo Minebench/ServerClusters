@@ -42,7 +42,7 @@ public class WarpManager extends Manager {
             Double y = warp.getDouble("y", Double.NaN);
             Double z = warp.getDouble("z", Double.NaN);
             float pitch = warp.getFloat("pitch", 0);
-            float yaw = warp.getFloat("pitch", 0);
+            float yaw = warp.getFloat("yaw", 0);
 
             if (serverName == null || serverName.isEmpty() || world == null || world.isEmpty() || x.isNaN() || y.isNaN() || z.isNaN()) {
                 plugin.getLogger().log(Level.SEVERE, ChatColor.YELLOW + "Could not load the global warp '" + warpName + "'! It was configured wrong!");
@@ -71,7 +71,7 @@ public class WarpManager extends Manager {
                 Double y = warp.getDouble("y", Double.NaN);
                 Double z = warp.getDouble("z", Double.NaN);
                 float pitch = warp.getFloat("pitch", 0);
-                float yaw = warp.getFloat("pitch", 0);
+                float yaw = warp.getFloat("yaw", 0);
 
                 if (serverName == null || serverName.isEmpty() || world == null || world.isEmpty() || x.isNaN() || y.isNaN() || z.isNaN()) {
                     plugin.getLogger().log(Level.SEVERE, ChatColor.YELLOW + "Could not load the warp '" + warpName + "' for cluster '" + c.getName() + "'! It was configured wrong!");
