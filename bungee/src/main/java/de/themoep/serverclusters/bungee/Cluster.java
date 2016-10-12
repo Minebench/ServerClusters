@@ -3,12 +3,12 @@ package de.themoep.serverclusters.bungee;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.InvalidPropertiesFormatException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -43,7 +43,7 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * List of aliases of this cluster
      */
-    private List<String> aliaslist = new ArrayList<>();
+    private Set<String> aliases = new HashSet<>();
 
     /**
      * Map of lowercase warpnames to their warp info
@@ -113,7 +113,7 @@ public class Cluster implements Comparable<Cluster> {
                 config.getBoolean("ignoreLogoutServer", false)
         );
 
-        setAliaslist(config.getStringList("alias"));
+        setAliases(config.getStringList("alias"));
         setHidden(config.getBoolean("hidden", false));
         setDefaultServer(config.getString("cluster", null));
     }
@@ -328,17 +328,24 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     /**
-     * @return the aliaslist
+     * @return the aliases
      */
-    public List<String> getAliaslist() {
-        return aliaslist;
+    public Set<String> getAliases() {
+        return aliases;
     }
 
     /**
-     * @param aliaslist the aliaslist to set
+     * @param aliasList the aliases to set
      */
-    public void setAliaslist(List<String> aliaslist) {
-        this.aliaslist = aliaslist;
+    public void setAliases(List<String> aliasList) {
+        aliases = new HashSet<>();
+        for (String alias : aliasList) {
+            aliases.add(alias.toLowerCase());
+        }
+    }
+
+    public boolean isAlias(String name) {
+        return aliases.contains(name.toLowerCase());
     }
 
     public boolean containsServer(String servername) {

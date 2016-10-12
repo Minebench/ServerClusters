@@ -36,14 +36,8 @@ public class ClusterManager extends Manager {
         }
 
         for (Cluster c : clustermap.values()) {
-            if (c.getName().equalsIgnoreCase(name)) {
+            if (c.getName().equalsIgnoreCase(name) || c.isAlias(name)) {
                 return c;
-            }
-
-            for (String a : c.getAliaslist()) {
-                if (a.equalsIgnoreCase(name)) {
-                    return c;
-                }
             }
         }
         return null;
