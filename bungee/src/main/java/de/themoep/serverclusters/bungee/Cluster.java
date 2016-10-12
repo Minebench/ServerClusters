@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.InvalidPropertiesFormatException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * The list of servernames in the cluster
      */
-    private List<String> serverlist = new ArrayList<String>();
+    private List<String> serverlist = new ArrayList<>();
 
     /**
      * Name of the cluster
@@ -42,13 +43,13 @@ public class Cluster implements Comparable<Cluster> {
     /**
      * List of aliases of this cluster
      */
-    private List<String> aliaslist = new ArrayList<String>();
+    private List<String> aliaslist = new ArrayList<>();
 
     /**
      * Map of lowercase warpnames to their warp info
      */
 
-    private Map<String, WarpInfo> warps = new HashMap<String, WarpInfo>();
+    private Map<String, WarpInfo> warps = new LinkedHashMap<>();
 
     /**
      * Allow ignoring the last logout server. This also stops storing of that value!

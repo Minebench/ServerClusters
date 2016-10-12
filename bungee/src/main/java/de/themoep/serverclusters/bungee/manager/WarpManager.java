@@ -10,24 +10,20 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 
-import javax.script.Bindings;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class WarpManager extends Manager {
 
     private final YamlStorage warpStorage;
 
-    private final Map<String, WarpInfo> globalWarps = new HashMap<>();
+    private final Map<String, WarpInfo> globalWarps = new LinkedHashMap<>();
 
     public WarpManager(ServerClusters plugin) {
         super(plugin);

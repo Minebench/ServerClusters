@@ -1,12 +1,9 @@
 package de.themoep.serverclusters.bungee.manager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
@@ -14,7 +11,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class ClusterManager extends Manager {
 
-    private final Map<String, Cluster> clustermap = new HashMap<String, Cluster>();
+    private final Map<String, Cluster> clustermap = new LinkedHashMap<>();
 
     public ClusterManager(ServerClusters plugin) {
         super(plugin);
@@ -25,7 +22,7 @@ public class ClusterManager extends Manager {
      * @return List of clusters
      */
     public List<Cluster> getClusterlist() {
-        return new ArrayList<Cluster>(clustermap.values());
+        return new ArrayList<>(clustermap.values());
     }
 
     /**
