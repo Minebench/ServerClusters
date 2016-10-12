@@ -48,7 +48,7 @@ public class WarpManager extends Manager {
             if (server == null) {
                 plugin.getLogger().log(Level.WARNING, "There is no server with the name " + serverName + " for the global warp " + warpName);
             }
-            globalWarps.put(warpName.toLowerCase(), new WarpInfo(warpName, serverName, world, x, y, z, pitch, yaw));
+            globalWarps.put(warpName.toLowerCase(), new WarpInfo(warpName, serverName, world, x, y, z, yaw, pitch));
         }
 
         Configuration clusterSection = warpStorage.getConfig().getSection("cluster");
@@ -77,7 +77,7 @@ public class WarpManager extends Manager {
                 if (server == null) {
                     plugin.getLogger().log(Level.WARNING, "There is no server with the name '" + serverName + "' for the warp '" + warpName + "' of cluster '" + c.getName() + "'");
                 }
-                c.addWarp(new WarpInfo(warpName, serverName, world, x, y, z, pitch, yaw));
+                c.addWarp(new WarpInfo(warpName, serverName, world, x, y, z, yaw, pitch));
             }
         }
     }

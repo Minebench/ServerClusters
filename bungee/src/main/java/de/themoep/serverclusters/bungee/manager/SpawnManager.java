@@ -40,7 +40,7 @@ public class SpawnManager extends Manager {
             if (server == null) {
                 plugin.getLogger().log(Level.WARNING, "There is no server with the name " + serverName + " for the global spawn");
             }
-            globalSpawn = new LocationInfo(serverName, world, x, y, z, pitch, yaw);
+            globalSpawn = new LocationInfo(serverName, world, x, y, z, yaw, pitch);
         }
 
         Configuration clusterSection = spawnStorage.getConfig().getSection("cluster");
@@ -68,7 +68,7 @@ public class SpawnManager extends Manager {
             if (server == null) {
                 plugin.getLogger().log(Level.WARNING, "There is no server with the name '" + serverName + "' for spawn of cluster '" + c.getName() + "'");
             }
-            c.setSpawn(new LocationInfo(serverName, world, x, y, z, pitch, yaw));
+            c.setSpawn(new LocationInfo(serverName, world, x, y, z, yaw, pitch));
         }
     }
 
