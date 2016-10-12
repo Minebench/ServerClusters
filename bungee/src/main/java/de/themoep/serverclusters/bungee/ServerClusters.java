@@ -154,7 +154,7 @@ public class ServerClusters extends Plugin {
         commandList.add(new FindCommand(this, "find", "serverclusters.command.find", fal.toArray(new String[fal.size()])));
 
         List<String> dsal = getConfig().getStringList("commandaliases.delspawn");
-        commandList.add(new DelspawnCommand(this, "delwarp", "serverclusters.command.delspawn", dsal.toArray(new String[fal.size()])));
+        commandList.add(new DelspawnCommand(this, "delspawn", "serverclusters.command.delspawn", dsal.toArray(new String[fal.size()])));
 
         List<String> dwal = getConfig().getStringList("commandaliases.delwarp");
         commandList.add(new DelwarpCommand(this, "delwarp", "serverclusters.command.delwarp", dwal.toArray(new String[fal.size()])));
