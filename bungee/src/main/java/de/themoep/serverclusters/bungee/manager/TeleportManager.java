@@ -289,7 +289,7 @@ public class TeleportManager extends Manager {
                                             .append("/tpaconfirm").color(ChatColor.RED).event(
                                                     new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm")
                                             ).event(
-                                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuführen!"))
+                                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuf\u00fchren!"))
                                             )
                                             .append(" um dich trotzdem zu ihm zu teleportieren!")
                                             .retain(ComponentBuilder.FormatRetention.NONE)
@@ -306,7 +306,7 @@ public class TeleportManager extends Manager {
                                     .event(
                                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + receiverCluster.getName())
                                     ).event(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + receiverCluster.getName() + " auszuführen und den Server zu wechseln!"))
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + receiverCluster.getName() + " auszuf\u00fchren und den Server zu wechseln!"))
                                     ).create()
                     );
                 }
