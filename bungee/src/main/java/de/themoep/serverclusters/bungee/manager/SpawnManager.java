@@ -47,7 +47,7 @@ public class SpawnManager extends Manager {
         for (String clusterName : clusterSection.getKeys()) {
             Cluster c = plugin.getClusterManager().getCluster(clusterName);
             if (c == null) {
-                plugin.getLogger().log(Level.WARNING, "Cannot load warps for cluster " + clusterName + " ás this cluster does not exist!");
+                plugin.getLogger().log(Level.WARNING, "Cannot load warps for cluster " + clusterName + " ï¿½s this cluster does not exist!");
                 continue;
             }
             Configuration spawn = clusterSection.getSection(clusterName);
@@ -107,12 +107,12 @@ public class SpawnManager extends Manager {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
                 if (player != null && player.isConnected()) {
                     plugin.getTeleportUtils().teleport(player, finalSpawn);
-                    player.sendMessage(ChatColor.GREEN + "Zum " + cluster.getName() + " Spawn teleportiert!");
                 }
             }
         };
 
         if (plugin.getTeleportDelay() <= 0 || player.hasPermission("serverclusters.bypass.delay") || (sender != player && sender.hasPermission("serverclusters.bypass.delay"))) {
+            player.sendMessage(ChatColor.GRAY + "Teleportiere zum Spawn von " + cluster.getName() + "...");
             runnable.run();
         } else {
             player.sendMessage(ChatColor.GRAY + "Teleportiere zum Spawn von " + cluster.getName() + "! Bleibe " + plugin.getTeleportDelay() + " Sekunden ruhig stehen...");

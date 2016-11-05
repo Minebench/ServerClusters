@@ -104,12 +104,12 @@ public class WarpManager extends Manager {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
                 if (player != null && player.isConnected()) {
                     plugin.getTeleportUtils().teleport(player, warp);
-                    player.sendMessage(ChatColor.GREEN + "Zu " + ChatColor.YELLOW + warp.getName() + ChatColor.GREEN + " teleportiert!");
                 }
             }
         };
 
         if (plugin.getTeleportDelay() <= 0 || player.hasPermission("serverclusters.bypass.delay") || (sender != player && sender.hasPermission("serverclusters.bypass.delay"))) {
+            player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "...");
             runnable.run();
         } else {
             player.sendMessage(ChatColor.GRAY + "Teleportiere zu " + warp.getName() + "! Bleibe " + plugin.getTeleportDelay() + " Sekunden ruhig stehen...");

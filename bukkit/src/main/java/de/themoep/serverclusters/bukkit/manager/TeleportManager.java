@@ -217,6 +217,8 @@ public class TeleportManager implements Listener {
             player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
             player.teleport(target);
             removeQueueEntry(player.getName());
+
+            player.sendMessage(ChatColor.GREEN + "Teleportiert!");
             plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
             return 1;
         }
@@ -271,6 +273,7 @@ public class TeleportManager implements Listener {
             }
             player.teleport(loc);
             removeQueueEntry(player.getName());
+            player.sendMessage(ChatColor.GREEN + "Teleportiert!");
             plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
             return 1;
         }
