@@ -55,7 +55,7 @@ public class WarpManager extends Manager {
         for (String clusterName : clusterSection.getKeys()) {
             Cluster c = plugin.getClusterManager().getCluster(clusterName);
             if (c == null) {
-                plugin.getLogger().log(Level.WARNING, "Cannot load warps for cluster " + clusterName + " ás this cluster does not exist!");
+                plugin.getLogger().log(Level.WARNING, "Cannot load warps for cluster " + clusterName + " as this cluster does not exist!");
                 continue;
             }
             Configuration warpSection = clusterSection.getSection(clusterName);
