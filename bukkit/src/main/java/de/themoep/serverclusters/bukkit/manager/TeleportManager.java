@@ -151,7 +151,7 @@ public class TeleportManager implements Listener {
      * Teleport the player if he has an entry in the teleport queue
      */
     @EventHandler
-    public void OnPlayerLogin(PlayerJoinEvent event) {
+    public void onPlayerLogin(PlayerJoinEvent event) {
         if (isQueued(event.getPlayer())) {
             QueueEntry entry = getQueueEntry(event.getPlayer().getName());
             if (entry.getType() == EntryType.LOCATION) {
@@ -177,19 +177,11 @@ public class TeleportManager implements Listener {
      * @param playername The name of the player to teleport
      * @param target     The location where to teleport the player to
      */
-    public void teleport(final String playername, final Location target) {
-        addQueueEntry(playername, target);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (isQueued(playername)) {
-                    Player player = plugin.getServer().getPlayer(playername);
-                    if (player != null && player.isOnline()) {
-                        teleport(player, target);
-                    }
-                }
-            }
-        }.runTaskLater(plugin, 10);
+    public void teleport(String playername, Location target) {
+        Player player = plugin.getServer().getPlayer(playername);
+        if (teleport(player, target) == -1) {
+            addQueueEntry(playername, target);
+        }
     }
 
     /**
@@ -209,7 +201,7 @@ public class TeleportManager implements Listener {
                     target = getSafeLocation(block);
                     if (target == null) {
                         player.sendMessage(ChatColor.RED + "No safe location found!");
-                        return -1;
+                        return 0;
                     }
                     block = target.getBlock().getRelative(BlockFace.DOWN);
                 }
@@ -231,22 +223,14 @@ public class TeleportManager implements Listener {
      * @param playername Name of the player to teleport
      * @param targetname Name of the player to teleport to
      */
-    public void teleport(final String playername, final String targetname) {
-        addQueueEntry(playername, targetname);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (isQueued(playername)) {
-                    Player target = plugin.getServer().getPlayer(targetname);
-                    if (target != null && target.isOnline()) {
-                        Player player = plugin.getServer().getPlayer(playername);
-                        if (player != null && player.isOnline()) {
-                            teleport(player, target);
-                        }
-                    }
-                }
+    public void teleport(String playername, String targetname) {
+        Player target = plugin.getServer().getPlayer(targetname);
+        if (target != null && target.isOnline()) {
+            Player player = plugin.getServer().getPlayer(playername);
+            if (teleport(player, target) == -1) {
+                addQueueEntry(playername, targetname);
             }
-        }.runTaskLater(plugin, 10);
+        }
     }
 
     /**
@@ -267,7 +251,7 @@ public class TeleportManager implements Listener {
                     loc = getSafeLocation(block);
                     if (loc == null) {
                         player.sendMessage(ChatColor.RED + "No safe location found!");
-                        return -1;
+                        return 0;
                     }
                 }
             }
