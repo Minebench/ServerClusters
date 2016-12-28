@@ -231,7 +231,7 @@ public class TeleportManager implements Listener {
      */
     public byte teleport(Player player, Player target) {
         if (target != null && target.isOnline() && player != null && player.isOnline()) {
-            Location loc = makeTeleportSafe(target, target.getLocation());
+            Location loc = makeTeleportSafe(player, target.getLocation());
             if (loc == null) {
                 return 0;
             }
@@ -337,7 +337,7 @@ public class TeleportManager implements Listener {
                     player.setFlying(true);
                 } else {
                     while (target.getBlock().getType() == Material.AIR && target.getY() >= 0) {
-                        target.add(0, -1, 0);
+                        target.subtract(0, 1, 0);
                     }
                     if (target.getBlock().getType() == Material.AIR) {
                         target.setY(target.getWorld().getHighestBlockAt(target).getY());
