@@ -9,7 +9,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,7 +21,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -193,20 +191,11 @@ public class TeleportManager implements Listener {
      */
     public byte teleport(Player player, Location target) {
         if (target != null && player != null && player.isOnline()) {
-            Block block = target.getBlock().getRelative(BlockFace.DOWN);
-            if (block.getType() == Material.AIR) {
-                if (player.getAllowFlight() || player.getGameMode() == GameMode.CREATIVE) {
-                    player.setFlying(true);
-                } else {
-                    target = getSafeLocation(block);
-                    if (target == null) {
-                        player.sendMessage(ChatColor.RED + "No safe location found!");
-                        return 0;
-                    }
-                    block = target.getBlock().getRelative(BlockFace.DOWN);
-                }
+            Location loc = makeTeleportSafe(player, target);
+            if (loc == null) {
+                return 0;
             }
-            player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
+            player.sendBlockChange(loc, loc.getBlock().getType(), loc.getBlock().getData());
             player.teleport(target);
             removeQueueEntry(player.getName());
 
@@ -242,18 +231,9 @@ public class TeleportManager implements Listener {
      */
     public byte teleport(Player player, Player target) {
         if (target != null && target.isOnline() && player != null && player.isOnline()) {
-            Location loc = target.getLocation();
-            Block block = loc.getBlock().getRelative(BlockFace.DOWN);
-            if (!player.isFlying() && (target.isFlying() || block.getType() == Material.AIR)) {
-                if (player.getAllowFlight() || player.getGameMode() == GameMode.CREATIVE) {
-                    player.setFlying(true);
-                } else {
-                    loc = getSafeLocation(block);
-                    if (loc == null) {
-                        player.sendMessage(ChatColor.RED + "No safe location found!");
-                        return 0;
-                    }
-                }
+            Location loc = makeTeleportSafe(target, target.getLocation());
+            if (loc == null) {
+                return 0;
             }
             player.teleport(loc);
             removeQueueEntry(player.getName());
@@ -350,13 +330,27 @@ public class TeleportManager implements Listener {
         tpRequests.put(playerId, time);
     }
 
-    public Location getSafeLocation(Block block) {
-        while (block.getType() == Material.AIR && block.getY() >= 0) {
-            block = block.getRelative(BlockFace.DOWN);
+    public Location makeTeleportSafe(Player player, Location target) {
+        if (target != null && player != null && player.isOnline()) {
+            if (!player.isFlying() && target.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+                if (player.getAllowFlight() || player.getGameMode() == GameMode.CREATIVE) {
+                    player.setFlying(true);
+                } else {
+                    while (target.getBlock().getType() == Material.AIR && target.getY() >= 0) {
+                        target.add(0, -1, 0);
+                    }
+                    if (target.getBlock().getType() == Material.AIR) {
+                        target.setY(target.getWorld().getHighestBlockAt(target).getY());
+                    }
+                    target = target.getY() > 0 ? target.add(0, 1, 0) : null;
+                    if (target == null) {
+                        player.sendMessage(ChatColor.RED + "No safe location found!");
+                        return null;
+                    }
+                }
+            }
+            return target;
         }
-        if (block.getType() == Material.AIR) {
-            block = block.getWorld().getHighestBlockAt(block.getLocation());
-        }
-        return block == null || block.getType() == Material.AIR ? null : block.getLocation().add(0, 1, 0);
+        return null;
     }
 }
