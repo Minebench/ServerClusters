@@ -20,7 +20,7 @@ public class QueueEntry {
      * @param loc The location
      */
     public QueueEntry(String playerName, Location loc) {
-        this(playerName, null, loc, EntryType.STRING);
+        this(playerName, null, loc, EntryType.LOCATION);
     }
 
     /**
