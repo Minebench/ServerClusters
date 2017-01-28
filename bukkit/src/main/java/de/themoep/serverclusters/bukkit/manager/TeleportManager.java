@@ -321,7 +321,7 @@ public class TeleportManager implements Listener {
     private void addQueueEntry(String playerName, QueueEntry entry) {
         tpQueue.put(playerName, entry);
         Player player = plugin.getServer().getPlayer(playerName);
-        if (player != null && player.isOnline() && teleportTask == null || !plugin.getServer().getScheduler().isQueued(teleportTask.getTaskId())) {
+        if (player != null && player.isOnline() && teleportTask == null) {
             teleportTask = new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -336,8 +336,8 @@ public class TeleportManager implements Listener {
 
                     // If the queue is empty, cancel the task
                     if (tpQueue.isEmpty()) {
-                        cancel();
                         teleportTask = null;
+                        cancel();
                     }
                 }
             }.runTaskTimer(plugin, 20L, 20L);
