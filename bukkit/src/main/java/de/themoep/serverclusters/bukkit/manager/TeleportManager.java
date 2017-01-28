@@ -320,8 +320,9 @@ public class TeleportManager implements Listener {
      */
     private void addQueueEntry(String playerName, QueueEntry entry) {
         tpQueue.put(playerName, entry);
-        Player player = plugin.getServer().getPlayer(playerName);
-        if (player != null && player.isOnline() && teleportTask == null) {
+        plugin.debug("Added new queue entry for " + entry.getPlayerName());
+        if (teleportTask == null) {
+            plugin.debug("No teleport task running. Starting a new one!");
             teleportTask = new BukkitRunnable() {
                 @Override
                 public void run() {
