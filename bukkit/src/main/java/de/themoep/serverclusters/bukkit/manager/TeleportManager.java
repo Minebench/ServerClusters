@@ -326,6 +326,7 @@ public class TeleportManager implements Listener {
             teleportTask = new BukkitRunnable() {
                 @Override
                 public void run() {
+                    plugin.debug("Running teleport task. Queue contains " + tpQueue.size() + " entries");
                     // Check all entries if they can teleport
                     for (Iterator<QueueEntry> i = tpQueue.values().iterator(); i.hasNext(); ) {
                         QueueEntry entry = i.next();
@@ -337,6 +338,7 @@ public class TeleportManager implements Listener {
 
                     // If the queue is empty, cancel the task
                     if (tpQueue.isEmpty()) {
+                        plugin.debug("Queue is empty, cancelling the teleport task!");
                         teleportTask = null;
                         cancel();
                     }
