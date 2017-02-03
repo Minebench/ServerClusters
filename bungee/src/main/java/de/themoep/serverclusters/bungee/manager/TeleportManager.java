@@ -243,8 +243,7 @@ public class TeleportManager extends Manager {
     public boolean acceptRequest(ProxiedPlayer player, Request request) {
         removeRequest(request);
 
-        // TODO: Make timeout configurable
-        if (request.getTimestamp() + 120 * 1000000 < System.currentTimeMillis()) {
+        if (request.getTimestamp() + plugin.getTeleportTimeout() * 1000 < System.currentTimeMillis()) {
             player.sendMessage(ChatColor.RED + "Die letzte Anfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.RED + " ist bereits ausgelaufen!");
             return false;
         }
@@ -350,7 +349,7 @@ public class TeleportManager extends Manager {
 
         removeRequest(request);
 
-        if (request.getTimestamp() + plugin.getTeleportTimeout() * 1000000 < System.currentTimeMillis()) {
+        if (request.getTimestamp() + plugin.getTeleportTimeout() * 1000 < System.currentTimeMillis()) {
             player.sendMessage(ChatColor.RED + "Die letzte Anfrage von " + ChatColor.YELLOW + request.getSender() + ChatColor.RED + " ist bereits ausgelaufen!");
             return false;
         }
