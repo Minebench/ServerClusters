@@ -69,7 +69,11 @@ public class TpaCommand extends CooldownBukkitCommand {
         }
 
         if (!sender.hasPermission("serverclusters.command.tpa.intercluster")) {
-            sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You don't have permission to teleport between server! Please use /server to switch before you teleport!");
+            sender.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
+                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + targetCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + targetCluster.getName()))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + targetCluster.getName() + " auszuf\u00fchren und den Server zu wechseln!")))
+                    .create());
             return;
         }
 

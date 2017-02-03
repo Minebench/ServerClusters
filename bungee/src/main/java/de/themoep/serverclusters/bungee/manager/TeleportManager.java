@@ -134,14 +134,12 @@ public class TeleportManager extends Manager {
                     }
                 } else {
                     receiver.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
-                                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + receiverCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
-                                    .event(
-                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + receiverCluster.getName())
-                                    ).event(
-                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                            ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/server " + receiverCluster.getName() + ChatColor.BLUE + "auszuf\u00fchren und den Server zu wechseln!"
-                                    )))
-                                    .create()
+                            .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + targetCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + targetCluster.getName()))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                            ChatColor.BLUE + "Klicke um " + ChatColor.YELLOW + "/server " + targetCluster.getName() + ChatColor.BLUE + " auszuf\u00fchren und den Server zu wechseln!"
+                            )))
+                            .create()
                     );
                 }
             }
@@ -263,38 +261,43 @@ public class TeleportManager extends Manager {
             return false;
         }
 
-        if (!isCached(request) && request.getTarget() == TeleportTarget.RECEIVER) {
-            Cluster senderCluster = plugin.getClusterManager().getPlayerCluster(sender);
-            if (senderCluster == null) {
+        if (!isCached(request)) {
+            Cluster fromCluster;
+            Cluster toCluster;
+            if (request.getTarget() == TeleportTarget.RECEIVER) {
+                fromCluster = plugin.getClusterManager().getPlayerCluster(sender);
+                toCluster = plugin.getClusterManager().getPlayerCluster(receiver);
+            } else {
+                fromCluster = plugin.getClusterManager().getPlayerCluster(receiver);
+                toCluster = plugin.getClusterManager().getPlayerCluster(sender);
+            }
+            if (fromCluster == null && request.getTarget() == TeleportTarget.RECEIVER || toCluster == null && request.getTarget() == TeleportTarget.SENDER) {
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster are you on? Oo");
                 return false;
             }
-            Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
-            if (receiverCluster == null) {
+            if (toCluster == null && request.getTarget() == TeleportTarget.RECEIVER || fromCluster == null && request.getTarget() == TeleportTarget.SENDER) {
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster is " + receiver.getName() + " on? Oo");
                 return false;
             }
 
-            if (!senderCluster.equals(receiverCluster)) {
+            if (!fromCluster.equals(toCluster)) {
                 if (sender.hasPermission("serverclusters.command.tpa.intercluster")) {
-                    if (sender.hasPermission("serverclusters.cluster." + receiverCluster.getName())) {
+                    if (sender.hasPermission("serverclusters.cluster." + toCluster.getName())) {
                         if (!sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
                             request.setAction(RequestAction.TELEPORT);
                             cacheRequest(request);
                             sender.sendMessage(new ComponentBuilder(receiver.getName()).color(ChatColor.RED)
-                                            .append(" befindet sich auf dem Server " + receiverCluster.getName() + "!").color(ChatColor.YELLOW)
-                                            .create()
+                                    .append(" befindet sich auf dem Server " + toCluster.getName() + "!").color(ChatColor.YELLOW)
+                                    .create()
                             );
                             sender.sendMessage(new ComponentBuilder("Nutze ").color(ChatColor.YELLOW)
-                                            .append("/tpaconfirm").color(ChatColor.RED).event(
-                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm")
-                                            ).event(
-                                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuf\u00fchren!"))
-                                            )
-                                            .append(" um dich trotzdem zu ihm zu teleportieren!")
-                                            .retain(ComponentBuilder.FormatRetention.NONE)
-                                            .color(ChatColor.YELLOW)
-                                            .create()
+                                    .append("/tpaconfirm").color(ChatColor.RED).event(
+                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm"))
+                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuf\u00fchren!")))
+                                    .append(" um dich trotzdem zu ihm zu teleportieren!")
+                                    .retain(ComponentBuilder.FormatRetention.NONE)
+                                    .color(ChatColor.YELLOW)
+                                    .create()
                             );
                         }
                     } else {
@@ -302,12 +305,10 @@ public class TeleportManager extends Manager {
                     }
                 } else {
                     sender.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
-                                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + receiverCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
-                                    .event(
-                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + receiverCluster.getName())
-                                    ).event(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + receiverCluster.getName() + " auszuf\u00fchren und den Server zu wechseln!"))
-                                    ).create()
+                            .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + toCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + toCluster.getName()))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + toCluster.getName() + " auszuf\u00fchren und den Server zu wechseln!")))
+                            .create()
                     );
                 }
             }
