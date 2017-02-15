@@ -13,26 +13,22 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class TphereCommand extends Command implements TabExecutor {
+public class TphereCommand extends ServerClustersCommand implements TabExecutor {
 
-    private ServerClusters plugin;
-
-    public TphereCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public TphereCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         // TODO: Change messages to language system!
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + this.getName() + " <playername>");
-            return;
+            return false;
         }
 
         if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "This command can only be run by a player!");
-            return;
+            return true;
         }
 
         ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -46,11 +42,12 @@ public class TphereCommand extends Command implements TabExecutor {
         }
         if (toTeleport == null) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
-            return;
+            return true;
         }
 
         plugin.getTeleportUtils().teleportToPlayer(toTeleport, p);
         sender.sendMessage(ChatColor.YELLOW + toTeleport.getName() + ChatColor.GREEN + " zu dir teleportiert");
+        return true;
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {

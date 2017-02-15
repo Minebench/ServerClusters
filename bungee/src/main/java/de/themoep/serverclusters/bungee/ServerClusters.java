@@ -1,14 +1,13 @@
 package de.themoep.serverclusters.bungee;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import de.themoep.bungeeplugin.BungeePlugin;
+import de.themoep.bungeeplugin.PluginCommand;
 import de.themoep.serverclusters.bungee.bukkitcommands.*;
 import de.themoep.serverclusters.bungee.commands.*;
 import de.themoep.serverclusters.bungee.enums.Backend;
@@ -18,16 +17,9 @@ import de.themoep.serverclusters.bungee.utils.TeleportUtils;
 
 import de.themoep.vnpbungee.VNPBungee;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 
-public class ServerClusters extends Plugin {
-
-    private Configuration config = null;
+public class ServerClusters extends BungeePlugin {
 
     private Level infolevel = Level.INFO;
 
@@ -44,8 +36,6 @@ public class ServerClusters extends Plugin {
     private TeleportUtils teleportUtils;
 
     private BukkitCommandExecutor bukkitCommandExecutor;
-
-    private final List<Command> commandList = new ArrayList<Command>();
 
     private VNPBungee vnpbungee = null;
     private long commandCooldown;
@@ -82,8 +72,6 @@ public class ServerClusters extends Plugin {
 
     private void loadConfig() {
         getLogger().log(infolevel, "Loading Config...");
-        saveDefaultConfig();
-        config = loadConfigFile();
         try {
             backend = Backend.valueOf(getConfig().getString("backend"));
         } catch (IllegalArgumentException e) {
@@ -134,30 +122,16 @@ public class ServerClusters extends Plugin {
 
         getProxy().getPluginManager().unregisterCommands(this);
 
-        final List<Command> commandList = new ArrayList<>();
+        final Map<String, Class<? extends PluginCommand>> commandMap = new LinkedHashMap<>();
 
-        commandList.add(new ServerClustersCommand(this, "serverclusters", "serverclusters.command.serverclusters", new String[]{"sc", "sclusters"}));
-
-        List<String> cal = getConfig().getStringList("commandaliases.cluster");
-        commandList.add(new ClusterCommand(this, "cluster", "serverclusters.command.cluster", cal.toArray(new String[cal.size()])));
-
-        List<String> lal = getConfig().getStringList("commandaliases.clist");
-        commandList.add(new ListCommand(this, "clist", "serverclusters.command.clist", lal.toArray(new String[lal.size()])));
-
-        List<String> tpal = getConfig().getStringList("commandaliases.tp");
-        commandList.add(new TpCommand(this, "tp", "serverclusters.command.tp", tpal.toArray(new String[tpal.size()])));
-
-        List<String> tphal = getConfig().getStringList("commandaliases.tphere");
-        commandList.add(new TphereCommand(this, "tphere", "serverclusters.command.tphere", tphal.toArray(new String[tphal.size()])));
-
-        List<String> fal = getConfig().getStringList("commandaliases.find");
-        commandList.add(new FindCommand(this, "find", "serverclusters.command.find", fal.toArray(new String[fal.size()])));
-
-        List<String> dsal = getConfig().getStringList("commandaliases.delspawn");
-        commandList.add(new DelspawnCommand(this, "delspawn", "serverclusters.command.delspawn", dsal.toArray(new String[dsal.size()])));
-
-        List<String> dwal = getConfig().getStringList("commandaliases.delwarp");
-        commandList.add(new DelwarpCommand(this, "delwarp", "serverclusters.command.delwarp", dwal.toArray(new String[dwal.size()])));
+        commandMap.put("serverclusters",    ServerClustersCommand.class);
+        commandMap.put("cluster",           ClusterCommand.class);
+        commandMap.put("clist",             ListCommand.class);
+        commandMap.put("tp",                TpCommand.class);
+        commandMap.put("tphere",            TphereCommand.class);
+        commandMap.put("find",              FindCommand.class);
+        commandMap.put("delspawn",          DelspawnCommand.class);
+        commandMap.put("delwarp",           DelwarpCommand.class);
 
         if (latebind) {
             getLogger().log(infolevel, "Scheduling the Registering of the Commands...");
@@ -165,15 +139,15 @@ public class ServerClusters extends Plugin {
             getProxy().getScheduler().schedule(this, new Runnable() {
                 public void run() {
                     plugin.getLogger().log(infolevel, "Late-binding Commands...");
-                    for (Command c : commandList) {
-                        ProxyServer.getInstance().getPluginManager().registerCommand(plugin, c);
+                    for (Map.Entry<String, Class<? extends PluginCommand>> entry : commandMap.entrySet()) {
+                        registerCommand(entry.getKey(), entry.getValue());
                     }
                 }
             }, 1, TimeUnit.SECONDS);
         } else {
             getLogger().log(infolevel, "Registering Commands...");
-            for (Command c : commandList) {
-                getProxy().getPluginManager().registerCommand(this, c);
+            for (Map.Entry<String, Class<? extends PluginCommand>> entry : commandMap.entrySet()) {
+                registerCommand(entry.getKey(), entry.getValue());
             }
         }
 
@@ -249,65 +223,4 @@ public class ServerClusters extends Plugin {
         return backend;
     }
 
-//-VVV- Config handling! -VVV-*/
-
-    /**
-     * Get the plugin's default config.
-     * @return The plugin's configuration
-     */
-    public Configuration getConfig() {
-        return config;
-    }
-
-    /**
-     * Save the default config.yml
-     */
-    public void saveDefaultConfig() {
-        saveDefaultConfig("config.yml");
-    }
-
-    /**
-     * Save a default config file
-     * @param filename The name of the config file
-     */
-    public void saveDefaultConfig(final String filename) {
-        if (!getDataFolder().exists())
-            getDataFolder().mkdir();
-
-        File file = new File(getDataFolder(), filename);
-
-        if (!file.exists()) {
-            try {
-                Files.copy(getResourceAsStream(filename), file.toPath());
-            } catch (IOException e) {
-                getLogger().log(Level.SEVERE, "Error while saving default config '" + filename + "'!");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Load the default config.yml file
-     * @return The default Configuration
-     */
-    public Configuration loadConfigFile() {
-        return loadConfigFile("config.yml");
-    }
-
-    /**
-     * Load a different config file
-     * @param filename The name of the config file
-     * @return The Configuration in the file
-     */
-    public Configuration loadConfigFile(String filename) {
-        try {
-            return ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), filename));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            getLogger().log(Level.SEVERE, "Error while loading config '" + filename + "'!");
-            e.printStackTrace();
-        }
-        return null;
-
-    }
 }

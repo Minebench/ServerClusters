@@ -19,17 +19,14 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class ListCommand extends Command {
+public class ListCommand extends ServerClustersCommand {
 
-    private ServerClusters plugin;
-
-    public ListCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public ListCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         //send cluster list
         // TODO: Change messages to language system!
 
@@ -107,5 +104,6 @@ public class ListCommand extends Command {
             }
         }
         sender.sendMessage(new ComponentBuilder("Gesamt: " + totalPlayers).create());
+        return true;
     }
 }

@@ -13,27 +13,23 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DelspawnCommand extends Command implements TabExecutor {
+public class DelspawnCommand extends ServerClustersCommand {
 
-    private final ServerClusters plugin;
-
-    public DelspawnCommand(ServerClusters plugin, String name, String permission, String... aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public DelspawnCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + getName() + " <cluster>|--global");
-            return;
+            return false;
         }
 
         Cluster cluster = plugin.getClusterManager().getCluster(args[0]);
 
         if (cluster == null) {
             sender.sendMessage(ChatColor.RED + "No cluster with the name " + ChatColor.YELLOW + args[0] + ChatColor.RED + " found!");
-            return;
+            return true;
         }
 
         cluster = "--global".equalsIgnoreCase(args[0]) || "-g".equals(args[0]) ? null : cluster;
@@ -53,8 +49,10 @@ public class DelspawnCommand extends Command implements TabExecutor {
                 sender.sendMessage(ChatColor.YELLOW + "There is no global spawn?");
             }
         }
+        return true;
     }
 
+    @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> pl = new ArrayList<String>();
         for (WarpInfo warp : plugin.getWarpManager().getGlobalWarps()) {

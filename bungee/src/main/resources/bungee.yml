@@ -3,3 +3,36 @@ main: de.themoep.serverclusters.bungee.ServerClusters
 version: '${minecraft.plugin.version}'
 author: Phoenix616
 softdepends: [VNPBungee]
+commands:
+  serverclusters:
+    aliases: [sc, sclusters]
+    permission: serverclusters.command.serverclusters
+    usage: "&cUsage:&e /<command> <username>"
+  cluster:
+    aliases: [server,hg,join,j]
+    permission: serverclusters.command.cluster
+    usage: "&cUsage:&e /<command> <cluster> [<player...>]"
+  clist:
+    aliases: [slist, glist]
+    permission: serverclusters.command.clist
+    usage: "&cUsage:&e /<command> [<cluster>]"
+  find:
+    aliases: [cfind]
+    permission: serverclusters.command.find
+    usage: "&cUsage:&e /<command> <player>"
+  tp:
+    aliases: [ctp, tpc]
+    permission: serverclusters.command.tp
+    usage: "&cUsage:&e /<command> <player> [<targetplayer>]"
+  tphere:
+    aliases: [ctphere, s]
+    permission: serverclusters.command.tphere
+    usage: "&cUsage:&e /<command> <player>"
+  delspawn:
+    aliases: [cdelspawn]
+    permission: serverclusters.command.delspawn
+    usage: "&cUsage:&e /<command> <cluster>|--global"
+  delwarp:
+    aliases: [cdelwarp]
+    permission: serverclusters.command.delwarp
+    usage: "&cUsage:&e /<command> <warp>"

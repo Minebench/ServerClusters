@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bukkit</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>${plugin.version}</version>
 
     <parent>
         <groupId>de.themoep.serverclusters</groupId>
@@ -21,5 +21,14 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 
 </project>

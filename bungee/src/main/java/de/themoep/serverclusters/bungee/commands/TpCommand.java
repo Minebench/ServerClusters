@@ -16,21 +16,17 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class TpCommand extends Command implements TabExecutor {
+public class TpCommand extends ServerClustersCommand implements TabExecutor {
 
-    private ServerClusters plugin;
-
-    public TpCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public TpCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         // TODO: Change messages to language system!
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + getName() + " <playername> [<targetplayer>]");
-            return;
+            return false;
         }
 
         ProxiedPlayer player;
@@ -47,12 +43,12 @@ public class TpCommand extends Command implements TabExecutor {
             player = (ProxiedPlayer) sender;
         } else {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "To run this command from the console use /" + getName() + " <playername> <targetplayer>");
-            return;
+            return true;
         }
 
         if (player == null) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[1] + " was not found online!");
-            return;
+            return true;
         }
 
         ProxiedPlayer target = plugin.getProxy().getPlayer(args[0]);
@@ -66,7 +62,7 @@ public class TpCommand extends Command implements TabExecutor {
 
         if (target == null) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
-            return;
+            return true;
         }
 
         Cluster playerCluster = plugin.getClusterManager().getPlayerCluster(player);
@@ -76,6 +72,7 @@ public class TpCommand extends Command implements TabExecutor {
         } else {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You are not allowed to teleport between clusters!");
         }
+        return true;
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {

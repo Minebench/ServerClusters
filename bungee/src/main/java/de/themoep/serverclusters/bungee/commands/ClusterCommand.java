@@ -21,17 +21,14 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class ClusterCommand extends Command implements TabExecutor {
+public class ClusterCommand extends ServerClustersCommand {
 
-    ServerClusters plugin;
-
-    public ClusterCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public ClusterCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         if (args.length == 0) {
             //send cluster list
             // TODO: Change messages to language system!
@@ -104,7 +101,7 @@ public class ClusterCommand extends Command implements TabExecutor {
                 // ERROR no perms
                 // ERROR Cluster not found
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
-                return;
+                return true;
             }
 
             // connect player to cluster
@@ -117,19 +114,19 @@ public class ClusterCommand extends Command implements TabExecutor {
             }
         } else {
             if (!sender.hasPermission("serverclusters.command.cluster.others")) {
+                // ERROR no perms
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "You don't have the permission serverclusters.command.cluster.others");
-                return;
+                return true;
             }
 
             Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
             if (targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
-                // ERROR no perms
                 // ERROR Cluster not found
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
-                return;
+                return true;
             }
 
-            ArrayList<String> playerlist = new ArrayList<String>(Arrays.asList(args));
+            ArrayList<String> playerlist = new ArrayList<>(Arrays.asList(args));
             playerlist.remove(0);
             for (String playername : playerlist) {
                 ProxiedPlayer p = plugin.getProxy().getPlayer(playername);
@@ -143,10 +140,12 @@ public class ClusterCommand extends Command implements TabExecutor {
                 }
             }
         }
+        return true;
     }
 
+    @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        List<String> cl = new ArrayList<String>();
+        List<String> cl = new ArrayList<>();
         for (Cluster c : plugin.getClusterManager().getClusterlist())
             if (args.length == 0 || c.getName().toLowerCase().startsWith(args[0].toLowerCase()))
                 if (sender.hasPermission("serverclusters.cluster." + c.getName().toLowerCase()))

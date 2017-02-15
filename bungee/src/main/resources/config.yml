@@ -9,14 +9,6 @@ mysql:
   host: localhost
   port: 3306
   tableprefix: serverclusters_
-commandaliases:
-  cluster: [server,hg,join,j]
-  clist: [slist, glist]
-  find: [cfind]
-  tp: [ctp, tpc]
-  tphere: [ctphere, s]
-  delspawn: [cdelspawn]
-  delwarp: [cdelwarp]
 teleportDelay: 5
 commandCooldown: 10
 teleportTimeout: 30

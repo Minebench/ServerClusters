@@ -15,20 +15,16 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DelwarpCommand extends Command implements TabExecutor {
+public class DelwarpCommand extends ServerClustersCommand {
 
-    private final ServerClusters plugin;
-
-    public DelwarpCommand(ServerClusters plugin, String name, String permission, String... aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public DelwarpCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: " + ChatColor.YELLOW + "/" + getName() + " <warp>");
-            return;
+            return false;
         }
 
         WarpInfo warp = plugin.getWarpManager().removeWarp(sender, args[0]);
@@ -37,8 +33,10 @@ public class DelwarpCommand extends Command implements TabExecutor {
         } else {
             sender.sendMessage(ChatColor.RED + "No warp with the name " + ChatColor.YELLOW + args[0] + ChatColor.RED + " found!");
         }
+        return true;
     }
 
+    @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> pl = new ArrayList<String>();
         for (WarpInfo warp : plugin.getWarpManager().getGlobalWarps()) {

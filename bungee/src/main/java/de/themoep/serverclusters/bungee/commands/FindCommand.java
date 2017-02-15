@@ -14,19 +14,16 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class FindCommand extends Command implements TabExecutor {
+public class FindCommand extends ServerClustersCommand {
 
-    private ServerClusters plugin;
-
-    public FindCommand(ServerClusters plugin, String name, String permission, String[] aliases) {
-        super(name, permission, aliases);
-        this.plugin = plugin;
+    public FindCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+        super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public boolean run(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /" + getName() + " <username>");
+            return false;
         }
 
         for (String name : args) {
@@ -42,8 +39,10 @@ public class FindCommand extends Command implements TabExecutor {
             }
             sender.sendMessage(ChatColor.YELLOW + player.getDisplayName() + ChatColor.GREEN + " ist online auf " + ChatColor.YELLOW + cluster.getName());
         }
+        return true;
     }
 
+    @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {
         List<String> playerNames = new ArrayList<>();
         if (strings.length == 0) {
