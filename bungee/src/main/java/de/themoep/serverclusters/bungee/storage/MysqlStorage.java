@@ -1,9 +1,10 @@
 package de.themoep.serverclusters.bungee.storage;
 
+import com.zaxxer.hikari.HikariDataSource;
 import de.themoep.serverclusters.bungee.ServerClusters;
+import org.mariadb.jdbc.MariaDbDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,31 +15,25 @@ import java.util.logging.Level;
 
 public class MysqlStorage extends ValueStorage {
 
-    private Connection conn;
+    private final HikariDataSource ds;
 
-    private final String dbuser;
-    private final String dbpassword;
-    private final String dbname;
-    private final String dbhost;
-    private final int dbport;
-    private final String dburl;
     private final String dbtableprefix;
 
     public MysqlStorage(ServerClusters plugin, String name) throws InvalidPropertiesFormatException, SQLException {
         super(plugin, name);
 
-        dbuser = plugin.getConfig().getString("mysql.user");
-        dbpassword = plugin.getConfig().getString("mysql.password");
-        dbname = plugin.getConfig().getString("mysql.dbname");
-        dbhost = plugin.getConfig().getString("mysql.host");
-        dbport = plugin.getConfig().getInt("mysql.port");
+        String host = plugin.getConfig().getString("mysql.host");
+        int port = plugin.getConfig().getInt("mysql.port");
+        String database = plugin.getConfig().getString("mysql.dbname");
         dbtableprefix = plugin.getConfig().getString("mysql.tableprefix", "serverclusters_");
 
-        if (dbhost != null && dbuser != null && dbpassword != null && dbname != null && dbport > 0) {
-            dburl = ("jdbc:mysql://" + dbhost + ":" + dbport + "/" + dbname);
+        if (host != null && database != null && port > 0) {
 
-            plugin.getLogger().info("Checking Database Connection...");
-            checkConnection();
+            ds = new HikariDataSource();
+            ds.setDataSource(new MariaDbDataSource(host, port, database));
+            ds.setUsername(plugin.getConfig().getString("mysql.user"));
+            ds.setPassword(plugin.getConfig().getString("mysql.password"));
+            ds.setConnectionTimeout(5000);
 
             plugin.getLogger().info("Initializing Database...");
             initDb();
@@ -49,81 +44,52 @@ public class MysqlStorage extends ValueStorage {
     }
 
     /**
-     * Connects to the Database.
-     */
-    private void connectDb() throws SQLException {
-        plugin.getLogger().info("Connecting to Database...");
-        conn = (Connection) DriverManager.getConnection(dburl, dbuser, dbpassword);
-        conn.setAutoCommit(true);
-    }
-
-    /**
      * Initializes the databases for the plugin if they don't exist.
      */
     private void initDb() {
-        try {
-            Statement sta = (Statement) conn.createStatement();
+        try (Connection conn = ds.getConnection();
+             Statement sta = conn.createStatement()){
             sta.execute("CREATE TABLE IF NOT EXISTS `" + dbtableprefix + "_" + name + "` ( `playerid` varchar(52) NOT NULL, `value` count(16) NOT NULL, PRIMARY KEY (`playerid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
             sta.close();
         } catch (SQLException e) {
-            plugin.getLogger().severe("Could not initialize the tables! Error: " + e.getMessage());
-            //e.printStackTrace();
+            plugin.getLogger().log(Level.SEVERE, "Could not initialize the tables! ", e);
         }
-    }
-
-    /**
-     * Checks if the connection to the database still exists and reconnects if it doesn't.
-     */
-    private void checkConnection() throws SQLException {
-        if (conn == null || !conn.isValid(1))
-            connectDb();
     }
 
     @Override
     public String getValue(UUID playerId) {
-        try {
-            PreparedStatement sta;
-            sta = conn.prepareStatement("SELECT `value`from " + dbtableprefix + "_" + name + " WHERE playerid=?");
+        String sql = "SELECT `value`from " + dbtableprefix + "_" + name + " WHERE playerid=?";
+        try (Connection conn = ds.getConnection();
+             PreparedStatement sta = conn.prepareStatement(sql)) {
             sta.setString(1, playerId.toString());
             ResultSet rs = sta.executeQuery();
-            sta.close();
             if (rs.next()) {
                 return rs.getString("value");
             }
             return null;
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "MySQL-Error! Something went wrong while fetching data for player with the id " + playerId + "! Does the table \"" + dbtableprefix + "_" + name + "\" exist?", e);
-            //e.printStackTrace();
             return null;
         }
     }
 
     @Override
     public void putValue(final UUID playerId, final String value) {
-        plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
-            public void run() {
-                try {
-                    PreparedStatement sta;
-                    sta = conn.prepareStatement("INSERT INTO " + dbtableprefix + "_" + name + " (`playerid`,`value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE value=VALUES(`value`)");
-                    sta.setString(1, playerId.toString());
-                    sta.setString(2, value);
-                    sta.executeQuery();
-                    sta.close();
-                } catch (SQLException e) {
-                    plugin.getLogger().log(Level.SEVERE, "MySQL-Error! Something went wrong while inserting data for player with the id " + playerId + "!", e);
-                    //e.printStackTrace();
-                }
+        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
+            String sql = "INSERT INTO " + dbtableprefix + "_" + name + " (`playerid`,`value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE value=VALUES(`value`)";
+            try (Connection conn = ds.getConnection();
+                 PreparedStatement sta = conn.prepareStatement(sql)) {
+                sta.setString(1, playerId.toString());
+                sta.setString(2, value);
+                sta.executeQuery();
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "MySQL-Error! Something went wrong while inserting data for player with the id " + playerId + "!", e);
             }
         });
     }
 
     @Override
     public void close() {
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            plugin.getLogger().severe("Error while closing the database connection for " + name);
-            e.printStackTrace();
-        }
+        ds.close();
     }
 }
