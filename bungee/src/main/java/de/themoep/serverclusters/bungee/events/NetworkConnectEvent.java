@@ -20,7 +20,7 @@ public class NetworkConnectEvent extends Event {
      * @param target
      */
     public NetworkConnectEvent(ServerClusters plugin, ServerConnectEvent event, Cluster target) {
-        this.target = target;
+        setTarget(target);
         this.plugin = plugin;
         this.event = event;
     }
