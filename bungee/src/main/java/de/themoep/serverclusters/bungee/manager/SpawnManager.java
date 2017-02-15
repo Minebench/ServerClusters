@@ -1,29 +1,30 @@
 package de.themoep.serverclusters.bungee.manager;
 
+import de.themoep.bungeeplugin.FileConfiguration;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.ServerNotFoundException;
-import de.themoep.serverclusters.bungee.storage.YamlStorage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class SpawnManager extends Manager {
-    private final YamlStorage spawnStorage;
+    private final FileConfiguration spawnStorage;
 
     private LocationInfo globalSpawn = null;
 
-    public SpawnManager(ServerClusters plugin) {
+    public SpawnManager(ServerClusters plugin) throws IOException {
         super(plugin);
-        spawnStorage = new YamlStorage(plugin, "spawns");
+        spawnStorage = new FileConfiguration(plugin, "spawns");
 
-        Configuration global = spawnStorage.getConfig().getSection("global");
+        Configuration global = spawnStorage.getSection("global");
         if (global.getKeys().size() > 0) {
             String serverName = global.getString("server");
             String world = global.getString("world");
@@ -43,7 +44,7 @@ public class SpawnManager extends Manager {
             globalSpawn = new LocationInfo(serverName, world, x, y, z, yaw, pitch);
         }
 
-        Configuration clusterSection = spawnStorage.getConfig().getSection("cluster");
+        Configuration clusterSection = spawnStorage.getSection("cluster");
         for (String clusterName : clusterSection.getKeys()) {
             Cluster c = plugin.getClusterManager().getCluster(clusterName);
             if (c == null) {
@@ -74,7 +75,7 @@ public class SpawnManager extends Manager {
 
     @Override
     public void destroy() {
-        spawnStorage.close();
+        spawnStorage.saveConfig();
     }
 
     /**
@@ -131,14 +132,14 @@ public class SpawnManager extends Manager {
     public LocationInfo setSpawn(LocationInfo location, boolean global) throws IllegalArgumentException {
         if (global) {
             globalSpawn = location;
-            spawnStorage.getConfig().set("global", location.toConfig());
-            spawnStorage.save();
+            spawnStorage.set("global", location.toConfig());
+            spawnStorage.saveConfig();
         } else {
             Cluster cluster = plugin.getClusterManager().getClusterByServer(location.getServer());
             if (cluster != null) {
                 cluster.setSpawn(location);
-                spawnStorage.getConfig().set("cluster." + cluster.getName(), location.toConfig());
-                spawnStorage.save();
+                spawnStorage.set("cluster." + cluster.getName(), location.toConfig());
+                spawnStorage.saveConfig();
             } else {
                 throw new IllegalArgumentException("No Cluster found for server " + location.getServer() + " in provided location!");
             }
@@ -155,15 +156,15 @@ public class SpawnManager extends Manager {
         if (cluster == null) {
             LocationInfo spawn = globalSpawn;
             globalSpawn = null;
-            spawnStorage.getConfig().set("global", null);
-            spawnStorage.save();
+            spawnStorage.set("global", null);
+            spawnStorage.saveConfig();
             return spawn;
         }
         LocationInfo spawn = cluster.getSpawn();
         if (spawn != null) {
             cluster.setSpawn(null);
-            spawnStorage.getConfig().set("cluster." + cluster.getName(), null);
-            spawnStorage.save();
+            spawnStorage.set("cluster." + cluster.getName(), null);
+            spawnStorage.saveConfig();
         }
         return spawn;
     }

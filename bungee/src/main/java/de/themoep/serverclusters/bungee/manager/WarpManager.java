@@ -1,5 +1,6 @@
 package de.themoep.serverclusters.bungee.manager;
 
+import de.themoep.bungeeplugin.FileConfiguration;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
@@ -12,6 +13,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -21,15 +23,15 @@ import java.util.logging.Level;
 
 public class WarpManager extends Manager {
 
-    private final YamlStorage warpStorage;
+    private final FileConfiguration warpStorage;
 
     private final Map<String, WarpInfo> globalWarps = new LinkedHashMap<>();
 
-    public WarpManager(ServerClusters plugin) {
+    public WarpManager(ServerClusters plugin) throws IOException {
         super(plugin);
-        warpStorage = new YamlStorage(plugin, "warps");
+        warpStorage = new FileConfiguration(plugin, "warps");
 
-        Configuration globalSection = warpStorage.getConfig().getSection("global");
+        Configuration globalSection = warpStorage.getSection("global");
         for (String warpName : globalSection.getKeys()) {
             Configuration warp = globalSection.getSection(warpName);
             String serverName = warp.getString("server");
@@ -51,7 +53,7 @@ public class WarpManager extends Manager {
             globalWarps.put(warpName.toLowerCase(), new WarpInfo(warpName, serverName, world, x, y, z, yaw, pitch));
         }
 
-        Configuration clusterSection = warpStorage.getConfig().getSection("cluster");
+        Configuration clusterSection = warpStorage.getSection("cluster");
         for (String clusterName : clusterSection.getKeys()) {
             Cluster c = plugin.getClusterManager().getCluster(clusterName);
             if (c == null) {
@@ -98,13 +100,10 @@ public class WarpManager extends Manager {
 
         final UUID playerId = player.getUniqueId();
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(playerId);
-                if (player != null && player.isConnected()) {
-                    plugin.getTeleportUtils().teleport(player, warp);
-                }
+        Runnable runnable = () -> {
+            ProxiedPlayer player1 = plugin.getProxy().getPlayer(playerId);
+            if (player1 != null && player1.isConnected()) {
+                plugin.getTeleportUtils().teleport(player1, warp);
             }
         };
 
@@ -153,14 +152,14 @@ public class WarpManager extends Manager {
         WarpInfo warp = new WarpInfo(name, location);
         if (global) {
             globalWarps.put(name.toLowerCase(), warp);
-            warpStorage.getConfig().set("global." + warp.getName(), warp.toConfig());
-            warpStorage.save();
+            warpStorage.set("global." + warp.getName(), warp.toConfig());
+            warpStorage.saveConfig();
         } else {
             Cluster cluster = plugin.getClusterManager().getClusterByServer(location.getServer());
             if (cluster != null) {
                 cluster.addWarp(warp);
-                warpStorage.getConfig().set("cluster." + cluster.getName() + "." + warp.getName(), warp.toConfig());
-                warpStorage.save();
+                warpStorage.set("cluster." + cluster.getName() + "." + warp.getName(), warp.toConfig());
+                warpStorage.saveConfig();
             } else {
                 throw new IllegalArgumentException("No Cluster found for server " + location.getServer() + " in provided location!");
             }
@@ -177,8 +176,8 @@ public class WarpManager extends Manager {
         WarpInfo warp = getGlobalWarp(name);
         if (warp != null) {
             globalWarps.remove(name.toLowerCase());
-            warpStorage.getConfig().set("global." + warp.getName(), null);
-            warpStorage.save();
+            warpStorage.set("global." + warp.getName(), null);
+            warpStorage.saveConfig();
             return warp;
         }
         Cluster cluster = null;
@@ -191,8 +190,8 @@ public class WarpManager extends Manager {
         }
         if (cluster != null) {
             warp = cluster.removeWarp(name);
-            warpStorage.getConfig().set("cluster." + cluster.getName() + "." + warp.getName(), null);
-            warpStorage.save();
+            warpStorage.set("cluster." + cluster.getName() + "." + warp.getName(), null);
+            warpStorage.saveConfig();
         }
         return warp;
     }
@@ -252,6 +251,6 @@ public class WarpManager extends Manager {
 
     @Override
     public void destroy() {
-        warpStorage.close();
+        warpStorage.saveConfig();
     }
 }

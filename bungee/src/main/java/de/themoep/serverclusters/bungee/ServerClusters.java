@@ -1,5 +1,6 @@
 package de.themoep.serverclusters.bungee;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -107,10 +108,18 @@ public class ServerClusters extends BungeePlugin {
         }
 
         getLogger().info("Loading Spawn Manager....");
-        sm = new SpawnManager(this);
+        try {
+            sm = new SpawnManager(this);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Could not load spawn storage!", e);
+        }
 
         getLogger().info("Loading Warp Manager...");
-        wm = new WarpManager(this);
+        try {
+            wm = new WarpManager(this);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Could not load warp storage!", e);
+        }
     }
 
     /**
