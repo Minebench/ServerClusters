@@ -3,26 +3,28 @@ package de.themoep.serverclusters.bungee.events;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;
 
-public class NetworkConnectEvent extends Event {
+public class NetworkConnectEvent extends Event implements Cancellable {
 
-    private ServerClusters plugin = null;
+    private final ProxiedPlayer player;
     private Cluster target = null;
-    private ServerConnectEvent event = null;
+    private boolean cancelled = false;
+    private BaseComponent[] cancelMessage = new BaseComponent[]{};
 
     /**
      * Event which represents a player connecting to the first server after he joined the BungeeCord network
-     * @param plugin
-     * @param event
-     * @param target
+     * @param player    The player that connects to the network
+     * @param target    The target cluster
      */
-    public NetworkConnectEvent(ServerClusters plugin, ServerConnectEvent event, Cluster target) {
-        setTarget(target);
-        this.plugin = plugin;
-        this.event = event;
+    public NetworkConnectEvent(ProxiedPlayer player, Cluster target) {
+        this.player = player;
+        this.target = target;
     }
 
     /**
@@ -35,10 +37,10 @@ public class NetworkConnectEvent extends Event {
 
     /**
      * Sets which cluster the player should connect to
-     * @param cluster The target cluster
+     * @param cluster   The target cluster, if this is null the cluster will
+     *                  not change or attempt to find the logout server
      */
     public void setTarget(Cluster cluster) {
-        event.setTarget(plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
         target = cluster;
     }
 
@@ -47,6 +49,29 @@ public class NetworkConnectEvent extends Event {
      * @return The ProxiedPlayer
      */
     public ProxiedPlayer getPlayer() {
-        return event.getPlayer();
+        return player;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancelled = cancel;
+    }
+
+    @Deprecated
+    public void setCancelMessage(String message) {
+        setCancelMessage(TextComponent.fromLegacyText(message));
+    }
+
+    private void setCancelMessage(BaseComponent[] message) {
+        this.cancelMessage = message;
+    }
+
+    public BaseComponent[] getCancelMessage() {
+        return cancelMessage;
     }
 }

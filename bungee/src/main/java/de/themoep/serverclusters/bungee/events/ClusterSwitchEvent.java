@@ -5,32 +5,30 @@ import de.themoep.serverclusters.bungee.ServerClusters;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;
 
-public class ClusterSwitchEvent extends Event {
+public class ClusterSwitchEvent extends Event implements Cancellable {
 
-    private ServerClusters plugin = null;
+    private final ProxiedPlayer player;
     private Cluster from = null;
     private Cluster to = null;
-    private ServerConnectEvent event = null;
+    private boolean cancelled = false;
 
     /**
      * Called before a player changes the cluster and is not called on the first connect (see NetworkConnectEvent for that) in contrast to it's Bungee counterpart ServerSwitchEvent!
-     * @param plugin
-     * @param event
      * @param from
      * @param to
      */
-    public ClusterSwitchEvent(ServerClusters plugin, ServerConnectEvent event, Cluster from, Cluster to) {
+    public ClusterSwitchEvent(ProxiedPlayer player, Cluster from, Cluster to) {
+        this.player = player;
         this.from = from;
         this.to = to;
-        this.plugin = plugin;
-        this.event = event;
     }
 
     /**
      * Get the cluster the player switches from
-     * @return The origin cluster
+     * @return  The origin cluster
      */
     public Cluster getFrom() {
         return from;
@@ -38,7 +36,7 @@ public class ClusterSwitchEvent extends Event {
 
     /**
      * Get the cluster the player tries to connect to
-     * @return The targeted cluster
+     * @return  The targeted cluster
      */
     public Cluster getTo() {
         return to;
@@ -46,19 +44,28 @@ public class ClusterSwitchEvent extends Event {
 
     /**
      * Sets which cluster the player should connect to
-     * @param cluster The target cluster
+     * @param cluster   The target cluster, if this is null the cluster will
+     *                  not change or attempt to find the logout server
      */
     public void setTo(Cluster cluster) {
-        event.setTarget(plugin.getProxy().getServerInfo(cluster.getLogoutServer(event.getPlayer().getUniqueId())));
-        from = cluster;
+        to = cluster;
     }
 
     /**
      * Get the player of the event
-     * @return The ProxiedPlayer
+     * @return  The ProxiedPlayer
      */
     public ProxiedPlayer getPlayer() {
-        return event.getPlayer();
+        return player;
     }
 
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancelled = cancel;
+    }
 }
