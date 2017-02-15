@@ -136,33 +136,16 @@ public class Cluster implements Comparable<Cluster> {
                 .build(new CacheLoader<UUID, String>() {
                     @Override
                     public String load(UUID uuid) throws Exception {
-                        //make the expensive call
+                        String serverName = null;
                         if(logoutStorage != null) {
-                            return logoutStorage.getValue(uuid);
+                            serverName = logoutStorage.getValue(uuid);
                         }
-                        return null;
+                        if (serverName == null) {
+                            throw new ServerNotFoundException("No logout server found for player " + uuid + " on cluster " + getName());
+                        }
+                        return serverName;
                     }
                 });
-    }
-
-    /**
-     * Connects a player to the server cluster and the last server he was on
-     * @param playername The name of the player
-     */
-    public void connectPlayer(String playername) {
-        ProxiedPlayer player = plugin.getProxy().getPlayer(playername);
-        if (player != null)
-            connectPlayer(player);
-    }
-
-    /**
-     * Connects a player to the server cluster and the last server he was on
-     * @param playerid The UUID of the player
-     */
-    public void connectPlayer(UUID playerid) {
-        ProxiedPlayer player = plugin.getProxy().getPlayer(playerid);
-        if (player != null)
-            connectPlayer(player);
     }
 
     /**
@@ -202,40 +185,30 @@ public class Cluster implements Comparable<Cluster> {
 
     /**
      * Sets the server a player loggout out from
-     * @param player     The Player to save the loggout server
-     * @param servername The name of the server the player logged out from as a string
+     * @param playerId  The UUID of the Player to set the logout server for
      */
-    public void setLogoutServer(ProxiedPlayer player, String servername) {
+    public void setLogoutServer(UUID playerId, String servername) {
         if (getServerlist().size() > 1 && !shouldIgnoreLogoutServer() && getServerlist().contains(servername)) {
-            logoutStorage.putValue(player.getUniqueId(), servername);
-            logoutCache.put(player.getUniqueId(), servername);
+            logoutStorage.putValue(playerId, servername);
+            logoutCache.put(playerId, servername);
         }
     }
 
     /**
      * Gets the name of the server a player logged out of
-     * @param playerid The Player to get the servername
-     * @return The servername as a string, null if not found
+     * @param playerId  The UUID of the Player to get the logout server for
+     * @return          The name of the logout server as a string, null if not found
      */
-    public String getLogoutServer(UUID playerid) {
+    public String getLogoutServer(UUID playerId) {
         if (getServerlist().size() > 1 && !shouldIgnoreLogoutServer()) {
             try {
-                return logoutCache.get(playerid);
+                return logoutCache.get(playerId);
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
         }
         return null;
     }
-
-    public String getLogoutServer(String playername) {
-        ProxiedPlayer player = plugin.getProxy().getPlayer(playername);
-        if (player != null) {
-            return getLogoutServer(player.getUniqueId());
-        }
-        return null;
-    }
-
 
     public List<ProxiedPlayer> getPlayerlist() {
         // TODO Auto-generated method stub

@@ -1,5 +1,6 @@
 package de.themoep.serverclusters.bungee.listeners;
 
+import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.ServerClusters;
 
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -16,9 +17,12 @@ public class ServerSwitchListener implements Listener {
 
     @EventHandler
     public void onServerSwitch(ServerSwitchEvent event) {
-        String servername = event.getPlayer().getServer().getInfo().getName();
-        plugin.getLogger().info("ServerSwitchEvent - to " + servername);
-        plugin.getClusterManager().getClusterByServer(servername).setLogoutServer(event.getPlayer(), servername);
+        String serverName = event.getPlayer().getServer().getInfo().getName();
+        plugin.getLogger().info("ServerSwitchEvent - to " + serverName);
+        Cluster cluster = plugin.getClusterManager().getClusterByServer(serverName);
+        if (cluster != null) {
+            cluster.setLogoutServer(event.getPlayer().getUniqueId(), serverName);
+        }
     }
 
 }
