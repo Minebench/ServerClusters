@@ -86,6 +86,11 @@ public class TeleportUtils {
      */
     public void teleportToLocation(ProxiedPlayer player, ServerInfo server, String world, double x, double y, double z, float yaw, float pitch) {
         if (!player.getServer().getInfo().getName().equals(server.getName())) {
+            Cluster playerCluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
+            Cluster targetCluster = plugin.getClusterManager().getClusterByServer(server.getName());
+            if (playerCluster != targetCluster) {
+                player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+            }
             player.connect(server);
         }
         teleportToLocationPM(player, server, world, x, y, z, yaw, pitch);

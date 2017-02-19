@@ -4,6 +4,12 @@ version: '${minecraft.plugin.version}'
 description: Bukkit part of of the ServerClusters plugin
 authors: [Phoenix616]
 commands:
+   tppos:
+      aliases: [ctppos]
+      description: Request a teleport to another player
+      usage: /<command> [<playername>] <x> <y> <z> [<yaw> <pitch>] [[<server>:]<world>]
+      permission: serverclusters.command.tppos
+      permission-message: You don't have the permission <permission>
    tpa:
       aliases: [ctpa,call]
       description: Request a teleport to another player
