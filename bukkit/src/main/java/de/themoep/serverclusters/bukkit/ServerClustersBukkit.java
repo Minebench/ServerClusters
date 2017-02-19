@@ -6,8 +6,10 @@ import de.themoep.serverclusters.bukkit.manager.TeleportManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,14 +73,24 @@ public class ServerClustersBukkit extends JavaPlugin {
         out.writeUTF("RunCommand");
         out.writeUTF(senderName);
         out.writeUTF(cmd.getName());
-        out.writeBoolean(sender instanceof Player);
-        if (sender instanceof Player) {
-            out.writeUTF(player.getLocation().getWorld().getName());
-            out.writeDouble(player.getLocation().getX());
-            out.writeDouble(player.getLocation().getY());
-            out.writeDouble(player.getLocation().getZ());
-            out.writeFloat(player.getLocation().getYaw());
-            out.writeFloat(player.getLocation().getPitch());
+        if (sender instanceof Entity) {
+            out.writeBoolean(true);
+            out.writeUTF(((Entity) sender).getLocation().getWorld().getName());
+            out.writeDouble(((Entity) sender).getLocation().getX());
+            out.writeDouble(((Entity) sender).getLocation().getY());
+            out.writeDouble(((Entity) sender).getLocation().getZ());
+            out.writeFloat(((Entity) sender).getLocation().getYaw());
+            out.writeFloat(((Entity) sender).getLocation().getPitch());
+        } else if (sender instanceof BlockCommandSender) {
+            out.writeBoolean(true);
+            out.writeUTF(((BlockCommandSender) sender).getBlock().getLocation().getWorld().getName());
+            out.writeDouble(((BlockCommandSender) sender).getBlock().getLocation().getX());
+            out.writeDouble(((BlockCommandSender) sender).getBlock().getLocation().getY());
+            out.writeDouble(((BlockCommandSender) sender).getBlock().getLocation().getZ());
+            out.writeFloat(((BlockCommandSender) sender).getBlock().getLocation().getYaw());
+            out.writeFloat(((BlockCommandSender) sender).getBlock().getLocation().getPitch());
+        } else {
+            out.writeBoolean(false);
         }
         out.writeUTF(StringUtils.join(args, " "));
         player.sendPluginMessage(this, "ServerClusters", out.toByteArray());

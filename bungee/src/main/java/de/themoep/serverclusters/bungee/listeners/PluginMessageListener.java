@@ -51,17 +51,10 @@ public class PluginMessageListener implements Listener {
             String command = in.readUTF();
             LocationInfo loc = null;
 
-            // Sender is player
+            // Location was send
             if (in.readBoolean()) {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(sender);
-                if (player == null) {
-                    plugin.getLogger().log(Level.WARNING, receiver.getName() + " received an invalid plugin message on channel ServerClusters/RunCommand/" + command + " from " + sender + "! Could not find player for that sender?");
-                    ((ProxiedPlayer) event.getReceiver()).sendMessage(ChatColor.RED + "Something went wrong while processing this command! Please contact an admin!");
-                    return;
-                }
-
                 loc = new LocationInfo(
-                        player.getServer().getInfo().getName(),
+                        receiver.getServer().getInfo().getName(),
                         in.readUTF(),
                         in.readDouble(),
                         in.readDouble(),
