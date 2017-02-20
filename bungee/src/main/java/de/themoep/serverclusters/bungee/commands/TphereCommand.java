@@ -1,11 +1,10 @@
 package de.themoep.serverclusters.bungee.commands;
 
-import de.themoep.serverclusters.bungee.ServerClusters;
+import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.vnpbungee.VNPBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 
 public class TphereCommand extends ServerClustersCommand implements TabExecutor {
 
-    public TphereCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+    public TphereCommand(BungeePlugin plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
         super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 

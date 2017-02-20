@@ -1,7 +1,7 @@
 package de.themoep.serverclusters.bungee.commands;
 
+import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.serverclusters.bungee.Cluster;
-import de.themoep.serverclusters.bungee.ServerClusters;
 
 import de.themoep.vnpbungee.VNPBungee;
 
@@ -12,8 +12,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +21,7 @@ import java.util.List;
 
 public class ClusterCommand extends ServerClustersCommand {
 
-    public ClusterCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+    public ClusterCommand(BungeePlugin plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
         super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 

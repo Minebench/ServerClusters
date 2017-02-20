@@ -1,21 +1,19 @@
 package de.themoep.serverclusters.bungee.commands;
 
+import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.LocationInfo;
-import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.WarpInfo;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DelspawnCommand extends ServerClustersCommand {
 
-    public DelspawnCommand(ServerClusters plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
+    public DelspawnCommand(BungeePlugin plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
         super(plugin, name, permission, permissionMessage, description, usage, aliases);
     }
 
