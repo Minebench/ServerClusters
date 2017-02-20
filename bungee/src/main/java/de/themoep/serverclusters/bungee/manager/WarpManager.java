@@ -29,7 +29,7 @@ public class WarpManager extends Manager {
 
     public WarpManager(ServerClusters plugin) throws IOException {
         super(plugin);
-        warpStorage = new FileConfiguration(plugin, "warps");
+        warpStorage = new FileConfiguration(plugin, "warps.yml");
 
         Configuration globalSection = warpStorage.getSection("global");
         for (String warpName : globalSection.getKeys()) {

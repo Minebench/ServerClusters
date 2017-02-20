@@ -22,7 +22,7 @@ public class SpawnManager extends Manager {
 
     public SpawnManager(ServerClusters plugin) throws IOException {
         super(plugin);
-        spawnStorage = new FileConfiguration(plugin, "spawns");
+        spawnStorage = new FileConfiguration(plugin, "spawns.yml");
 
         Configuration global = spawnStorage.getSection("global");
         if (global.getKeys().size() > 0) {
