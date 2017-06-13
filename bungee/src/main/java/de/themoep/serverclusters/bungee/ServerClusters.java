@@ -1,8 +1,10 @@
 package de.themoep.serverclusters.bungee;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -131,32 +133,30 @@ public class ServerClusters extends BungeePlugin {
 
         getProxy().getPluginManager().unregisterCommands(this);
 
-        final Map<String, Class<? extends PluginCommand>> commandMap = new LinkedHashMap<>();
+        final List<PluginCommand> commands = new ArrayList<>();
 
-        commandMap.put("serverclusters",    ServerClustersCommand.class);
-        commandMap.put("cluster",           ClusterCommand.class);
-        commandMap.put("clist",             ListCommand.class);
-        commandMap.put("tp",                TpCommand.class);
-        commandMap.put("tphere",            TphereCommand.class);
-        commandMap.put("find",              FindCommand.class);
-        commandMap.put("delspawn",          DelspawnCommand.class);
-        commandMap.put("delwarp",           DelwarpCommand.class);
+        commands.add(new ServerClustersCommand(this, "serverclusters"));
+        commands.add(new ClusterCommand(this, "cluster"));
+        commands.add(new ListCommand(this, "clist"));
+        commands.add(new TpCommand(this, "tp"));
+        commands.add(new TphereCommand(this, "tphere"));
+        commands.add(new FindCommand(this, "find"));
+        commands.add(new DelspawnCommand(this, "delspawn"));
+        commands.add(new DelwarpCommand(this, "delwarp"));
 
         if (latebind) {
             getLogger().log(infolevel, "Scheduling the Registering of the Commands...");
             final ServerClusters plugin = this;
-            getProxy().getScheduler().schedule(this, new Runnable() {
-                public void run() {
-                    plugin.getLogger().log(infolevel, "Late-binding Commands...");
-                    for (Map.Entry<String, Class<? extends PluginCommand>> entry : commandMap.entrySet()) {
-                        registerCommand(entry.getKey(), entry.getValue());
-                    }
+            getProxy().getScheduler().schedule(this, () -> {
+                plugin.getLogger().log(infolevel, "Late-binding Commands...");
+                for (PluginCommand command : commands) {
+                    getProxy().getPluginManager().registerCommand(this, command);
                 }
             }, 1, TimeUnit.SECONDS);
         } else {
             getLogger().log(infolevel, "Registering Commands...");
-            for (Map.Entry<String, Class<? extends PluginCommand>> entry : commandMap.entrySet()) {
-                registerCommand(entry.getKey(), entry.getValue());
+            for (PluginCommand command : commands) {
+                getProxy().getPluginManager().registerCommand(this, command);
             }
         }
 

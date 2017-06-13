@@ -7,13 +7,10 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
 
-public class ServerClustersCommand extends PluginCommand {
+public class ServerClustersCommand extends PluginCommand<ServerClusters> {
 
-    protected final ServerClusters plugin;
-
-    public ServerClustersCommand(BungeePlugin plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
-        super(plugin, name, permission, permissionMessage, description, usage, aliases);
-        this.plugin = (ServerClusters) plugin;
+    public ServerClustersCommand(ServerClusters plugin, String name) {
+        super(plugin, name);
     }
 
     @Override

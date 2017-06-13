@@ -1,7 +1,7 @@
 package de.themoep.serverclusters.bungee.commands;
 
-import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.serverclusters.bungee.Cluster;
+import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.vnpbungee.VNPBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -14,8 +14,8 @@ import java.util.List;
 
 public class FindCommand extends ServerClustersCommand {
 
-    public FindCommand(BungeePlugin plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
-        super(plugin, name, permission, permissionMessage, description, usage, aliases);
+    public FindCommand(ServerClusters plugin, String name) {
+        super(plugin, name);
     }
 
     @Override

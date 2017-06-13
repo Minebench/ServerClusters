@@ -1,8 +1,8 @@
 package de.themoep.serverclusters.bungee.commands;
 
-import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.serverclusters.bungee.Cluster;
 
+import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.vnpbungee.VNPBungee;
 
 import net.md_5.bungee.api.ChatColor;
@@ -21,8 +21,8 @@ import java.util.List;
 
 public class ClusterCommand extends ServerClustersCommand {
 
-    public ClusterCommand(BungeePlugin plugin, String name, String permission, String permissionMessage, String description, String usage, String... aliases) {
-        super(plugin, name, permission, permissionMessage, description, usage, aliases);
+    public ClusterCommand(ServerClusters plugin, String name) {
+        super(plugin, name);
     }
 
     @Override
