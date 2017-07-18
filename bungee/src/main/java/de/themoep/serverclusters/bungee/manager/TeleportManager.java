@@ -110,11 +110,9 @@ public class TeleportManager extends Manager {
 
         requestMap.get(request.getReceiver()).add(request);
 
-        sender.sendMessage(ChatColor.GREEN + "Teleportationsanfrage an " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + " gesendet!");
         if (request.getTarget() == TeleportTarget.RECEIVER) {
             receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob er sich zu " + ChatColor.RED + "dir" + ChatColor.GOLD + " teleportieren darf.");
         } else {
-            receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob du dich zu " + ChatColor.RED + "ihm" + ChatColor.GOLD + " teleportieren willst.");
             Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
             Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(sender);
             if (receiverCluster == null) {
@@ -131,6 +129,7 @@ public class TeleportManager extends Manager {
                         }
                     } else {
                         receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + sender.getName() + " gerade befindet!");
+                        sender.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " hat nicht die Rechte um dich auf den Server zu teleportieren auf dem du gerade befindest!");
                     }
                 } else {
                     receiver.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
@@ -143,7 +142,9 @@ public class TeleportManager extends Manager {
                     );
                 }
             }
+            receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob du dich zu " + ChatColor.RED + "ihm" + ChatColor.GOLD + " teleportieren willst.");
         }
+        sender.sendMessage(ChatColor.GREEN + "Teleportationsanfrage an " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + " gesendet!");
         receiver.sendMessage(new ComponentBuilder("Nutze ")
                         .color(ChatColor.GOLD)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
@@ -279,37 +280,8 @@ public class TeleportManager extends Manager {
                 return false;
             }
 
-            if (!fromCluster.equals(toCluster)) {
-                if (sender.hasPermission("serverclusters.command.tpa.intercluster")) {
-                    if (sender.hasPermission("serverclusters.cluster." + toCluster.getName())) {
-                        if (!sender.hasPermission("serverclusters.command.tpa.intercluster.nowarning")) {
-                            request.setAction(RequestAction.TELEPORT);
-                            cacheRequest(request);
-                            sender.sendMessage(new ComponentBuilder(receiver.getName()).color(ChatColor.RED)
-                                    .append(" befindet sich auf dem Server " + toCluster.getName() + "!").color(ChatColor.YELLOW)
-                                    .create()
-                            );
-                            sender.sendMessage(new ComponentBuilder("Nutze ").color(ChatColor.YELLOW)
-                                    .append("/tpaconfirm").color(ChatColor.RED).event(
-                                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm"))
-                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuf\u00fchren!")))
-                                    .append(" um dich trotzdem zu ihm zu teleportieren!")
-                                    .retain(ComponentBuilder.FormatRetention.NONE)
-                                    .color(ChatColor.YELLOW)
-                                    .create()
-                            );
-                        }
-                    } else {
-                        receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + receiver.getName() + " gerade befindet!");
-                    }
-                } else {
-                    sender.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
-                            .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + toCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
-                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + toCluster.getName()))
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + toCluster.getName() + " auszuf\u00fchren und den Server zu wechseln!")))
-                            .create()
-                    );
-                }
+            if (!fromCluster.equals(toCluster) && !checkTeleportPermission(sender, receiver, request, toCluster)) {
+                return false;
             }
         }
 
@@ -320,6 +292,46 @@ public class TeleportManager extends Manager {
             plugin.getTeleportUtils().teleportToPlayer(sender, player);
         } else if (request.getTarget() == TeleportTarget.SENDER) {
             plugin.getTeleportUtils().teleportToPlayer(player, sender);
+        }
+        return true;
+    }
+
+    private boolean checkTeleportPermission(ProxiedPlayer sender, ProxiedPlayer receiver, Request request, Cluster toCluster) {
+        ProxiedPlayer toCheck = request.getTarget() == TeleportTarget.RECEIVER ? sender : receiver;
+        ProxiedPlayer target = request.getTarget() == TeleportTarget.RECEIVER ? receiver : sender;
+        String type = request.getTarget() == TeleportTarget.RECEIVER ? "tpa" : "tpahere";
+        if (toCheck.hasPermission("serverclusters.command." + type + ".intercluster")) {
+            if (toCheck.hasPermission("serverclusters.cluster." + toCluster.getName())) {
+                if (!toCheck.hasPermission("serverclusters.command." + type + ".intercluster.nowarning")) {
+                    request.setAction(RequestAction.TELEPORT);
+                    cacheRequest(request);
+                    toCheck.sendMessage(new ComponentBuilder(target.getName()).color(ChatColor.RED)
+                            .append(" befindet sich auf dem Server " + toCluster.getName() + "!").color(ChatColor.YELLOW)
+                            .create()
+                    );
+                    toCheck.sendMessage(new ComponentBuilder("Nutze ").color(ChatColor.YELLOW)
+                            .append("/tpaconfirm").color(ChatColor.RED).event(
+                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaconfirm"))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /tpaconfirm auszuf\u00fchren!")))
+                            .append(" um dich trotzdem zu ihm zu teleportieren!")
+                            .retain(ComponentBuilder.FormatRetention.NONE)
+                            .color(ChatColor.YELLOW)
+                            .create()
+                    );
+                    return false;
+                }
+            } else {
+                toCheck.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + target.getName() + " gerade befindet!");
+                return false;
+            }
+        } else {
+            toCheck.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
+                    .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsle zuerst mit /server " + toCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + toCluster.getName()))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Klicke um /server " + toCluster.getName() + " auszuf\u00fchren und den Server zu wechseln!")))
+                    .create()
+            );
+            return false;
         }
         return true;
     }
