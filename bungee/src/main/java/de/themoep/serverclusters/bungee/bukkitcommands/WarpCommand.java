@@ -59,21 +59,23 @@ public class WarpCommand extends CooldownBukkitCommand {
                     ComponentBuilder builder = new ComponentBuilder(" ");
                     while (clusterWarps.hasNext()) {
                         WarpInfo clusterWarp = clusterWarps.next();
-                        String clusterStr = "";
-                        Cluster cluster = plugin.getClusterManager().getClusterByServer(clusterWarp.getServer());
-                        if (cluster != null) {
-                            clusterStr = cluster.getName() + ":";
-                        }
-                        builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
-                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterStr + clusterWarp.getName())
-                        ).event(
-                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                        ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + clusterWarp.getName() + ChatColor.BLUE + " zu warpen!"
-                                ))
-                        );
+                        if (plugin.getWarpManager().checkAccess(sender, clusterWarp)) {
+                            String clusterStr = "";
+                            Cluster cluster = plugin.getClusterManager().getClusterByServer(clusterWarp.getServer());
+                            if (cluster != null) {
+                                clusterStr = cluster.getName() + ":";
+                            }
+                            builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
+                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + clusterStr + clusterWarp.getName())
+                            ).event(
+                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                            ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + clusterWarp.getName() + ChatColor.BLUE + " zu warpen!"
+                                    ))
+                            );
 
-                        if (clusterWarps.hasNext()) {
-                            builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
+                            if (clusterWarps.hasNext()) {
+                                builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
+                            }
                         }
                     }
                     sender.sendMessage(builder.create());
@@ -88,16 +90,17 @@ public class WarpCommand extends CooldownBukkitCommand {
                         ComponentBuilder builder = new ComponentBuilder(" ");
                         while (clusterWarps.hasNext()) {
                             WarpInfo clusterWarp = clusterWarps.next();
-                            builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
-                                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + cluster.getName() + ":" + clusterWarp.getName())
-                            ).event(
-                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                            ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + cluster.getName() + ":" + clusterWarp.getName() + ChatColor.BLUE + " zu warpen!"
-                                    ))
-                            );
-
-                            if (clusterWarps.hasNext()) {
-                                builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
+                            if (plugin.getWarpManager().checkAccess(sender, clusterWarp)) {
+                                builder.append(clusterWarp.getName()).color(ChatColor.WHITE).event(
+                                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + cluster.getName() + ":" + clusterWarp.getName())
+                                ).event(
+                                        new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                                                ChatColor.BLUE + "Klicke um zu " + ChatColor.YELLOW + cluster.getName() + ":" + clusterWarp.getName() + ChatColor.BLUE + " zu warpen!"
+                                        ))
+                                );
+                                if (clusterWarps.hasNext()) {
+                                    builder.append(", ").retain(ComponentBuilder.FormatRetention.NONE).color(ChatColor.YELLOW);
+                                }
                             }
                         }
                         sender.sendMessage(builder.create());
@@ -107,12 +110,19 @@ public class WarpCommand extends CooldownBukkitCommand {
             return;
         }
 
-        WarpInfo warp = plugin.getWarpManager().getWarp(args[0]);
-        if (warp == null && sender instanceof ProxiedPlayer) {
+        WarpInfo warp = null;
+        if (sender instanceof ProxiedPlayer) {
             Cluster cluster = plugin.getClusterManager().getPlayerCluster((ProxiedPlayer) sender);
             if (cluster != null) {
                 warp = cluster.getWarp(args[0]);
+                if (warp != null && !plugin.getWarpManager().checkAccess(sender, warp)) {
+                    warp = null;
+                }
             }
+        }
+
+        if (warp == null) {
+            warp = plugin.getWarpManager().getWarp(args[0]);
         }
 
         if (warp == null || !plugin.getWarpManager().checkAccess(sender, warp)) {
@@ -129,7 +139,7 @@ public class WarpCommand extends CooldownBukkitCommand {
                 sender.sendMessage(ChatColor.RED + "To run this command from the console use /warp <warpname> <playername>");
                 return;
             }
-        } else if (args.length >= 2) {
+        } else {
             if (!sender.hasPermission("serverclusters.command.warp.others")) {
                 sender.sendMessage(ChatColor.RED + "You don't have the permissions to teleport other players!");
                 return;
