@@ -76,6 +76,12 @@ public class ServerClusters extends BungeePlugin {
     private void loadConfig() {
         getLogger().log(infolevel, "Loading Config...");
         try {
+            getConfig().loadConfig();
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Error loading config!", e);
+            return;
+        }
+        try {
             backend = Backend.valueOf(getConfig().getString("backend"));
         } catch (IllegalArgumentException e) {
             getLogger().info("No or wrong backend option in config.yml. Only YAML and MYSQL is allowed! Falling back to YAML backend!");
