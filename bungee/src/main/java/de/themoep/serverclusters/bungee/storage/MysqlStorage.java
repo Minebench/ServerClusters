@@ -49,7 +49,7 @@ public class MysqlStorage extends ValueStorage {
     private void initDb() {
         try (Connection conn = ds.getConnection();
              Statement sta = conn.createStatement()){
-            sta.execute("CREATE TABLE IF NOT EXISTS `" + dbtableprefix + name + "` ( `playerid` varchar(52) NOT NULL, `value` count(16) NOT NULL, PRIMARY KEY (`playerid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+            sta.execute("CREATE TABLE IF NOT EXISTS `" + dbtableprefix + name + "` ( `playerid` char(36) NOT NULL, `value` varchar(256) NOT NULL, PRIMARY KEY (`playerid`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
             sta.close();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Could not initialize the tables! ", e);
@@ -75,6 +75,9 @@ public class MysqlStorage extends ValueStorage {
 
     @Override
     public void putValue(final UUID playerId, final String value) {
+        if (value.length() > 256) {
+            throw new IllegalArgumentException("Value is longer than 256 chars! (" + value.length() + ")");
+        }
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
             String sql = "INSERT INTO " + dbtableprefix + name + " (`playerid`,`value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE value=VALUES(`value`)";
             try (Connection conn = ds.getConnection();
