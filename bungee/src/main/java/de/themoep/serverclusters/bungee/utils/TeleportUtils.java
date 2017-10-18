@@ -11,6 +11,9 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 /**
@@ -19,6 +22,7 @@ import java.util.logging.Level;
 public class TeleportUtils {
 
     private final ServerClusters plugin;
+    private Map<UUID, Boolean> teleportingPlayers = new ConcurrentHashMap<>();
 
     public TeleportUtils(ServerClusters plugin) {
         this.plugin = plugin;
@@ -38,7 +42,7 @@ public class TeleportUtils {
             Cluster targetCluster = plugin.getClusterManager().getClusterByServer(target.getServer().getInfo().getName());
             if (playerCluster != targetCluster)
                 player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
-            player.connect(target.getServer().getInfo());
+            connect(player, target.getServer().getInfo());
             player.sendMessage(ChatColor.GREEN + "Teleportiere zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + "...");
             teleportToPlayerPM(player, target);
         }
@@ -91,7 +95,7 @@ public class TeleportUtils {
             if (playerCluster != targetCluster) {
                 player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
             }
-            player.connect(server);
+            connect(player, server);
         }
         teleportToLocationPM(player, server, world, x, y, z, yaw, pitch);
     }
@@ -118,5 +122,25 @@ public class TeleportUtils {
         out.writeFloat(yaw);
         out.writeFloat(pitch);
         server.sendData("ServerClusters", out.toByteArray());
+    }
+
+    /**
+     * Connect a player to a server while marking this connect as a teleport
+     * @param player        The player to connect
+     * @param serverInfo    The server to connect to
+     */
+    private void connect(ProxiedPlayer player, ServerInfo serverInfo) {
+        teleportingPlayers.put(player.getUniqueId(), true);
+        player.connect(serverInfo);
+        teleportingPlayers.remove(player.getUniqueId());
+    }
+
+    /**
+     * Check whether or not a player is currently teleporting
+     * @param player    The player to check
+     * @return          <tt>true</tt> if he is teleporting; <tt>false</tt> if not
+     */
+    public boolean isTeleporting(ProxiedPlayer player) {
+        return teleportingPlayers.containsKey(player.getUniqueId());
     }
 }

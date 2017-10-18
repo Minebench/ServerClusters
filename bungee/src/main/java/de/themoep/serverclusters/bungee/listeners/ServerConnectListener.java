@@ -50,7 +50,7 @@ public class ServerConnectListener implements Listener {
             plugin.getProxy().getPluginManager().callEvent(clusterSwitchEvent);
             if (clusterSwitchEvent.isCancelled()) {
                 event.setCancelled(true);
-            } else if (clusterSwitchEvent.getTo() != null) {
+            } else if (clusterSwitchEvent.getTo() != null && !plugin.getTeleportUtils().isTeleporting(event.getPlayer())) {
                 String logoutServer = clusterSwitchEvent.getTo().getLogoutServer(event.getPlayer().getUniqueId());
                 if (logoutServer != null) {
                     ServerInfo server = plugin.getProxy().getServerInfo(logoutServer);
