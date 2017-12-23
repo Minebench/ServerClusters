@@ -12,6 +12,7 @@ mysql:
 teleportDelay: 5
 commandCooldown: 10
 teleportTimeout: 30
+queueTimeout: 30
 cluster:
   Freebuild:
     server:

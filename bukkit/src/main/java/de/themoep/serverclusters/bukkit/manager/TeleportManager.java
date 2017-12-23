@@ -331,7 +331,8 @@ public class TeleportManager implements Listener {
                     for (Iterator<QueueEntry> i = tpQueue.values().iterator(); i.hasNext(); ) {
                         QueueEntry entry = i.next();
                         Player player = plugin.getServer().getPlayer(entry.getPlayerName());
-                        if (player != null && player.isOnline() && runEntry(player, entry) >= 0) {
+                        if ((player != null && player.isOnline() && runEntry(player, entry) >= 0)
+                                || entry.getTimeStamp() + plugin.getQueueTimeout() * 1000 < System.currentTimeMillis()) {
                             i.remove();
                         }
                     }
