@@ -204,7 +204,9 @@ public class Cluster implements Comparable<Cluster> {
             try {
                 return logoutCache.get(playerId);
             } catch (ExecutionException e) {
-                e.printStackTrace();
+                if (!(e instanceof ServerNotFoundException)) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;

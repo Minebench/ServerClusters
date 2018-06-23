@@ -1,6 +1,8 @@
 package de.themoep.serverclusters.bungee;
 
-public class ServerNotFoundException extends Exception {
+import java.util.concurrent.ExecutionException;
+
+public class ServerNotFoundException extends ExecutionException {
     public ServerNotFoundException(String message) {
         super(message);
     }
