@@ -49,6 +49,15 @@ public class TphereCommand extends ServerClustersCommand implements TabExecutor 
         return true;
     }
 
+    @Override
+    protected boolean onPermissionDenied(CommandSender sender, String[] args) {
+        if (sender instanceof ProxiedPlayer) {
+            ((ProxiedPlayer) sender).chat("/tpahere " + String.join(" ", args));
+            return true;
+        }
+        return false;
+    }
+
     public Iterable<String> onTabComplete(CommandSender sender, String[] strings) {
         List<String> playerNames = new ArrayList<>();
         if (strings.length == 0) {
