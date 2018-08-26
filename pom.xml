@@ -17,7 +17,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <plugin.version>0.4-SNAPSHOT</plugin.version>
+        <plugin.version>0.4.1-SNAPSHOT</plugin.version>
         <plugin.name>ServerClusters</plugin.name>
         <minecraft.plugin.version>${project.version} ${buildDescription}</minecraft.plugin.version>
     </properties>
@@ -47,7 +47,7 @@
             </activation>
             <properties>
                 <buildNumber>0</buildNumber>
-                <buildDescription>(manually compiled)</buildDescription>
+                <buildDescription>(compiled at ${maven.build.timestamp})</buildDescription>
             </properties>
         </profile>
         <profile>

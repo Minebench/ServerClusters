@@ -10,6 +10,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
@@ -31,10 +32,37 @@ public class ListCommand extends ServerClustersCommand {
         List<Cluster> cl = plugin.getClusterManager().getClusterlist();
         Collections.sort(cl);
 
-        int totalPlayers = 0;
+        boolean checkVanished = plugin.getVnpbungee() != null;
+
+        List<String> extraPlayers = new ArrayList<>();
+        for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+            if (p.hasPermission("serverclusters.list-extra")) {
+                String name = "";
+                if (checkVanished) {
+                    if (plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
+                        if (sender.hasPermission("vanish.see")) {
+                            name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
+                        } else if (plugin.shouldHideVanished()) {
+                            continue;
+                        }
+                    }
+                }
+                if (p == sender) {
+                    name += ChatColor.ITALIC;
+                }
+                name += p.getName() + ChatColor.RESET;
+                extraPlayers.add(name);
+            }
+        }
+
+        if (!extraPlayers.isEmpty()) {
+            sender.sendMessage(new ComponentBuilder("Teamler online:").color(ChatColor.YELLOW).create());
+            sender.sendMessage(TextComponent.fromLegacyText(String.join(", ", extraPlayers)));
+        }
+
+        int totalPlayers = extraPlayers.size();
 
         sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
-        boolean checkVanished = plugin.getVnpbungee() != null;
 
         for (Cluster c : cl) {
             if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
@@ -44,27 +72,31 @@ public class ListCommand extends ServerClustersCommand {
                     continue;
                 }
 
-                List<String> clusterPlayers = new ArrayList<String>();
+                List<String> clusterPlayers = new ArrayList<>();
                 for (ProxiedPlayer p : c.getPlayerlist()) {
                     String name = "";
+                    if (p.hasPermission("serverclusters.list-extra")) {
+                        continue;
+                    }
                     if (checkVanished) {
                         if (plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
-                            if (!sender.hasPermission("vanish.see"))
+                            if (sender.hasPermission("vanish.see")) {
+                                name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
+                            } else if (plugin.shouldHideVanished()) {
                                 continue;
-                            name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
+                            }
                         }
                     }
                     if (p == sender) {
                         name += ChatColor.ITALIC;
                     }
-                    name += p.getDisplayName() + ChatColor.RESET;
+                    name += p.getName() + ChatColor.RESET;
                     clusterPlayers.add(name);
                 }
-                ;
 
                 totalPlayers += clusterPlayers.size();
 
-                String playerList = clusterPlayers.toString().substring(1, clusterPlayers.toString().length() - 1);
+                String playerList = String.join(", ", clusterPlayers);
 
                 ComponentBuilder msg = new ComponentBuilder(" ");
 
@@ -97,7 +129,7 @@ public class ListCommand extends ServerClustersCommand {
                 }
                 msg.event(he);
                 msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
-                msg.append(playerList).color(ChatColor.WHITE);
+                msg.append(TextComponent.fromLegacyText(playerList), ComponentBuilder.FormatRetention.EVENTS);
                 sender.sendMessage(msg.create());
             }
         }

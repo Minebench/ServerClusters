@@ -75,15 +75,11 @@ public class ClusterCommand extends ServerClustersCommand {
                     }
                     msg.event(he);
                     int playerCount = 0;
-                    if (!sender.hasPermission("vanish.see") && plugin.getVnpbungee() != null) {
-                        VNPBungee vnpBungee = (VNPBungee) ProxyServer.getInstance().getPluginManager().getPlugin("VNPBungee");
-                        for (ProxiedPlayer p : c.getPlayerlist()) {
-                            if (vnpBungee.getVanishStatus(p) != VNPBungee.VanishStatus.VANISHED) {
-                                playerCount++;
-                            }
+                    for (ProxiedPlayer p : c.getPlayerlist()) {
+                        if ((!plugin.shouldHideVanished() || plugin.getVnpbungee() == null || plugin.getVnpbungee().canSee(sender, p))
+                                && !p.hasPermission("serverclusters.list-extra")) {
+                            playerCount++;
                         }
-                    } else {
-                        playerCount = c.getPlayerlist().size();
                     }
                     msg.append(" - " + playerCount + " Spieler").color(ChatColor.WHITE);
                     msg.event(he);

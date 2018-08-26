@@ -39,7 +39,7 @@ public class TpdenyCommand extends BukkitCommand {
         List<String> playerNames = new ArrayList<>();
         if (strings.length == 0) {
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+                if (plugin.shouldHideVanished() && plugin.getVnpbungee() == null ||  !plugin.getVnpbungee().canSee(sender, player)) {
                     playerNames.add(player.getName());
                 }
             }
@@ -47,8 +47,9 @@ public class TpdenyCommand extends BukkitCommand {
         } else if (strings.length == 1) {
             String input = strings[0].toLowerCase();
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (!player.getName().toLowerCase().startsWith(input)) continue;
-                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+                if (!player.getName().toLowerCase().startsWith(input))
+                    continue;
+                if (!plugin.shouldHideVanished() || plugin.getVnpbungee() == null || !plugin.getVnpbungee().canSee(sender, player)) {
                     playerNames.add(player.getName());
                 }
             }

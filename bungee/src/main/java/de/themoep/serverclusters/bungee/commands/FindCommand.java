@@ -26,7 +26,7 @@ public class FindCommand extends ServerClustersCommand {
 
         for (String name : args) {
             ProxiedPlayer player = plugin.getProxy().getPlayer(name);
-            if (player == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VISIBLE && !sender.hasPermission("vanish.see"))) {
+            if (player == null || (plugin.shouldHideVanished() && plugin.getVnpbungee() != null && !plugin.getVnpbungee().canSee(sender, player))) {
                 sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
                 continue;
             }
@@ -45,7 +45,7 @@ public class FindCommand extends ServerClustersCommand {
         List<String> playerNames = new ArrayList<>();
         if (strings.length == 0) {
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+                if (plugin.getVnpbungee() == null || !plugin.getVnpbungee().canSee(sender, player)) {
                     playerNames.add(player.getName());
                 }
             }
@@ -53,8 +53,9 @@ public class FindCommand extends ServerClustersCommand {
         } else if (strings.length == 1) {
             String input = strings[0].toLowerCase();
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (!player.getName().toLowerCase().startsWith(input)) continue;
-                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+                if (!player.getName().toLowerCase().startsWith(input))
+                    continue;
+                if (!plugin.shouldHideVanished() || plugin.getVnpbungee() == null || !plugin.getVnpbungee().canSee(sender, player)) {
                     playerNames.add(player.getName());
                 }
             }

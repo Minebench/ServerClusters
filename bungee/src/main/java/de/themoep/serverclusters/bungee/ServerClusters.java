@@ -44,6 +44,7 @@ public class ServerClusters extends BungeePlugin {
     private long commandCooldown;
     private int teleportDelay;
     private int teleportTimeout;
+    private boolean hideVanished;
 
     public void onEnable() {
         loadConfig();
@@ -88,9 +89,11 @@ public class ServerClusters extends BungeePlugin {
             backend = Backend.YAML;
         }
 
-        teleportDelay = getConfig().getInt("teleportDelay", 5);
-        commandCooldown = getConfig().getInt("commandCooldown", 10);
-        teleportTimeout = getConfig().getInt("teleportTimeout", 30);
+        teleportDelay = getConfig().getInt("teleportDelay");
+        commandCooldown = getConfig().getInt("commandCooldown");
+        teleportTimeout = getConfig().getInt("teleportTimeout");
+
+        hideVanished = getConfig().getBoolean("hideVanished");
 
         getLogger().info("Loading Cluster Manager...");
         cm = new ClusterManager(this);
@@ -200,6 +203,10 @@ public class ServerClusters extends BungeePlugin {
         return teleportTimeout;
     }
 
+    public boolean shouldHideVanished() {
+        return hideVanished;
+    }
+
     public SpawnManager getSpawnManager() {
         return sm;
     }
@@ -238,5 +245,4 @@ public class ServerClusters extends BungeePlugin {
     public Backend getBackend() {
         return backend;
     }
-
 }

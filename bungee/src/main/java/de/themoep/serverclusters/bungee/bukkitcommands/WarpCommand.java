@@ -171,9 +171,7 @@ public class WarpCommand extends CooldownBukkitCommand {
         List<String> pl = new ArrayList<String>();
         if (args.length > 1) {
             for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-                if (plugin.getVnpbungee() != null
-                        && plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED
-                        && !sender.hasPermission("vanish.see")) {
+                if (plugin.shouldHideVanished() && plugin.getVnpbungee() != null && plugin.getVnpbungee().canSee(sender, p)) {
                     continue;
                 }
                 if (args.length == 2 || p.getName().toLowerCase().startsWith(args[1].toLowerCase())) {

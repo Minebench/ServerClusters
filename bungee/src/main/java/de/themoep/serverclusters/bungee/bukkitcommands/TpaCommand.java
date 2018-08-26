@@ -47,7 +47,7 @@ public class TpaCommand extends CooldownBukkitCommand {
             }
         }
 
-        if (target == null || (plugin.getVnpbungee() != null && plugin.getVnpbungee().getVanishStatus(target) == VNPBungee.VanishStatus.VANISHED && !sender.hasPermission("vanish.see"))) {
+        if (target == null || (plugin.shouldHideVanished() && plugin.getVnpbungee() != null && !plugin.getVnpbungee().canSee(sender, target))) {
             sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "The player " + args[0] + " was not found online!");
             return;
         }
@@ -109,7 +109,7 @@ public class TpaCommand extends CooldownBukkitCommand {
         List<String> playerNames = new ArrayList<>();
         if (strings.length == 0) {
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+                if (!plugin.shouldHideVanished() || plugin.getVnpbungee() == null || !plugin.getVnpbungee().canSee(sender, player)) {
                     playerNames.add(player.getName());
                 }
             }
@@ -117,8 +117,9 @@ public class TpaCommand extends CooldownBukkitCommand {
         } else if (strings.length == 1) {
             String input = strings[0].toLowerCase();
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (!player.getName().toLowerCase().startsWith(input)) continue;
-                if (plugin.getVnpbungee() == null || plugin.getVnpbungee().getVanishStatus(player) != VNPBungee.VanishStatus.VANISHED || sender.hasPermission("vanish.see")) {
+                if (!player.getName().toLowerCase().startsWith(input))
+                    continue;
+                if (!plugin.shouldHideVanished() || plugin.getVnpbungee() == null || !plugin.getVnpbungee().canSee(sender, player)) {
                     playerNames.add(player.getName());
                 }
             }

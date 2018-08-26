@@ -116,9 +116,7 @@ public class SpawnCommand extends CooldownBukkitCommand {
         }
         if (!cluster) {
             for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-                if (plugin.getVnpbungee() != null
-                        && plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED
-                        && !sender.hasPermission("vanish.see")) {
+                if (plugin.shouldHideVanished() && plugin.getVnpbungee() != null && !plugin.getVnpbungee().canSee(sender, p) ) {
                     continue;
                 }
                 if (args.length == 0 || p.getName().toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
