@@ -36,10 +36,10 @@ public class ClusterCommand extends ServerClustersCommand {
             Collections.sort(cl);
 
             for (Cluster c : cl) {
-                if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
+                if (c.canSee(sender)) {
                     boolean current = (sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*"));
 
-                    if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
+                    if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden") && !sender.hasPermission(c.getPermission() + ".see")) {
                         continue;
                     }
 
@@ -91,7 +91,7 @@ public class ClusterCommand extends ServerClustersCommand {
         } else if (args.length == 1 && sender instanceof ProxiedPlayer) {
 
             Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
-            if (targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
+            if (targetCluster == null || !targetCluster.hasAccess(sender)) {
                 // ERROR no perms
                 // ERROR Cluster not found
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
@@ -114,7 +114,7 @@ public class ClusterCommand extends ServerClustersCommand {
             }
 
             Cluster targetCluster = plugin.getClusterManager().getCluster(args[0]);
-            if (targetCluster == null || !sender.hasPermission("serverclusters.cluster." + targetCluster.getName().toLowerCase())) {
+            if (targetCluster == null || !targetCluster.hasAccess(sender)) {
                 // ERROR Cluster not found
                 sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "Cluster " + args[0] + " not found!");
                 return true;

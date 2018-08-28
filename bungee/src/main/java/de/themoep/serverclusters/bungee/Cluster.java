@@ -372,8 +372,16 @@ public class Cluster implements Comparable<Cluster> {
         }
     }
 
+    public String getPermission() {
+        return "serverclusters.cluster." + getName().toLowerCase();
+    }
+
     public boolean hasAccess(CommandSender sender) {
-        return sender.hasPermission("serverclusters.cluster." + getName());
+        return sender.hasPermission(getPermission()) || sender.hasPermission(getPermission() + ".join");
+    }
+
+    public boolean canSee(CommandSender sender) {
+        return sender.hasPermission(getPermission()) || sender.hasPermission(getPermission() + ".see");
     }
 
     public boolean shouldIgnoreLogoutServer() {

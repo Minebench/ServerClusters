@@ -65,10 +65,10 @@ public class ListCommand extends ServerClustersCommand {
         sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
 
         for (Cluster c : cl) {
-            if (sender.hasPermission("serverclusters.cluster." + c.getName())) {
+            if (c.canSee(sender)) {
                 boolean current = sender instanceof ProxiedPlayer && c.getServerlist().toString().matches(".*\\b" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "\\b.*");
 
-                if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden")) {
+                if (c.isHidden() && !current && !sender.hasPermission("serverclusters.seehidden") && !sender.hasPermission(c.getPermission() + ".see")) {
                     continue;
                 }
 
@@ -110,12 +110,20 @@ public class ListCommand extends ServerClustersCommand {
                                     .create()
                     );
                     msg.event(he);
-                } else {
+                } else if (c.hasAccess(sender)) {
                     he = new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
                             new ComponentBuilder("Klicke zum Beitreten von ").italic(true)
                                     .append(c.getName()).color(ChatColor.GREEN)
                                     .append("!").color(ChatColor.RESET).italic(true)
+                                    .create()
+                    );
+                } else {
+                    he = new HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            new ComponentBuilder("Du darfst ").italic(true)
+                                    .append(c.getName()).color(ChatColor.RED)
+                                    .append(" nicht beitreten!").color(ChatColor.RESET).italic(true)
                                     .create()
                     );
                 }

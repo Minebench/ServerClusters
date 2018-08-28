@@ -31,7 +31,12 @@ public class FindCommand extends ServerClustersCommand {
                 continue;
             }
             Cluster cluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
-            if (cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") || !sender.hasPermission("serverclusters.cluster." + cluster.getName())) {
+            if (!cluster.canSee(sender)) {
+                sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
+                continue;
+            }
+
+            if (cluster.isHidden() && !sender.hasPermission("serverclusters.seehidden") && !sender.hasPermission(cluster.getPermission() + ".see")) {
                 sender.sendMessage(ChatColor.RED + "Kein Spieler mit dem Namen " + ChatColor.YELLOW + name + ChatColor.RED + " gefunden!");
                 continue;
             }
