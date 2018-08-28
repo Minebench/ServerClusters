@@ -2,7 +2,6 @@ package de.themoep.serverclusters.bungee.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
 import de.themoep.serverclusters.bungee.ServerClusters;
-import org.mariadb.jdbc.MariaDbDataSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,12 +24,38 @@ public class MysqlStorage extends ValueStorage {
         String host = plugin.getConfig().getString("mysql.host");
         int port = plugin.getConfig().getInt("mysql.port");
         String database = plugin.getConfig().getString("mysql.dbname");
+        String urlPar = plugin.getConfig().getString("mysql.url-parameters");
         dbtableprefix = plugin.getConfig().getString("mysql.tableprefix", "serverclusters_");
 
         if (host != null && database != null && port > 0) {
-
             ds = new HikariDataSource();
-            ds.setDataSource(new MariaDbDataSource(host, port, database));
+            String dataSourceClassName = tryDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+            if (dataSourceClassName == null) {
+                dataSourceClassName = tryDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+            }
+            if (dataSourceClassName != null) {
+                plugin.getLogger().log(Level.INFO, "Using " + dataSourceClassName + " database source");
+                ds.setDataSourceClassName(dataSourceClassName);
+            }
+
+            if (dataSourceClassName == null) {
+                String driverClassName = tryDriverClassName("org.mariadb.jdbc.Driver");
+                if (driverClassName == null) {
+                    driverClassName = tryDriverClassName("com.mysql.cj.jdbc.Driver");
+                }
+                if (driverClassName == null) {
+                    driverClassName = tryDriverClassName("com.mysql.jdbc.Driver");
+                }
+
+                if (driverClassName != null) {
+                    plugin.getLogger().log(Level.INFO, "Using " + driverClassName + " database driver");
+                    ds.setDriverClassName(driverClassName);
+                } else {
+                    throw new RuntimeException("Could not find database driver or data source class! Plugin wont work without a database!");
+                }
+            }
+
+            ds.addDataSourceProperty("url", "jdbc:mysql://" + host + ":" + port + "/" + database + urlPar);
             ds.setUsername(plugin.getConfig().getString("mysql.user"));
             ds.setPassword(plugin.getConfig().getString("mysql.password"));
             ds.setConnectionTimeout(5000);
@@ -41,6 +66,22 @@ public class MysqlStorage extends ValueStorage {
             plugin.getLogger().warning("MySQL settings not or not fully configured! Falling back to YAML backend!");
             throw new InvalidPropertiesFormatException("We are missing at least one parameter to establish a database connection!");
         }
+    }
+
+    private String tryDriverClassName(String className) {
+        try {
+            Class.forName(className).newInstance();
+            return className;
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    private String tryDataSourceClassName(String className) {
+        try {
+            Class.forName(className);
+            return className;
+        } catch (Exception ignored) {}
+        return null;
     }
 
     /**

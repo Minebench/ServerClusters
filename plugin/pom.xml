@@ -53,10 +53,6 @@
                             <pattern>com.zaxxer.hikari</pattern>
                             <shadedPattern>de.themoep.serverclusters.lib.hikari</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>org.mariadb.jdbc</pattern>
-                            <shadedPattern>de.themoep.serverclusters.lib.mariadb</shadedPattern>
-                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
