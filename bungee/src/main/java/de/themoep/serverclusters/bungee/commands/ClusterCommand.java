@@ -50,16 +50,24 @@ public class ClusterCommand extends ServerClustersCommand {
                         msg.append(ChatColor.RED + ">").bold(true).color(ChatColor.RED);
                         he = new HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
-                                new ComponentBuilder("Hier befindest du dich!")
+                                new ComponentBuilder("Hier befindest du dich!").color(ChatColor.BLUE)
                                         .create()
                         );
                         msg.event(he);
+                    } else if (c.hasAccess(sender)) {
+                        he = new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                new ComponentBuilder("Klicke zum Betreten von ").italic(true)
+                                        .append(c.getName()).color(ChatColor.GREEN)
+                                        .append("!").color(ChatColor.RESET).italic(true)
+                                        .create()
+                        );
                     } else {
                         he = new HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
-                                new ComponentBuilder("Klicke zum Beitreten von ").italic(true)
-                                        .append(c.getName()).color(ChatColor.GREEN)
-                                        .append("!").color(ChatColor.RESET).italic(true)
+                                new ComponentBuilder("Du darfst ").color(ChatColor.RED)
+                                        .append(c.getName()).color(ChatColor.YELLOW)
+                                        .append(" nicht betreten!").color(ChatColor.RED)
                                         .create()
                         );
                     }
