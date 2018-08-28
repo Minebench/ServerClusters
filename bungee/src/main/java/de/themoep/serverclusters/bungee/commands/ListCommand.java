@@ -57,7 +57,11 @@ public class ListCommand extends ServerClustersCommand {
 
         if (!extraPlayers.isEmpty()) {
             sender.sendMessage(new ComponentBuilder("Teamler online:").color(ChatColor.YELLOW).create());
-            sender.sendMessage(TextComponent.fromLegacyText(String.join(", ", extraPlayers)));
+            if (!extraPlayers.isEmpty()) {
+                sender.sendMessage(TextComponent.fromLegacyText(" " + String.join(", ", extraPlayers)));
+            } else {
+                sender.sendMessage(TextComponent.fromLegacyText(" - "));
+            }
         }
 
         int totalPlayers = extraPlayers.size();
