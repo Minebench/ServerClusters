@@ -75,7 +75,7 @@ public class ListCommand extends ServerClustersCommand {
                 List<String> clusterPlayers = new ArrayList<>();
                 for (ProxiedPlayer p : c.getPlayerlist()) {
                     String name = "";
-                    if (p.hasPermission("serverclusters.list-extra")) {
+                    if (p.hasPermission("serverclusters.list-extra") && !sender.hasPermission("serverclusters.list-extra")) {
                         continue;
                     }
                     if (checkVanished) {
