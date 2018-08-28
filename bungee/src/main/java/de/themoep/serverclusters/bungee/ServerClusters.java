@@ -3,9 +3,7 @@ package de.themoep.serverclusters.bungee;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -20,7 +18,10 @@ import de.themoep.serverclusters.bungee.utils.TeleportUtils;
 
 import de.themoep.vnpbungee.VNPBungee;
 
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
+import net.zaiyers.Channels.Channels;
+import net.zaiyers.Channels.Chatter;
 
 public class ServerClusters extends BungeePlugin {
 
@@ -41,6 +42,7 @@ public class ServerClusters extends BungeePlugin {
     private BukkitCommandExecutor bukkitCommandExecutor;
 
     private VNPBungee vnpbungee = null;
+    private Channels channels = null;
     private long commandCooldown;
     private int teleportDelay;
     private int teleportTimeout;
@@ -61,7 +63,12 @@ public class ServerClusters extends BungeePlugin {
 
         vnpbungee = (VNPBungee) getProxy().getPluginManager().getPlugin("VNPBungee");
         if (vnpbungee != null) {
-            getLogger().log(infolevel, "Found VNPBungee!");
+            getLogger().log(infolevel, "Found VNPBungee " + vnpbungee.getDescription().getVersion() + "!");
+        }
+
+        channels = (Channels) getProxy().getPluginManager().getPlugin("Channels");
+        if (channels != null) {
+            getLogger().info("Found Channels " + channels.getDescription().getVersion() + "!");
         }
 
         getLogger().log(infolevel, "Done enabling!");
@@ -244,5 +251,35 @@ public class ServerClusters extends BungeePlugin {
      */
     public Backend getBackend() {
         return backend;
+    }
+
+    /**
+     * Get the prefix of a player
+     * @param p The player to get the prefix for
+     * @return  The prefix or an empty string if he doesn't have one
+     */
+    public String getPrefix(ProxiedPlayer p) {
+        if (channels != null) {
+            Chatter chatter = channels.getChatter(p);
+            if (chatter != null) {
+                return chatter.getPrefix();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Get the suffix of a player
+     * @param p The player to get the prefix for
+     * @return  The suffix or an empty string if he doesn't have one
+     */
+    public String getSuffix(ProxiedPlayer p) {
+        if (channels != null) {
+            Chatter chatter = channels.getChatter(p);
+            if (chatter != null) {
+                return chatter.getSuffix();
+            }
+        }
+        return "";
     }
 }

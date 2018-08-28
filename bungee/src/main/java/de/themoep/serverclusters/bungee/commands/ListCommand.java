@@ -47,10 +47,11 @@ public class ListCommand extends ServerClustersCommand {
                         }
                     }
                 }
+                name += plugin.getPrefix(p);
                 if (p == sender) {
                     name += ChatColor.ITALIC;
                 }
-                name += p.getName() + ChatColor.RESET;
+                name += p.getName() + ChatColor.RESET + plugin.getSuffix(p) + ChatColor.RESET;
                 extraPlayers.add(name);
             }
         }
@@ -91,10 +92,11 @@ public class ListCommand extends ServerClustersCommand {
                             }
                         }
                     }
+                    name += plugin.getPrefix(p);
                     if (p == sender) {
                         name += ChatColor.ITALIC;
                     }
-                    name += p.getName() + ChatColor.RESET;
+                    name += p.getName() + ChatColor.RESET + plugin.getSuffix(p) + ChatColor.RESET;
                     clusterPlayers.add(name);
                 }
 

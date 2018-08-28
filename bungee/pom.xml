@@ -13,6 +13,21 @@
         <version>parent</version>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>bungee-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>minebench-repo</id>
+            <url>http://repo.minebench.de/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>luck-repo</id>
+            <url>https://repo.lucko.me/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>net.md-5</groupId>
@@ -23,6 +38,12 @@
         <dependency>
             <groupId>de.themoep</groupId>
             <artifactId>vnpbungee</artifactId>
+            <version>1.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.zaiyers</groupId>
+            <artifactId>Channels</artifactId>
             <version>1.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>

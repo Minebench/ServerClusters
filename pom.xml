@@ -22,21 +22,6 @@
         <minecraft.plugin.version>${project.version} ${buildDescription}</minecraft.plugin.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>bungee-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>minebench-repo</id>
-            <url>http://repo.minebench.de/content/groups/public/</url>
-        </repository>
-    </repositories>
-
     <profiles>
         <profile>
             <id>static_build_number</id>
