@@ -47,7 +47,7 @@ public class ListCommand extends ServerClustersCommand {
                         }
                     }
                 }
-                name += plugin.getPrefix(p);
+                name += plugin.getPrefix(p) + ChatColor.RESET;
                 if (p == sender) {
                     name += ChatColor.ITALIC;
                 }
@@ -92,7 +92,7 @@ public class ListCommand extends ServerClustersCommand {
                             }
                         }
                     }
-                    name += plugin.getPrefix(p);
+                    name += plugin.getPrefix(p) + ChatColor.RESET;
                     if (p == sender) {
                         name += ChatColor.ITALIC;
                     }
