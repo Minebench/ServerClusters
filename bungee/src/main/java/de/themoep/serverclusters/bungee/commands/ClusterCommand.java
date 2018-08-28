@@ -77,7 +77,7 @@ public class ClusterCommand extends ServerClustersCommand {
                     int playerCount = 0;
                     for (ProxiedPlayer p : c.getPlayerlist()) {
                         if ((!plugin.shouldHideVanished() || plugin.getVnpbungee() == null || plugin.getVnpbungee().canSee(sender, p))
-                                && !p.hasPermission("serverclusters.list-extra")) {
+                                && (!p.hasPermission("serverclusters.list-extra") || sender.hasPermission("serverclusters.list-extra"))) {
                             playerCount++;
                         }
                     }
