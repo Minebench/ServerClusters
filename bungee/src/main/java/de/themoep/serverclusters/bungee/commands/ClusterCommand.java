@@ -59,7 +59,7 @@ public class ClusterCommand extends ServerClustersCommand {
                                 HoverEvent.Action.SHOW_TEXT,
                                 new ComponentBuilder("Klicke zum Betreten von ").italic(true)
                                         .append(c.getName()).color(ChatColor.GREEN)
-                                        .append("!").color(ChatColor.RESET).italic(true)
+                                        .append("!").reset().italic(true)
                                         .create()
                         );
                     } else {
@@ -77,9 +77,11 @@ public class ClusterCommand extends ServerClustersCommand {
                     ClickEvent ce = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + c.getName());
                     if (current) {
                         msg.color(ChatColor.YELLOW);
-                    } else {
+                    } else if (c.hasAccess(sender)) {
                         msg.color(ChatColor.GREEN);
                         msg.event(ce);
+                    } else {
+                        msg.color(ChatColor.RED);
                     }
                     msg.event(he);
                     int playerCount = 0;
@@ -91,7 +93,7 @@ public class ClusterCommand extends ServerClustersCommand {
                     }
                     msg.append(" - " + playerCount + " Spieler").color(ChatColor.WHITE);
                     msg.event(he);
-                    if (!current) msg.event(ce);
+                    if (!current && c.hasAccess(sender)) msg.event(ce);
                     sender.sendMessage(msg.create());
                 }
             }

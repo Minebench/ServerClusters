@@ -121,7 +121,7 @@ public class ListCommand extends ServerClustersCommand {
                             HoverEvent.Action.SHOW_TEXT,
                             new ComponentBuilder("Klicke zum Betreten von ").italic(true)
                                     .append(c.getName()).color(ChatColor.GREEN)
-                                    .append("!").color(ChatColor.RESET).italic(true)
+                                    .append("!").reset().italic(true)
                                     .create()
                     );
                 } else {
@@ -137,9 +137,11 @@ public class ListCommand extends ServerClustersCommand {
 
                 if (current) {
                     msg.color(ChatColor.YELLOW);
-                } else {
+                } else if (c.hasAccess(sender)) {
                     msg.color(ChatColor.GREEN);
                     msg.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + c.getName()));
+                } else {
+                    msg.color(ChatColor.RED);
                 }
                 msg.event(he);
                 msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
