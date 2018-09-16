@@ -26,6 +26,8 @@ public class TeleportUtils {
 
     public TeleportUtils(ServerClusters plugin) {
         this.plugin = plugin;
+        plugin.getProxy().registerChannel("sc:tptoplayer");
+        plugin.getProxy().registerChannel("sc:tptolocation");
     }
 
     /**
@@ -55,10 +57,9 @@ public class TeleportUtils {
      */
     private void teleportToPlayerPM(ProxiedPlayer player, ProxiedPlayer target) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("TeleportToPlayer");
         out.writeUTF(player.getName());
         out.writeUTF(target.getName());
-        target.getServer().sendData("ServerClusters", out.toByteArray());
+        target.getServer().sendData("sc:tptoplayer", out.toByteArray());
     }
 
     /**
@@ -113,7 +114,6 @@ public class TeleportUtils {
      */
     private void teleportToLocationPM(ProxiedPlayer player, ServerInfo server, String world, double x, double y, double z, float yaw, float pitch) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("TeleportToLocation");
         out.writeUTF(player.getName());
         out.writeUTF(world);
         out.writeDouble(x);
@@ -121,7 +121,7 @@ public class TeleportUtils {
         out.writeDouble(z);
         out.writeFloat(yaw);
         out.writeFloat(pitch);
-        server.sendData("ServerClusters", out.toByteArray());
+        server.sendData("sc:tptolocation", out.toByteArray());
     }
 
     /**

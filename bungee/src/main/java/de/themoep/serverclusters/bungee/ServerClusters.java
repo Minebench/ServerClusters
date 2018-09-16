@@ -54,8 +54,6 @@ public class ServerClusters extends BungeePlugin {
         teleportUtils = new TeleportUtils(this);
         tm = new TeleportManager(this);
 
-        getProxy().registerChannel("ServerClusters");
-
         getLogger().log(infolevel, "Registering Listeners...");
         getProxy().getPluginManager().registerListener(this, new PluginMessageListener(this));
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));

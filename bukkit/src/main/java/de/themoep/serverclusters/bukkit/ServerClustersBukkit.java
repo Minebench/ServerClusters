@@ -36,8 +36,8 @@ public class ServerClustersBukkit extends JavaPlugin {
         tpman = new TeleportManager(this);
 
         getLogger().log(Level.INFO, "Registering Plugin Message Channel");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "ServerClusters", new BungeePluginMessageListener(this));
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "ServerClusters");
+        new BungeePluginMessageListener(this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "sc:runcommand");
 
         getLogger().log(Level.INFO, "Registering Event Listener");
         getServer().getPluginManager().registerEvents(getTeleportManager(), this);
@@ -67,7 +67,6 @@ public class ServerClustersBukkit extends JavaPlugin {
             return true;
         }
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("RunCommand");
         out.writeUTF(senderName);
         out.writeUTF(cmd.getName());
         if (sender instanceof Entity) {
@@ -90,7 +89,7 @@ public class ServerClustersBukkit extends JavaPlugin {
             out.writeBoolean(false);
         }
         out.writeUTF(StringUtils.join(args, " "));
-        player.sendPluginMessage(this, "ServerClusters", out.toByteArray());
+        player.sendPluginMessage(this, "sc:runcommand", out.toByteArray());
         return true;
     }
 

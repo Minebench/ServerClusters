@@ -43,6 +43,7 @@ public class TeleportManager implements Listener {
 
     public TeleportManager(ServerClustersBukkit plugin) {
         this.plugin = plugin;
+        plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "sc:cancelteleport");
     }
 
     @EventHandler
@@ -145,9 +146,8 @@ public class TeleportManager implements Listener {
     private void cancelTeleport(Player player) {
         tpRequests.remove(player.getUniqueId());
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("CancelTeleport");
         out.writeUTF(player.getName());
-        player.sendPluginMessage(plugin, "ServerClusters", out.toByteArray());
+        player.sendPluginMessage(plugin, "sc:cancelteleport", out.toByteArray());
     }
 
     /**

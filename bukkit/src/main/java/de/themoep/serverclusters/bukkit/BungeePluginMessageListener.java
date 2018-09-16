@@ -19,21 +19,25 @@ public class BungeePluginMessageListener implements PluginMessageListener {
 
     public BungeePluginMessageListener(ServerClustersBukkit plugin) {
         this.plugin = plugin;
+
+        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "sc:tptoplayer", this);
+        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "sc:tptolocation", this);
+        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "sc:getlocation", this);
+        plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "sc:playerlocation");
     }
 
     public void onPluginMessageReceived(String channel, Player recevier, byte[] message) {
-        if (channel.equals("ServerClusters")) {
+        if (channel.startsWith("sc:")) {
             ByteArrayDataInput in = ByteStreams.newDataInput(message);
-            String subchannel = in.readUTF();
 
-            plugin.debug(recevier.getName() + " received plugin message on subchannel '" + subchannel + "'");
+            plugin.debug(recevier.getName() + " received plugin message on channel '" + channel + "'");
 
-            if (subchannel.equals("TeleportToPlayer")) {
+            if ("sc:tptoplayer".equals(channel)) {
                 String playername = in.readUTF();
                 String targetname = in.readUTF();
                 plugin.getTeleportManager().teleport(playername, targetname);
 
-            } else if (subchannel.equals("TeleportToLocation")) {
+            } else if ("sc:tptolocation".equals(channel)) {
                 String playername = in.readUTF();
                 String worldname = in.readUTF();
                 double x = in.readDouble();
@@ -44,14 +48,13 @@ public class BungeePluginMessageListener implements PluginMessageListener {
                 Location loc = new Location(plugin.getServer().getWorld(worldname), x, y, z, yaw, pitch);
                 plugin.getTeleportManager().teleport(playername, loc);
 
-            } else if (subchannel.equals("GetPlayerLocation")) {
+            } else if ("sc:getlocation".equals(channel)) {
                 String reason = in.readUTF();
                 String sender = in.readUTF();
                 Location loc = recevier.getLocation();
 
                 ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-                out.writeUTF("GetPlayerLocation");
                 out.writeUTF(reason);
                 out.writeUTF(sender);
                 out.writeUTF(loc.getWorld().getName());
@@ -61,7 +64,7 @@ public class BungeePluginMessageListener implements PluginMessageListener {
                 out.writeFloat(loc.getYaw());
                 out.writeFloat(loc.getPitch());
 
-                recevier.sendPluginMessage(this.plugin, "ServerClusters", out.toByteArray());
+                recevier.sendPluginMessage(this.plugin, "sc:playerlocation", out.toByteArray());
             }
         }
     }

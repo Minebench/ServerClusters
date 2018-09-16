@@ -19,15 +19,17 @@ import java.util.logging.Level;
 public class PluginMessageListener implements Listener {
 
 
-    private ServerClusters plugin = null;
+    private ServerClusters plugin;
 
     public PluginMessageListener(ServerClusters plugin) {
         this.plugin = plugin;
+        plugin.getProxy().registerChannel("sc:runcommand");
+        plugin.getProxy().registerChannel("sc:cancelteleport");
     }
 
     @EventHandler
     public void onPluginMessageReceive(PluginMessageEvent event) {
-        if (!event.getTag().equals("ServerClusters")) {
+        if (!event.getTag().startsWith("sc:")) {
             return;
         }
 
@@ -44,9 +46,8 @@ public class PluginMessageListener implements Listener {
 
         ProxiedPlayer receiver = (ProxiedPlayer) event.getReceiver();
         ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
-        String subchannel = in.readUTF();
 
-        if ("RunCommand".equals(subchannel)) {
+        if ("sc:runcommand".equals(event.getTag())) {
             String sender = in.readUTF();
             String command = in.readUTF();
             LocationInfo loc = null;
@@ -74,7 +75,7 @@ public class PluginMessageListener implements Listener {
             if (!plugin.getBukkitCommandExecutor().execute(command, sender, loc, args)) {
                 plugin.getLogger().log(Level.WARNING, "Error while running ServerClusters/RunCommand/" + command + " from " + sender + "! Command failed to execute?");
             }
-        } else if ("CancelTeleport".equals(subchannel)) {
+        } else if ("sc:cancelteleport".equals(event.getTag())) {
             String playerName = in.readUTF();
             ProxiedPlayer player = plugin.getProxy().getPlayer(playerName);
             if (player != null) {
