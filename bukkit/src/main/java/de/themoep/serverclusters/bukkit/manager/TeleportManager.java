@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Created by Phoenix616 on 08.01.2015.
@@ -248,10 +249,16 @@ public class TeleportManager implements Listener {
             if (loc == null) {
                 return 0;
             }
-            player.teleport(loc);
-            removeQueueEntry(player.getName());
-            player.sendMessage(ChatColor.GREEN + "Teleportiert!");
-            plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
+            player.teleportAsync(loc).whenComplete((b, ex) -> {
+                removeQueueEntry(player.getName());
+                if (b) {
+                    player.sendMessage(ChatColor.GREEN + "Teleportiert!");
+                    plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
+                } else {
+                    player.sendMessage(ChatColor.RED + "Error");
+                    plugin.getLogger().log(Level.SEVERE, "Could not teleport " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")", ex);
+                }
+            });
             return 1;
         }
         return -1;
