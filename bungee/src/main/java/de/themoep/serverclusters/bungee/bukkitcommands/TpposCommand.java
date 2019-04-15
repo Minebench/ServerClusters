@@ -7,6 +7,8 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.ArrayList;
+
 public class TpposCommand extends BukkitCommand {
     public TpposCommand(ServerClusters plugin, String name, String permission) {
         super(plugin, name, permission);
@@ -116,6 +118,6 @@ public class TpposCommand extends BukkitCommand {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return null;
+        return new ArrayList<>();
     }
 }
