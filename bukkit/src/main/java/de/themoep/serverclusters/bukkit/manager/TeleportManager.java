@@ -208,16 +208,23 @@ public class TeleportManager implements Listener {
      */
     public byte teleport(Player player, Location target) {
         if (target != null && player != null && player.isOnline() && player.getLastPlayed() + 100 < System.currentTimeMillis()) {
-            Location loc = makeTeleportSafe(player, target);
-            if (loc == null) {
-                plugin.getLogger().warning("Target location could not be made save to teleport " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
-                return 0;
-            }
-            player.teleport(target);
-            removeQueueEntry(player.getName());
+            target.getWorld().getChunkAtAsync(target).whenComplete((c, ex) -> {
+                if (ex != null) {
+                    player.sendMessage(ChatColor.RED + "Error");
+                    plugin.getLogger().log(Level.SEVERE, "Could not teleport " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")", ex);
+                    return;
+                }
+                Location loc = makeTeleportSafe(player, target);
+                if (loc == null) {
+                    plugin.getLogger().warning("Target location could not be made save to teleport " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
+                    return;
+                }
+                player.teleport(target);
+                removeQueueEntry(player.getName());
 
-            player.sendMessage(ChatColor.GREEN + "Teleportiert!");
-            plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
+                player.sendMessage(ChatColor.GREEN + "Teleportiert!");
+                plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
+            });
             return 1;
         }
         return -1;
@@ -247,18 +254,15 @@ public class TeleportManager implements Listener {
         if (target != null && target.isOnline() && player != null && player.isOnline() && player.getLastPlayed() + 100 < System.currentTimeMillis()) {
             Location loc = makeTeleportSafe(player, target.getLocation());
             if (loc == null) {
+                player.sendMessage(ChatColor.RED + "Error");
+                loc = target.getLocation();
+                plugin.getLogger().log(Level.SEVERE, "Could not teleport " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ") as it was unsafe!");
                 return 0;
             }
-            player.teleportAsync(loc).whenComplete((b, ex) -> {
-                removeQueueEntry(player.getName());
-                if (b) {
-                    player.sendMessage(ChatColor.GREEN + "Teleportiert!");
-                    plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
-                } else {
-                    player.sendMessage(ChatColor.RED + "Error");
-                    plugin.getLogger().log(Level.SEVERE, "Could not teleport " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")", ex);
-                }
-            });
+            player.teleport(loc);
+            removeQueueEntry(player.getName());
+            player.sendMessage(ChatColor.GREEN + "Teleportiert!");
+            plugin.debug("Teleported " + player.getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
             return 1;
         }
         return -1;
