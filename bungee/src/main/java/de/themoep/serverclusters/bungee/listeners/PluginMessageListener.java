@@ -25,6 +25,7 @@ public class PluginMessageListener implements Listener {
         this.plugin = plugin;
         plugin.getProxy().registerChannel("sc:runcommand");
         plugin.getProxy().registerChannel("sc:cancelteleport");
+        plugin.getProxy().registerChannel("sc:error");
     }
 
     @EventHandler
@@ -82,6 +83,10 @@ public class PluginMessageListener implements Listener {
                 plugin.getTeleportManager().cancelTeleport(player);
             }
             plugin.getLogger().log(Level.INFO, receiver.getName() + " received a plugin message on channel ServerClusters/CancelTeleport '" + playerName + "'");
+        } else if ("sc:error".equals(event.getTag())) {
+            String type = in.readUTF();
+            String value = in.readUTF();
+            ((ProxiedPlayer) event.getReceiver()).sendMessage(ChatColor.RED + "An error occured: " + type + " " + value);
         }
     }
 }
