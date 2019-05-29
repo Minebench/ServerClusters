@@ -1,5 +1,7 @@
 package de.themoep.serverclusters.bungee.manager;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import de.themoep.serverclusters.bungee.Cluster;
 import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
@@ -25,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TeleportManager extends Manager {
 
-    private final Map<String, List<Request>> requestMap = new HashMap<>();
+    private final Multimap<String, Request> requestMap = MultimapBuilder.hashKeys().arrayListValues().build();
 
     private final Map<String, Request> cachedRequests = new HashMap<>();
 
@@ -105,10 +107,8 @@ public class TeleportManager extends Manager {
         if (receiver == null || sender == null) {
             return false;
         }
-        if (!requestMap.containsKey(request.getReceiver()))
-            requestMap.put(request.getReceiver(), new ArrayList<Request>());
 
-        requestMap.get(request.getReceiver()).add(request);
+        requestMap.put(request.getReceiver(), request);
 
         if (request.getTarget() == TeleportTarget.RECEIVER) {
             receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob er sich zu " + ChatColor.RED + "dir" + ChatColor.GOLD + " teleportieren darf.");
@@ -179,11 +179,7 @@ public class TeleportManager extends Manager {
      * @return <tt>true</tt> if it was removed; <tt>false</tt> if it wasn't there anymore
      */
     private boolean removeRequest(Request request) {
-        List<Request> requestList = requestMap.get(request.getReceiver());
-        if (requestList == null || requestList.isEmpty())
-            return false;
-
-        return requestList.remove(request);
+        return requestMap.remove(request.getReceiver(), request);
     }
 
     /**
@@ -193,7 +189,7 @@ public class TeleportManager extends Manager {
      * @return The request of the sender; the last request if the sender is null or empty
      */
     private Request getRequest(ProxiedPlayer player, String sender) {
-        List<Request> requestList = requestMap.get(player.getName());
+        List<Request> requestList = (List<Request>) requestMap.get(player.getName());
         if (requestList == null || requestList.isEmpty())
             return null;
 
