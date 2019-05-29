@@ -37,15 +37,15 @@ public class TeleportUtils {
      */
     public void teleportToPlayer(ProxiedPlayer player, ProxiedPlayer target) {
         if (player.getServer().getInfo().getName().equals(target.getServer().getInfo().getName())) {
-            player.sendMessage(ChatColor.GREEN + "Teleportiere zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + "...");
+            plugin.sendLang(player, "teleport.player", "target", target.getName(), "player", player.getName());
             teleportToPlayerPM(player, target);
         } else {
             Cluster playerCluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
             Cluster targetCluster = plugin.getClusterManager().getClusterByServer(target.getServer().getInfo().getName());
             if (playerCluster != targetCluster)
-                player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+                plugin.sendLang(player, "teleport.connect", "cluster", targetCluster.getName(), "player", player.getName());
             connect(player, target.getServer().getInfo());
-            player.sendMessage(ChatColor.GREEN + "Teleportiere zu " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + "...");
+            plugin.sendLang(player, "teleport.player", "target", target.getName(), "player", player.getName());
             teleportToPlayerPM(player, target);
         }
     }
@@ -94,7 +94,7 @@ public class TeleportUtils {
             Cluster playerCluster = plugin.getClusterManager().getClusterByServer(player.getServer().getInfo().getName());
             Cluster targetCluster = plugin.getClusterManager().getClusterByServer(server.getName());
             if (playerCluster != targetCluster) {
-                player.sendMessage(ChatColor.GREEN + "Verbinde mit " + ChatColor.YELLOW + targetCluster.getName() + ChatColor.GREEN + "...");
+                plugin.sendLang(player, "teleport.connect", "cluster", targetCluster.getName(), "player", player.getName());
             }
             connect(player, server);
         }

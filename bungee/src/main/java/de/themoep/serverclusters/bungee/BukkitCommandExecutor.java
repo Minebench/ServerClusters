@@ -52,7 +52,7 @@ public class BukkitCommandExecutor {
         }
 
         if (sender instanceof ProxiedPlayer && location == null) {
-            sender.sendMessage(ChatColor.RED + "Error: Location was null?");
+            plugin.sendLang(sender, "error.null-location");
             return false;
         }
 

@@ -1,6 +1,8 @@
 # backend to safe runtime data (for example loggoutservers)
 # possible options: YAML or MYSQL
 backend: YAML
+# Default Language
+lang: de
 # mysql connection information
 mysql:
   user: username

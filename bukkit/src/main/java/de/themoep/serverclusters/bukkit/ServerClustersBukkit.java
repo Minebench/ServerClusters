@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import de.themoep.serverclusters.bukkit.manager.TeleportManager;
 
+import de.themoep.utils.lang.bukkit.LanguageManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
@@ -25,12 +26,16 @@ public class ServerClustersBukkit extends JavaPlugin {
     private int teleportDelay;
     private int queueTimeout;
     private boolean debug;
-    
+    private LanguageManager lang;
+
     public void onEnable() {
 
+        saveDefaultConfig();
         teleportDelay = getConfig().getInt("teleportDelay");
         queueTimeout = getConfig().getInt("queueTimeout");
         debug = getConfig().getBoolean("debug", true);
+
+        lang = new LanguageManager(this, getConfig().getString("lang"));
 
         getLogger().log(Level.INFO, "Initialising Teleport Manager");
         tpman = new TeleportManager(this);
@@ -63,7 +68,7 @@ public class ServerClustersBukkit extends JavaPlugin {
             senderName = "[@]";
             player = getServer().getOnlinePlayers().iterator().next();
         } else {
-            sender.sendMessage(ChatColor.RED + "This command can only be run with at least one player online as it relies on plugin messages!");
+            sendLang(sender, "no-player-online");
             return true;
         }
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -91,6 +96,10 @@ public class ServerClustersBukkit extends JavaPlugin {
         out.writeUTF(StringUtils.join(args, " "));
         player.sendPluginMessage(this, "sc:runcommand", out.toByteArray());
         return true;
+    }
+
+    public void sendLang(CommandSender sender, String key, String... replacements) {
+        sender.sendMessage(lang.getConfig(sender).get("bukkit." + key, replacements));
     }
 
     public int getTeleportDelay() {

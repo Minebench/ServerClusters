@@ -1,0 +1,46 @@
+bukkit:
+  teleported: "&aTeleportiert!"
+  no-player-online: "&cThis command can only be run with at least one player online as it relies on plugin messages!"
+error:
+  server-doesnt-exist: "&4Error:&c The server %server% does not exist!"
+  null-location: "&4Error:&c Location was null?"
+  unknown-cluster: "&5Error:&c On what cluster are you on? Oo"
+  unknown-cluster-player: "&5Error:&c On what cluster is %player% on? Oo"
+  request:
+    none: "&cDu hast keine offenen Anfragen!"
+    none-player: "&cDu hast keine offenen Anfragen von &e%player%&c!"
+    timeout: "&cDie letzte Anfrage von&e %player%&c ist bereits ausgelaufen!"
+    offline: "&e%player%&c ist nicht mehr online!"
+on-server: "&c%player%&e befindet sich auf dem Server %cluster%!"
+teleport:
+  player: "&aTeleportiere zu &e%target%&a..."
+  connect: "&aVerbinde mit &e%cluster%&a..."
+  cancelled: "&cTeleportation abgebrochen! Du musst für %delay% Sekunden stehen bleiben!"
+  request:
+    accepted:
+      receiver: "&aTeleportationsanfrage von &e%player%&a akzeptiert!"
+      sender: "&e%player%&a hat deine Teleportationsanfrage angenommen!"
+    denied:
+      receiver: "&7Teleportationsanfrage von &e%player%&7 abgelehnt!"
+      sender: "&e%player%&c hat deine Teleportationsanfrage abgelehnt!"
+    accept: >
+      &6Nutze [&a/tpaccept](/tpaccept %player% hover=&9Klicke um &e/tpaccept&9 auszuführen und die Anfrange anzunehmen!)
+      &6um die Anfragen anzunehmen."
+    deny: >
+      &6Nutze [&c/tpdeny](/tpdeny %player% hover=&9Klicke um &e/tpdeny&9 auszuführen und die Anfrange abzulehnen!)
+      &6um die Anfragen abzulehnen."
+    timeout: "&6Diese Anfrage wird nach &c%timeout% Sekunden&6 ungültig!"
+    confirm: "&eNutze [&c/tpaconfirm](/tpaconfirm hover=&9Klicke um &e/tpaconfirm&9 auszuführen!)&e um dich trotzdem zu ihm zu teleportieren!"
+    no-rights:
+      self: "&cAchtung:&e Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich %player% gerade befindet!"
+      other: "&cAchtung:&e %player% hat nicht die Rechte um dich auf den Server zu teleportieren auf dem du dich gerade befindest!"
+      directly: >
+        [&cAchtung:&e Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren!
+        Wechsele zuerst mit /server %cluster% auf den selben Server!]
+        (/cluster %cluster% hover=&9Klicke um &e/server %cluster%&9 auszuführen und den Server zu wechseln!)
+    target:
+      receiver: "&c%player%&6 fragt, ob er sich zu&c dir&6 teleportieren darf."
+      sender:
+        send: "&aTeleportationsanfrage an &e%player%&a gesendet!"
+        received: "&c%player%&6 fragt, ob du dich zu&c him&6 teleportieren willst."
+        other-cluster: "&cAchtung:&e %player% befindet sich auf dem Server %cluster%!"

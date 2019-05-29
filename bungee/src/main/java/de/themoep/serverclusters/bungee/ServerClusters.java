@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.bungeeplugin.PluginCommand;
+import de.themoep.minedown.MineDown;
 import de.themoep.serverclusters.bungee.bukkitcommands.*;
 import de.themoep.serverclusters.bungee.commands.*;
 import de.themoep.serverclusters.bungee.enums.Backend;
@@ -16,8 +17,11 @@ import de.themoep.serverclusters.bungee.listeners.*;
 import de.themoep.serverclusters.bungee.manager.*;
 import de.themoep.serverclusters.bungee.utils.TeleportUtils;
 
+import de.themoep.utils.lang.bungee.LanguageManager;
 import de.themoep.vnpbungee.VNPBungee;
 
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.zaiyers.Channels.Channels;
@@ -28,6 +32,8 @@ public class ServerClusters extends BungeePlugin {
     private Level infolevel = Level.INFO;
 
     private Backend backend;
+
+    private LanguageManager lang;
 
     private SpawnManager sm;
 
@@ -93,6 +99,8 @@ public class ServerClusters extends BungeePlugin {
             getLogger().info("No or wrong backend option in config.yml. Only YAML and MYSQL is allowed! Falling back to YAML backend!");
             backend = Backend.YAML;
         }
+
+        lang = new LanguageManager(this, getConfig().getString("lang"));
 
         teleportDelay = getConfig().getInt("teleportDelay");
         commandCooldown = getConfig().getInt("commandCooldown");
@@ -279,5 +287,13 @@ public class ServerClusters extends BungeePlugin {
             }
         }
         return "";
+    }
+
+    public BaseComponent[] getLang(CommandSender sender, String key, String... replacements) {
+        return MineDown.parse(lang.getConfig(sender).get(key), replacements);
+    }
+
+    public void sendLang(CommandSender sender, String key, String... replacements) {
+        sender.sendMessage(getLang(sender, key, replacements));
     }
 }

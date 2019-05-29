@@ -222,7 +222,7 @@ public class TeleportManager implements Listener {
                 player.teleport(target);
                 removeQueueEntry(player.getName());
 
-                player.sendMessage(ChatColor.GREEN + "Teleportiert!");
+                plugin.sendLang(player, "teleported");
                 plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
             });
             return 1;

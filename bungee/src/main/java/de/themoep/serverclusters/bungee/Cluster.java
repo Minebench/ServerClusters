@@ -161,7 +161,7 @@ public class Cluster implements Comparable<Cluster> {
         if (server != null) {
             player.connect(server);
         } else {
-            player.sendMessage(new ComponentBuilder("Error:").color(ChatColor.DARK_RED).append(" The server " + servername + " does not exist!").color(ChatColor.RED).create());
+            plugin.sendLang(player, "error.server-doesnt-exist", "server", servername);
         }
     }
 
