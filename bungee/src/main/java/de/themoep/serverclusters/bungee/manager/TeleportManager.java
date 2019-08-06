@@ -2,8 +2,9 @@ package de.themoep.serverclusters.bungee.manager;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import de.themoep.serverclusters.bungee.Cluster;
-import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import de.themoep.serverclusters.bungee.enums.TeleportTarget;
 import net.md_5.bungee.api.ChatColor;
@@ -14,7 +15,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ public class TeleportManager extends Manager {
 
     public TeleportManager(ServerClusters plugin) {
         super(plugin);
+        plugin.getProxy().registerChannel("sc:addtprequest");
     }
 
     @Override
@@ -375,6 +376,10 @@ public class TeleportManager extends Manager {
             plugin.getProxy().getScheduler().cancel(teleportTasks.get(player.getUniqueId()));
         }
         teleportTasks.put(player.getUniqueId(), plugin.getProxy().getScheduler().schedule(plugin, runnable, plugin.getTeleportDelay(), TimeUnit.SECONDS));
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeLong(player.getUniqueId().getMostSignificantBits());
+        out.writeLong(player.getUniqueId().getLeastSignificantBits());
+        player.getServer().sendData("sc:addtprequest", out.toByteArray());
     }
 
     public void cancelTeleport(ProxiedPlayer player) {

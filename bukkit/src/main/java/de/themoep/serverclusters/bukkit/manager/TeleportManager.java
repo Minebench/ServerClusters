@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -49,97 +50,70 @@ public class TeleportManager implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (plugin.getTeleportDelay() <= 0) {
+        checkQueue(event, event.getPlayer());
+        if (sameBlock(event.getTo(), event.getFrom())) {
             return;
         }
+        checkForCancel(event.getPlayer());
+    }
 
-        if (event.getTo() == event.getFrom()) {
-            return;
-        }
-
-        if (isQueued(event.getPlayer(), 60)) {
-            event.setCancelled(true);
-        }
-
-        if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
-            if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
-                cancelTeleport(event.getPlayer());
-            }
-        }
+    private boolean sameBlock(Location to, Location from) {
+        return to.getWorld() == from.getWorld()
+                && to.getBlockX() == from.getBlockX()
+                && to.getBlockY() == from.getBlockY()
+                && to.getBlockZ() == from.getBlockZ();
     }
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
-        if (plugin.getTeleportDelay() <= 0) {
-            return;
-        }
-
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
-
-        if (isQueued((Player) event.getEntity(), 60)) {
-            event.setCancelled(true);
-        }
-
-        if (tpRequests.containsKey(event.getEntity().getUniqueId())) {
-            if (tpRequests.get(event.getEntity().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
-                cancelTeleport((Player) event.getEntity());
-            }
-        }
+        checkQueue(event, (Player) event.getEntity());
+        checkForCancel((Player) event.getEntity());
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (plugin.getTeleportDelay() <= 0) {
-            return;
-        }
-
-        if (isQueued(event.getPlayer(), 60)) {
-            event.setCancelled(true);
-        }
-
-        if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
-            if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
-                cancelTeleport(event.getPlayer());
-            }
-        }
+        checkQueue(event, event.getPlayer());
+        checkForCancel(event.getPlayer());
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        checkQueue(event, event.getPlayer());
+        checkForCancel(event.getPlayer());
+    }
+
+    private void checkForCancel(Player player) {
         if (plugin.getTeleportDelay() <= 0) {
             return;
         }
 
-        if (isQueued(event.getPlayer(), 60)) {
-            event.setCancelled(true);
-        }
-
-        if (tpRequests.containsKey(event.getPlayer().getUniqueId())) {
-            if (tpRequests.get(event.getPlayer().getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
-                cancelTeleport(event.getPlayer());
+        if (tpRequests.containsKey(player.getUniqueId())) {
+            if (tpRequests.get(player.getUniqueId()) + plugin.getTeleportDelay() * 1000 < System.currentTimeMillis()) {
+                cancelTeleport(player);
             }
         }
     }
 
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
-        if (isQueued(event.getPlayer(), 60)) {
-            event.setCancelled(true);
-        }
+        checkQueue(event, event.getPlayer());
     }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (isQueued(event.getPlayer(), 60)) {
-            event.setCancelled(true);
-        }
+        checkQueue(event, event.getPlayer());
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (isQueued(event.getPlayer(), 60)) {
+        checkQueue(event, event.getPlayer());
+    }
+
+    private void checkQueue(Cancellable event, Player player) {
+        if (isQueued(player, 60)) {
             event.setCancelled(true);
         }
     }
@@ -148,7 +122,7 @@ public class TeleportManager implements Listener {
         tpRequests.remove(player.getUniqueId());
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(player.getName());
-        player.sendPluginMessage(plugin, "sc:cancelteleport", out.toByteArray());
+        player.sendPluginMessage(plugin, "sc:teleportDelay", out.toByteArray());
     }
 
     /**
@@ -209,6 +183,7 @@ public class TeleportManager implements Listener {
     public byte teleport(Player player, Location target) {
         if (target != null && player != null && player.isOnline() && player.getLastPlayed() + 100 < System.currentTimeMillis()) {
             target.getWorld().getChunkAtAsync(target).whenComplete((c, ex) -> {
+                tpRequests.remove(player.getUniqueId());
                 if (ex != null) {
                     player.sendMessage(ChatColor.RED + "Error");
                     plugin.getLogger().log(Level.SEVERE, "Could not teleport " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")", ex);
@@ -253,6 +228,7 @@ public class TeleportManager implements Listener {
     public byte teleport(Player player, Player target) {
         if (target != null && target.isOnline() && player != null && player.isOnline() && player.getLastPlayed() + 100 < System.currentTimeMillis()) {
             Location loc = makeTeleportSafe(player, target.getLocation());
+            tpRequests.remove(player.getUniqueId());
             if (loc == null) {
                 player.sendMessage(ChatColor.RED + "Error");
                 loc = target.getLocation();
