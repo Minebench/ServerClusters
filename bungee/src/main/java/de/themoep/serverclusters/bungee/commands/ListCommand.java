@@ -65,7 +65,7 @@ public class ListCommand extends ServerClustersCommand {
             }
         }
 
-        int totalPlayers = extraPlayers.size();
+        int totalPlayers = sender.hasPermission("serverclusters.list-extra") ? 0 : extraPlayers.size();
 
         sender.sendMessage(new ComponentBuilder("Spieler online:").color(ChatColor.YELLOW).create());
 
