@@ -26,8 +26,6 @@ public class TeleportUtils {
 
     public TeleportUtils(ServerClusters plugin) {
         this.plugin = plugin;
-        plugin.getProxy().registerChannel("sc:tptoplayer");
-        plugin.getProxy().registerChannel("sc:tptolocation");
     }
 
     /**

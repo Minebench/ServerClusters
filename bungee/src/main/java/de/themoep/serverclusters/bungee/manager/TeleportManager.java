@@ -35,7 +35,6 @@ public class TeleportManager extends Manager {
 
     public TeleportManager(ServerClusters plugin) {
         super(plugin);
-        plugin.getProxy().registerChannel("sc:addtprequest");
     }
 
     @Override

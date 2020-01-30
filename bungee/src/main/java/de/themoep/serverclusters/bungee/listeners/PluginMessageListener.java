@@ -24,6 +24,9 @@ public class PluginMessageListener implements Listener {
 
     public PluginMessageListener(ServerClusters plugin) {
         this.plugin = plugin;
+        plugin.getProxy().registerChannel("sc:runcommand");
+        plugin.getProxy().registerChannel("sc:cancelteleport");
+        plugin.getProxy().registerChannel("sc:error");
     }
 
     @EventHandler
