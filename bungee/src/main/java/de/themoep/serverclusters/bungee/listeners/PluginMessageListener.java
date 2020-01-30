@@ -7,6 +7,7 @@ import de.themoep.serverclusters.bungee.LocationInfo;
 import de.themoep.serverclusters.bungee.ServerClusters;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -23,9 +24,6 @@ public class PluginMessageListener implements Listener {
 
     public PluginMessageListener(ServerClusters plugin) {
         this.plugin = plugin;
-        plugin.getProxy().registerChannel("sc:runcommand");
-        plugin.getProxy().registerChannel("sc:cancelteleport");
-        plugin.getProxy().registerChannel("sc:error");
     }
 
     @EventHandler
@@ -34,7 +32,7 @@ public class PluginMessageListener implements Listener {
             return;
         }
 
-        if (!(event.getReceiver() instanceof ProxiedPlayer)) {
+        if (!(event.getReceiver() instanceof ProxiedPlayer) || !(event.getSender() instanceof Server)) {
             // plugin message from the client
             String senderName = event.getSender().getAddress().toString();
             if (event.getSender() instanceof ProxiedPlayer) {
