@@ -133,9 +133,11 @@ public class TeleportManager implements Listener {
         if (isQueued(event.getPlayer())) {
             QueueEntry entry = getQueueEntry(event.getPlayer().getName());
             if (entry != null) {
-                if (runEntry(event.getPlayer(), entry) < 0) {
-                    addQueueEntry(event.getPlayer().getName(), entry.copy());
-                }
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    if (runEntry(event.getPlayer(), entry) < 0) {
+                        addQueueEntry(event.getPlayer().getName(), entry.copy());
+                    }
+                });
             }
         }
     }
