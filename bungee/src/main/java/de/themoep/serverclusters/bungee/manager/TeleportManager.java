@@ -49,15 +49,15 @@ public class TeleportManager extends Manager {
      * @param target   Where we should teleport to
      */
     public void cacheRequest(ProxiedPlayer sender, ProxiedPlayer receiver, TeleportTarget target) {
-        cacheRequest(new Request(sender, receiver, target));
+        cacheRequest(sender.getName(), new Request(sender, receiver, target));
     }
 
     /**
      * Cache a request if the user would get a warning for teleporting across clusters
      * @param request The Request
      */
-    public void cacheRequest(Request request) {
-        cachedRequests.put(request.getSender(), request);
+    public void cacheRequest(String sender, Request request) {
+        cachedRequests.put(sender, request);
     }
 
     private boolean isCached(Request request) {
@@ -300,7 +300,7 @@ public class TeleportManager extends Manager {
             if (toCheck.hasPermission("serverclusters.cluster." + toCluster.getName())) {
                 if (!toCheck.hasPermission("serverclusters.command." + type + ".intercluster.nowarning")) {
                     request.setAction(RequestAction.TELEPORT);
-                    cacheRequest(request);
+                    cacheRequest(sender.getName(), request);
                     toCheck.sendMessage(new ComponentBuilder(target.getName()).color(ChatColor.RED)
                             .append(" befindet sich auf dem Server " + toCluster.getName() + "!").color(ChatColor.YELLOW)
                             .create()
