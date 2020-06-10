@@ -22,6 +22,10 @@
             <id>minebench-repo</id>
             <url>http://repo.minebench.de/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>minecrell</id>
+            <url>https://repo.minecrell.net/snapshots</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -42,6 +46,13 @@
             <artifactId>Channels</artifactId>
             <version>1.2-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.minecrell</groupId>
+            <artifactId>ServerListPlus</artifactId>
+            <version>3.4.9-SNAPSHOT</version>
+            <scope>provided</scope>
+            <classifier>Bungee</classifier>
         </dependency>
         <dependency>
             <groupId>de.themoep</groupId>

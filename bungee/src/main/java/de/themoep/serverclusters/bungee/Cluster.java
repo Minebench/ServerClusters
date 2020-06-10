@@ -212,8 +212,11 @@ public class Cluster implements Comparable<Cluster> {
         return null;
     }
 
+    /**
+     * Get the list of players on this cluster
+     * @return The list of players on this cluster
+     */
     public List<ProxiedPlayer> getPlayerlist() {
-        // TODO Auto-generated method stub
         List<ProxiedPlayer> playerlist = new ArrayList<ProxiedPlayer>();
         for (String s : getServerlist()) {
             ServerInfo si = plugin.getProxy().getServerInfo(s);
@@ -221,6 +224,20 @@ public class Cluster implements Comparable<Cluster> {
                 playerlist.addAll(si.getPlayers());
         }
         return playerlist;
+    }
+
+    /**
+     * Get the amount of players on this cluster
+     * @return The amount of players
+     */
+    public int getPlayerCount() {
+        int amount = 0;
+        for (String s : getServerlist()) {
+            ServerInfo si = plugin.getProxy().getServerInfo(s);
+            if (si != null)
+                amount += si.getPlayers().size();
+        }
+        return amount;
     }
 
     /**

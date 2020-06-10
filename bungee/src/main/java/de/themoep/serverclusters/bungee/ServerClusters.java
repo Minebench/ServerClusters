@@ -20,6 +20,9 @@ import de.themoep.vnpbungee.VNPBungee;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
+import net.minecrell.serverlistplus.core.ServerListPlusCore;
+import net.minecrell.serverlistplus.core.replacement.AbstractDynamicReplacer;
+import net.minecrell.serverlistplus.core.replacement.ReplacementManager;
 import net.zaiyers.Channels.Channels;
 import net.zaiyers.Channels.Chatter;
 
@@ -48,6 +51,43 @@ public class ServerClusters extends BungeePlugin {
     private int teleportTimeout;
     private boolean hideVanished;
 
+    public void onLoad() {
+        super.onLoad();
+        if (getProxy().getPluginManager().getPlugin("ServerListPlus") != null) {
+            net.minecrell.serverlistplus.bungee.BungeePlugin slp = (net.minecrell.serverlistplus.bungee.BungeePlugin) getProxy().getPluginManager().getPlugin("ServerListPlus");
+            getLogger().info("Found ServerListPlus " + slp.getDescription().getVersion() + "!");
+            ReplacementManager.getDynamic().add(new AbstractDynamicReplacer() {
+
+                final String prefix = "%clusteronline@";
+
+                @Override
+                public String replace(ServerListPlusCore serverListPlusCore, String s) {
+                    int index = -1;
+                    while ((index = s.toLowerCase().indexOf(prefix)) > -1) {
+                        int endIndex = s.indexOf('%', index + prefix.length());
+                        if (endIndex > index + prefix.length()) {
+                            String clusterName = s.substring(index + prefix.length() + 1, endIndex);
+                            Cluster cluster = getClusterManager().getCluster(clusterName);
+                            if (cluster != null) {
+                                s = s.substring(0, index) + cluster.getPlayerCount() + s.substring(endIndex + 1);
+                            }
+                        }
+                    }
+                    return s;
+                }
+
+                @Override
+                public boolean find(String s) {
+                    int index = s.indexOf("%clusteronline@");
+                    if (index > -1 && s.indexOf('%', index + prefix.length()) > index + prefix.length()) {
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
+    }
+
     public void onEnable() {
         loadConfig();
         setupCommands(true);
@@ -59,13 +99,13 @@ public class ServerClusters extends BungeePlugin {
         getProxy().getPluginManager().registerListener(this, new ServerSwitchListener(this));
         getProxy().getPluginManager().registerListener(this, new ServerConnectListener(this));
 
-        vnpbungee = (VNPBungee) getProxy().getPluginManager().getPlugin("VNPBungee");
-        if (vnpbungee != null) {
+        if (getProxy().getPluginManager().getPlugin("VNPBungee") != null) {
+            vnpbungee = (VNPBungee) getProxy().getPluginManager().getPlugin("VNPBungee");
             getLogger().log(infolevel, "Found VNPBungee " + vnpbungee.getDescription().getVersion() + "!");
         }
 
-        channels = (Channels) getProxy().getPluginManager().getPlugin("Channels");
-        if (channels != null) {
+        if (getProxy().getPluginManager().getPlugin("Channels") != null) {
+            channels = (Channels) getProxy().getPluginManager().getPlugin("Channels");
             getLogger().info("Found Channels " + channels.getDescription().getVersion() + "!");
         }
 

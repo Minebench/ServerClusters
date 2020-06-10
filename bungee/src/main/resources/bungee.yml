@@ -2,7 +2,7 @@ name: ServerClusters
 main: de.themoep.serverclusters.bungee.ServerClusters
 version: '${minecraft.plugin.version}'
 author: Phoenix616
-softdepends: [VNPBungee,Channels]
+softdepends: [VNPBungee,Channels,ServerListPlus]
 commands:
   serverclusters:
     aliases: [sc, sclusters]
