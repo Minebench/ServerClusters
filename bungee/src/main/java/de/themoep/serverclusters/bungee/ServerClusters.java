@@ -62,11 +62,12 @@ public class ServerClusters extends BungeePlugin {
 
                 @Override
                 public String replace(ServerListPlusCore serverListPlusCore, String s) {
-                    int index = -1;
-                    while ((index = s.toLowerCase().indexOf(prefix)) > -1) {
-                        int endIndex = s.indexOf('%', index + prefix.length());
+                    int index;
+                    int endIndex = 0;
+                    while (endIndex > -1 && (index = s.toLowerCase().indexOf(prefix, endIndex + 1)) > -1) {
+                        endIndex = s.indexOf('%', index + prefix.length());
                         if (endIndex > index + prefix.length()) {
-                            String clusterName = s.substring(index + prefix.length() + 1, endIndex);
+                            String clusterName = s.substring(index + prefix.length(), endIndex);
                             Cluster cluster = getClusterManager().getCluster(clusterName);
                             if (cluster != null) {
                                 s = s.substring(0, index) + cluster.getPlayerCount() + s.substring(endIndex + 1);
@@ -78,11 +79,8 @@ public class ServerClusters extends BungeePlugin {
 
                 @Override
                 public boolean find(String s) {
-                    int index = s.indexOf("%clusteronline@");
-                    if (index > -1 && s.indexOf('%', index + prefix.length()) > index + prefix.length()) {
-                        return true;
-                    }
-                    return false;
+                    int index = s.indexOf(prefix);
+                    return index > -1 && s.indexOf('%', index + prefix.length()) > index + prefix.length();
                 }
             });
         }
