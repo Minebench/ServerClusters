@@ -196,12 +196,18 @@ public class TeleportManager implements Listener {
                     plugin.getLogger().warning("Target location could not be made save to teleport " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
                     return;
                 }
-                player.teleport(target);
-                removeQueueEntry(player.getName());
+                player.teleportAsync(target).thenAccept(success -> {
+                    if (success) {
+                        player.sendMessage(ChatColor.GREEN + "Teleportiert!");
+                        plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Fehler beim teleportieren!");
+                        plugin.getLogger().severe("Unable to teleport " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
 
-                player.sendMessage(ChatColor.GREEN + "Teleportiert!");
-                plugin.debug("Teleported " + player.getName() + " to ([" + target.getWorld().getName() + "] " + target.getX() + ", " + target.getY() + ", " + target.getZ() + ")");
-            });
+                    }
+                });
+                removeQueueEntry(player.getName());
+});
             return 1;
         }
         return -1;
