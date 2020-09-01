@@ -1,5 +1,6 @@
 package de.themoep.serverclusters.bungee.commands;
 
+import de.themoep.minedown.MineDown;
 import de.themoep.serverclusters.bungee.Cluster;
 
 import de.themoep.serverclusters.bungee.ServerClusters;
@@ -86,7 +87,7 @@ public class ListCommand extends ServerClustersCommand {
                     if (checkVanished) {
                         if (plugin.getVnpbungee().getVanishStatus(p) == VNPBungee.VanishStatus.VANISHED) {
                             if (sender.hasPermission("vanish.see")) {
-                                name = ChatColor.GRAY + "[Versteckt]" + ChatColor.RESET;
+                                name = ChatColor.GRAY + "\\[Versteckt\\]" + ChatColor.RESET;
                             } else if (plugin.shouldHideVanished()) {
                                 continue;
                             }
@@ -145,7 +146,7 @@ public class ListCommand extends ServerClustersCommand {
                 }
                 msg.event(he);
                 msg.append(" (" + clusterPlayers.size() + "): ").color(ChatColor.WHITE);
-                msg.append(TextComponent.fromLegacyText(playerList), ComponentBuilder.FormatRetention.EVENTS);
+                msg.append(MineDown.parse(playerList), ComponentBuilder.FormatRetention.EVENTS);
                 sender.sendMessage(msg.create());
             }
         }

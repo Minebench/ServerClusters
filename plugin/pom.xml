@@ -46,6 +46,10 @@
                             <shadedPattern>de.themoep.serverclusters.bungee</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>de.themoep.minedown</pattern>
+                            <shadedPattern>de.themoep.serverclusters.bungee.minedown</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>org.slf4j</pattern>
                             <shadedPattern>de.themoep.serverclusters.lib.slf4j</shadedPattern>
                         </relocation>
