@@ -88,7 +88,7 @@ public class ServerClusters extends BungeePlugin {
 
     public void onEnable() {
         loadConfig();
-        setupCommands(true);
+        setupCommands(getConfig().getBoolean("latebindCommands"));
         teleportUtils = new TeleportUtils(this);
         tm = new TeleportManager(this);
 
