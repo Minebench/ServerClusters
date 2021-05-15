@@ -29,6 +29,7 @@ public class MysqlStorage extends ValueStorage {
 
         if (host != null && database != null && port > 0) {
             ds = new HikariDataSource();
+            String url = "jdbc:mysql://" + host + ":" + port + "/" + database + urlPar;
             String dataSourceClassName = tryDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
             if (dataSourceClassName == null) {
                 dataSourceClassName = tryDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
@@ -36,6 +37,7 @@ public class MysqlStorage extends ValueStorage {
             if (dataSourceClassName != null) {
                 plugin.getLogger().log(Level.INFO, "Using " + dataSourceClassName + " database source");
                 ds.setDataSourceClassName(dataSourceClassName);
+                ds.addDataSourceProperty("url", url);
             }
 
             if (dataSourceClassName == null) {
@@ -53,9 +55,9 @@ public class MysqlStorage extends ValueStorage {
                 } else {
                     throw new RuntimeException("Could not find database driver or data source class! Plugin wont work without a database!");
                 }
+                ds.setJdbcUrl(url);
             }
 
-            ds.addDataSourceProperty("url", "jdbc:mysql://" + host + ":" + port + "/" + database + urlPar);
             ds.setUsername(plugin.getConfig().getString("mysql.user"));
             ds.setPassword(plugin.getConfig().getString("mysql.password"));
             ds.setConnectionTimeout(5000);
