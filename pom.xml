@@ -17,7 +17,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <plugin.version>0.4.1-SNAPSHOT</plugin.version>
+        <plugin.version>0.4.2-SNAPSHOT</plugin.version>
         <plugin.name>ServerClusters</plugin.name>
         <minecraft.plugin.version>${project.version} ${buildDescription}</minecraft.plugin.version>
     </properties>

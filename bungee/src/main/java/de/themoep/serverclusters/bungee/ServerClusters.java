@@ -318,4 +318,20 @@ public class ServerClusters extends BungeePlugin {
         }
         return "";
     }
+
+    /**
+     * Check whether a player has ignored another player
+     * @param player The player to check
+     * @param target The other player
+     * @return Whether the player has ignored the target
+     */
+    public boolean hasIgnored(ProxiedPlayer player, ProxiedPlayer target) {
+        if (channels != null) {
+            Chatter chatter = channels.getChatter(player);
+            if (chatter != null) {
+                return chatter.getIgnores().contains(target.getUniqueId().toString());
+            }
+        }
+        return false;
+    }
 }

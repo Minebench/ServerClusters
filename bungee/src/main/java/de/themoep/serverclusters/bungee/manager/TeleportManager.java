@@ -31,7 +31,7 @@ public class TeleportManager extends Manager {
 
     private final Map<String, Request> cachedRequests = new HashMap<>();
 
-    private Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
+    private final Map<UUID, ScheduledTask> teleportTasks = new HashMap<>();
 
     public TeleportManager(ServerClusters plugin) {
         super(plugin);
@@ -111,27 +111,32 @@ public class TeleportManager extends Manager {
         requestMap.put(request.getReceiver(), request);
 
         if (request.getTarget() == TeleportTarget.RECEIVER) {
-            receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob er sich zu " + ChatColor.RED + "dir" + ChatColor.GOLD + " teleportieren darf.");
+            if (!plugin.hasIgnored(receiver, sender)) {
+                receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob er sich zu " + ChatColor.RED + "dir" + ChatColor.GOLD + " teleportieren darf.");
+            }
         } else {
             Cluster receiverCluster = plugin.getClusterManager().getPlayerCluster(receiver);
             Cluster targetCluster = plugin.getClusterManager().getPlayerCluster(sender);
             if (receiverCluster == null) {
-                receiver.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster is " + sender.getName() + " on? Oo");
+                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster is " + receiver.getName() + " on? Oo");
             }
             if (targetCluster == null) {
-                receiver.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster are you on? Oo");
+                sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.YELLOW + "On what cluster are you on? Oo");
             }
             if (receiverCluster != null && targetCluster != null && !receiverCluster.equals(targetCluster)) {
                 if (receiver.hasPermission("serverclusters.command.tpahere.intercluster")) {
                     if (receiver.hasPermission("serverclusters.cluster." + targetCluster.getName())) {
-                        if (!receiver.hasPermission("serverclusters.command.tpahere.intercluster.nowarning")) {
+                        if (!receiver.hasPermission("serverclusters.command.tpahere.intercluster.nowarning")
+                                && !plugin.hasIgnored(receiver, sender)) {
                             receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " befindet sich auf dem Server " + targetCluster.getName() + "!");
                         }
                     } else {
-                        receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + sender.getName() + " gerade befindet!");
-                        sender.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + sender.getName() + " hat nicht die Rechte um dich auf den Server zu teleportieren auf dem du gerade befindest!");
+                        if (!plugin.hasIgnored(receiver, sender)) {
+                            receiver.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + "Du hast nicht die Rechte um dich auf den Server zu teleportieren auf dem sich " + sender.getName() + " gerade befindet!");
+                        }
+                        sender.sendMessage(ChatColor.RED + "Achtung: " + ChatColor.YELLOW + receiver.getName() + " hat nicht die Rechte um dich auf den Server zu teleportieren auf dem du gerade befindest!");
                     }
-                } else {
+                } else if (!plugin.hasIgnored(receiver, sender)) {
                     receiver.sendMessage(new ComponentBuilder("Achtung: ").color(ChatColor.RED)
                             .append("Du hast nicht die Rechte um direkt zwischen Servern zu teleportieren! Wechsele zuerst mit /server " + targetCluster.getName() + " auf den selben Server!").color(ChatColor.YELLOW)
                             .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/cluster " + targetCluster.getName()))
@@ -142,34 +147,38 @@ public class TeleportManager extends Manager {
                     );
                 }
             }
-            receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob du dich zu " + ChatColor.RED + "ihm" + ChatColor.GOLD + " teleportieren willst.");
+            if (!plugin.hasIgnored(receiver, sender)) {
+                receiver.sendMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " fragt, ob du dich zu " + ChatColor.RED + "ihm" + ChatColor.GOLD + " teleportieren willst.");
+            }
         }
         sender.sendMessage(ChatColor.GREEN + "Teleportationsanfrage an " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + " gesendet!");
-        receiver.sendMessage(new ComponentBuilder("Nutze ")
-                        .color(ChatColor.GOLD)
-                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                ChatColor.BLUE + "Klicke um " + ChatColor.GREEN + "/tpaccept" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage anzunehmen!"
-                        )))
-                        .append("/tpaccept")
-                        .color(ChatColor.GREEN)
-                        .append(" um die Anfrage anzunehmen.")
-                        .color(ChatColor.GOLD)
-                        .create()
-        );
-        receiver.sendMessage(new ComponentBuilder("Nutze ")
-                        .color(ChatColor.GOLD)
-                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + sender.getName()))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-                                ChatColor.BLUE + "Klicke um " + ChatColor.RED + "/tpdeny" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage abzulehnen!"
-                        )))
-                        .append("/tpdeny")
-                        .color(ChatColor.RED)
-                        .append(" um die Anfrage abzulehnen.")
-                        .color(ChatColor.GOLD)
-                        .create()
-        );
-        receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + plugin.getTeleportTimeout() + " Sekunden" + ChatColor.GOLD + " ung\u00fcltig!");
+        if (!plugin.hasIgnored(receiver, sender)) {
+            receiver.sendMessage(new ComponentBuilder("Nutze ")
+                    .color(ChatColor.GOLD)
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName()))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                            ChatColor.BLUE + "Klicke um " + ChatColor.GREEN + "/tpaccept" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage anzunehmen!"
+                    )))
+                    .append("/tpaccept")
+                    .color(ChatColor.GREEN)
+                    .append(" um die Anfrage anzunehmen.")
+                    .color(ChatColor.GOLD)
+                    .create()
+            );
+            receiver.sendMessage(new ComponentBuilder("Nutze ")
+                    .color(ChatColor.GOLD)
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + sender.getName()))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
+                            ChatColor.BLUE + "Klicke um " + ChatColor.RED + "/tpdeny" + ChatColor.BLUE + " auszuf\u00fchren und die Anfrage abzulehnen!"
+                    )))
+                    .append("/tpdeny")
+                    .color(ChatColor.RED)
+                    .append(" um die Anfrage abzulehnen.")
+                    .color(ChatColor.GOLD)
+                    .create()
+            );
+            receiver.sendMessage(ChatColor.GOLD + "Diese Anfrage wird nach " + ChatColor.RED + plugin.getTeleportTimeout() + " Sekunden" + ChatColor.GOLD + " ung\u00fcltig!");
+        }
         return true;
     }
 
