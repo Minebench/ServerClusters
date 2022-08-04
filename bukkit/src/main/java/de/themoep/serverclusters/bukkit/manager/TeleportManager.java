@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,7 +127,55 @@ public class TeleportManager implements Listener {
     }
 
     /**
-     * Teleport the player if he has an entry in the teleport queue
+     * Set player location on join directly if they have one in the queue
+     */
+    @EventHandler
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        if (isQueued(event.getPlayer())) {
+            QueueEntry entry = getQueueEntry(event.getPlayer().getName());
+            if (entry != null) {
+                if (entry.getType() == EntryType.LOCATION) {
+                    Location entryLocation = entry.getLocation();
+                    if (entryLocation != null) {
+                        tpRequests.remove(event.getPlayer().getUniqueId());
+                        Location loc = makeTeleportSafe(event.getPlayer(), entryLocation);
+                        if (loc != null) {
+                            event.setSpawnLocation(entryLocation);
+                            event.getPlayer().sendMessage(ChatColor.GREEN + "Teleportiert!");
+                            plugin.debug("Teleported " + event.getPlayer().getName() + " to ([" + entryLocation.getWorld().getName() + "] " + entryLocation.getX() + ", " + entryLocation.getY() + ", " + entryLocation.getZ() + ") by changing spawn location");
+                            removeQueueEntry(event.getPlayer().getName());
+                            return;
+                        } else {
+                            plugin.getLogger().warning("Target location could not be made save to teleport " + event.getPlayer().getName() + " to ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ") by changing spawn location");
+                        }
+                    }
+                } else if (entry.getType() == EntryType.STRING) {
+                    String targetName = entry.getString();
+                    if (targetName != null) {
+                        Player target = plugin.getServer().getPlayer(targetName);
+                        if (target != null) {
+                            Location loc = makeTeleportSafe(event.getPlayer(), target.getLocation());
+                            tpRequests.remove(event.getPlayer().getUniqueId());
+                            if (loc != null) {
+                                event.getPlayer().teleport(loc);
+                                removeQueueEntry(event.getPlayer().getName());
+                                event.getPlayer().sendMessage(ChatColor.GREEN + "Teleportiert!");
+                                plugin.debug("Teleported " + event.getPlayer().getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ") by changing spawn location");
+                                return;
+                            } else {
+                                loc = target.getLocation();
+                                plugin.getLogger().log(Level.SEVERE, "Could not teleport " + event.getPlayer().getName() + " to " + target.getName() + " ([" + loc.getWorld().getName() + "] " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ") as it was unsafe! (Tried to change spawn location)");
+                            }
+                        }
+                    }
+                }
+                addQueueEntry(event.getPlayer().getName(), entry.copy());
+            }
+        }
+    }
+
+    /**
+     * Teleport the player if he still has an entry in the teleport queue
      */
     @EventHandler
     public void onPlayerLogin(PlayerJoinEvent event) {
