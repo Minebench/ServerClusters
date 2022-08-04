@@ -405,7 +405,7 @@ public class TeleportManager implements Listener {
     }
 
     public Location makeTeleportSafe(Player player, Location target) {
-        if (target != null && player != null && player.isOnline()) {
+        if (target != null && player != null) {
             if (!player.isFlying() && target.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
                 if (player.getAllowFlight() || player.getGameMode() == GameMode.CREATIVE) {
                     player.setFlying(true);
