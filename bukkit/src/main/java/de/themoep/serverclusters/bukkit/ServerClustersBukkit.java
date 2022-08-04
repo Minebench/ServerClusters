@@ -3,8 +3,6 @@ package de.themoep.serverclusters.bukkit;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import de.themoep.serverclusters.bukkit.manager.TeleportManager;
-
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -13,10 +11,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class ServerClustersBukkit extends JavaPlugin {
@@ -88,7 +82,7 @@ public class ServerClustersBukkit extends JavaPlugin {
         } else {
             out.writeBoolean(false);
         }
-        out.writeUTF(StringUtils.join(args, " "));
+        out.writeUTF(String.join(" ", args));
         player.sendPluginMessage(this, "sc:runcommand", out.toByteArray());
         return true;
     }

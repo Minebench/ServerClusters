@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import de.themoep.bungeeplugin.BungeePlugin;
 import de.themoep.bungeeplugin.PluginCommand;
+import de.themoep.connectorplugin.bungee.BungeeConnectorPlugin;
 import de.themoep.serverclusters.bungee.bukkitcommands.*;
 import de.themoep.serverclusters.bungee.commands.*;
 import de.themoep.serverclusters.bungee.enums.Backend;
@@ -19,6 +20,7 @@ import de.themoep.serverclusters.bungee.utils.TeleportUtils;
 import de.themoep.vnpbungee.VNPBungee;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.minecrell.serverlistplus.core.ServerListPlusCore;
 import net.minecrell.serverlistplus.core.replacement.AbstractDynamicReplacer;
@@ -44,6 +46,7 @@ public class ServerClusters extends BungeePlugin {
 
     private BukkitCommandExecutor bukkitCommandExecutor;
 
+    private BungeeConnectorPlugin connector;
     private VNPBungee vnpbungee = null;
     private Channels channels = null;
     private long commandCooldown;
@@ -87,6 +90,7 @@ public class ServerClusters extends BungeePlugin {
     }
 
     public void onEnable() {
+        connector = (BungeeConnectorPlugin) getProxy().getPluginManager().getPlugin("ConnectorPlugin");
         loadConfig();
         setupCommands(getConfig().getBoolean("latebindCommands"));
         teleportUtils = new TeleportUtils(this);
@@ -272,6 +276,10 @@ public class ServerClusters extends BungeePlugin {
 
     public BukkitCommandExecutor getBukkitCommandExecutor() {
         return bukkitCommandExecutor;
+    }
+
+    public BungeeConnectorPlugin getConnector() {
+        return connector;
     }
 
     /**
