@@ -25,6 +25,7 @@ public class BungeePluginMessageListener implements PluginMessageListener {
         plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "sc:getlocation", this);
         plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "sc:addrequest", this);
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "sc:playerlocation");
+        plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "sc:error");
     }
 
     public void onPluginMessageReceived(String channel, Player receiver, byte[] message) {
