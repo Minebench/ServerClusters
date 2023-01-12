@@ -6,6 +6,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -16,24 +17,28 @@ import java.util.logging.Level;
 public class BukkitCommandExecutor {
 
     private final ServerClusters plugin;
-    private final Map<String, BukkitCommand> commandMap = new HashMap<String, BukkitCommand>();
+    private final Map<String, BukkitCommand> commandMap = new HashMap<>();
 
     public BukkitCommandExecutor(ServerClusters plugin) {
         this.plugin = plugin;
     }
 
     public boolean registerCommand(BukkitCommand command) {
-        if (commandMap.containsKey(command.getName())) {
+        if (commandMap.containsKey(command.getName().toLowerCase(Locale.ROOT))) {
             return false;
         }
 
-        commandMap.put(command.getName(), command);
+        commandMap.put(command.getName().toLowerCase(Locale.ROOT), command);
         plugin.getProxy().getPluginManager().registerCommand(plugin, command);
         return true;
     }
 
+    public BukkitCommand getCommand(String name) {
+        return commandMap.get(name.toLowerCase(Locale.ROOT));
+    }
+
     public boolean execute(String commandName, String senderName, LocationInfo location, String[] args) {
-        BukkitCommand command = commandMap.get(commandName);
+        BukkitCommand command = getCommand(commandName);
 
         if (command == null) {
             return false;

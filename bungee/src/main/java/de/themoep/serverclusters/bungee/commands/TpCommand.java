@@ -77,7 +77,7 @@ public class TpCommand extends ServerClustersCommand implements TabExecutor {
     @Override
     protected boolean onPermissionDenied(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            ((ProxiedPlayer) sender).chat("/tpa " + String.join(" ", args));
+            plugin.getBukkitCommandExecutor().getCommand("tpa").execute(sender, args);
             return true;
         }
         return false;
