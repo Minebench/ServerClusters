@@ -24,7 +24,7 @@ public class DelwarpCommand extends ServerClustersCommand {
 
         WarpInfo warp = plugin.getWarpManager().removeWarp(sender, args[0]);
         if (warp != null) {
-
+            sender.sendMessage(ChatColor.GREEN + "Warp " + warp.getName() + " was removed!");
         } else {
             sender.sendMessage(ChatColor.RED + "No warp with the name " + ChatColor.YELLOW + args[0] + ChatColor.RED + " found!");
         }
@@ -33,7 +33,7 @@ public class DelwarpCommand extends ServerClustersCommand {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        List<String> pl = new ArrayList<String>();
+        List<String> pl = new ArrayList<>();
         for (WarpInfo warp : plugin.getWarpManager().getGlobalWarps()) {
             if (args.length == 0 || warp.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
                 if (sender.hasPermission("serverclusters.globalwarp." + warp)) {
